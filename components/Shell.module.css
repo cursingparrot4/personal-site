@@ -1,0 +1,29 @@
+.shell {
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: var(--page-pad);
+  display: grid;
+  grid-template-columns: 17rem minmax(0, 1fr);
+  gap: clamp(2.5rem, 6vw, 5rem);
+  align-items: start;
+}
+
+.content {
+  min-width: 0;
+  padding-block: clamp(3rem, 8vh, 6rem) var(--space-8);
+}
+
+/* First section shouldn't get the big top margin — it leads the column. */
+.content > section:first-of-type {
+  margin-top: 0;
+}
+
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .content {
+    padding-block: var(--space-7) var(--space-8);
+  }
+}

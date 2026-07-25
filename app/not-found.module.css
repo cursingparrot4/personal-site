@@ -1,0 +1,28 @@
+.wrap {
+  padding-top: var(--space-6);
+}
+
+.code {
+  font-size: var(--fs-meta);
+  color: var(--accent);
+  margin-bottom: var(--space-3);
+}
+
+.title {
+  font-size: var(--fs-display);
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}
+
+.back {
+  margin-top: var(--space-6);
+  font-size: var(--fs-meta);
+}
+
+.link {
+  color: var(--muted);
+  transition: color var(--dur-fast) var(--ease);
+}
+.link:hover {
+  color: var(--accent);
+}

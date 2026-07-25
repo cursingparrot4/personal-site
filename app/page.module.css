@@ -1,0 +1,38 @@
+.rows {
+  /* rows own their own hairline borders */
+}
+
+.more {
+  margin-top: var(--space-6);
+  font-size: var(--fs-meta);
+}
+
+.bio {
+  max-width: 62ch;
+  color: var(--text);
+  line-height: var(--lh-body);
+}
+
+.subhead {
+  margin-top: var(--space-7);
+  margin-bottom: var(--space-4);
+  font-size: var(--fs-h3);
+}
+
+.contactLead {
+  max-width: 50ch;
+  color: var(--text);
+  margin-bottom: var(--space-5);
+}
+
+.contact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--fs-meta);
+}
+
+.sep {
+  color: var(--border);
+}

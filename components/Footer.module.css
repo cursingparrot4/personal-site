@@ -1,0 +1,33 @@
+.footer {
+  border-top: 0.5px solid var(--border);
+  margin-top: var(--section-gap);
+}
+
+.inner {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding: var(--space-6) var(--page-pad);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+.sep {
+  color: var(--border);
+}
+
+.link {
+  color: var(--muted);
+  transition: color var(--dur-fast) var(--ease);
+}
+.link:hover {
+  color: var(--accent);
+}
+
+.arrow {
+  margin-left: 0.15em;
+  font-size: 0.85em;
+}
