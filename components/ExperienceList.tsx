@@ -21,13 +21,24 @@ function ExperienceItem({ exp }: { exp: Experience }) {
       >
         <span className={styles.role}>{exp.role}</span>
         <span className={`${styles.org} mono`}>{exp.org}</span>
-        <span className={`${styles.period} mono`}>{exp.period}</span>
         {hasNote ? (
           <span className={styles.chevron} aria-hidden="true">
             ⌄
           </span>
         ) : null}
       </button>
+
+      {/* Timeline gutter — spans the whole item, so it stretches as the panel opens. */}
+      <div className={styles.rail}>
+        <span className={styles.track} aria-hidden="true">
+          <span className={styles.node} />
+        </span>
+        {/* The slot carries a strut matching .role, so the date sits on the
+            same baseline as the role text regardless of font metrics. */}
+        <span className={styles.dateSlot}>
+          <span className={`${styles.period} mono`}>{exp.period}</span>
+        </span>
+      </div>
 
       {hasNote ? (
         <div id={panelId} className={styles.panel} role="region" inert={!open}>
