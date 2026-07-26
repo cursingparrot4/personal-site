@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { site } from "@/lib/site";
 import { Footer } from "@/components/Footer";
+import { NullscapeFilter } from "@/components/NullscapeFilter";
 import "./globals.css";
 
 const sans = Space_Grotesk({
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body>
+        <NullscapeFilter />
         <a href="#main" className="skip-link">
           skip to content
         </a>

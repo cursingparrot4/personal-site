@@ -6,16 +6,33 @@ import styles from "./Rail.module.css";
 type Props = {
   /** when present, renders in-page scroll-spy nav (home) instead of a home link */
   sections?: { id: string; label: string }[];
+  /** terminal prompt row above the name */
+  showPrompt?: boolean;
 };
 
+/** "Aryan Ahlawat" → "aryan-ahlawat" for the prompt row. */
+const handle = profile.name.toLowerCase().replace(/\s+/g, "-");
+
 /**
- * Sticky identity rail: name, tagline, focus areas, navigation, and contact.
+ * Sticky identity rail: prompt row, name, tagline, focus areas, navigation, contact.
  * On desktop it stays pinned; on mobile it stacks above the content as a header.
  */
-export function Rail({ sections }: Props) {
+export function Rail({ sections, showPrompt = true }: Props) {
   return (
     <aside className={styles.rail}>
       <div className={styles.top}>
+        {showPrompt ? (
+          <p className={`${styles.prompt} mono`}>
+            <span>
+              <span className={styles.promptPath} aria-hidden="true">
+                ~/
+              </span>
+              {handle}
+            </span>
+            <span className={styles.promptMeta}>{profile.promptMeta}</span>
+          </p>
+        ) : null}
+
         <Link href="/" className={styles.brand}>
           {profile.name}
         </Link>

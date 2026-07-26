@@ -20,6 +20,8 @@ export type Experience = {
 export type Profile = {
   name: string;
   headline: string; // one line, what you do
+  /** right side of the rail's terminal prompt row, e.g. "cs · systems" */
+  promptMeta: string;
   focus: string[]; // ["machine learning", ...]
   bio: string;
   links: { github: string; email: string; linkedin?: string };

@@ -2,15 +2,16 @@
    Design tokens — see spec.md §4–6. Edit values here only.
    ============================================================ */
 :root {
-  /* Palette — "Crimson" (dark) */
-  --bg: #100e11;
-  --surface: #1a171c;
-  --surface-hi: #23202b;
-  --text: #e8e4ea;
-  --muted: #8f8a96;
-  --border: #29242d;
-  --accent: #f0475e;
-  --accent-dim: rgba(240, 71, 94, 0.27);
+  /* Palette — "Graphite Cyan" (dark) */
+  --bg: #0d1114;
+  --surface: #161b1f; /* row hover, chrome */
+  --surface-hi: #1e252b; /* active state */
+  --text: #e2e8ec;
+  --muted: #8b979e;
+  --border: #232b31; /* hairlines, inert glyphs */
+  --accent: #34c5dd;
+  --accent-dim: rgba(52, 197, 221, 0.32); /* tag borders */
+  --selection: rgba(52, 197, 221, 0.28);
 
   /* Typography — families injected by next/font as --font-sans / --font-mono */
   --fs-display: clamp(2.5rem, 6vw, 4rem);
@@ -108,8 +109,15 @@ svg {
 }
 
 ::selection {
-  background: var(--accent-dim);
-  color: var(--text);
+  background: var(--selection);
+  color: #fff;
+}
+
+/* Content sits between the Nullscape filter's two layer stacks (z 0 and z 30). */
+main,
+footer {
+  position: relative;
+  z-index: 1;
 }
 
 /* Skip-to-content link — visible on focus */

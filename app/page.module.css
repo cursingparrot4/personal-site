@@ -13,12 +13,6 @@
   line-height: var(--lh-body);
 }
 
-.subhead {
-  margin-top: var(--space-7);
-  margin-bottom: var(--space-4);
-  font-size: var(--fs-h3);
-}
-
 .contactLead {
   max-width: 50ch;
   color: var(--text);

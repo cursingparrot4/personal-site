@@ -1,0 +1,54 @@
+/* Graphite Cyan tokens — merge into app/globals.css, mapping onto the
+   variable names already used there rather than adding a parallel set. */
+
+:root {
+  --bg: #0d1114;
+  --surface: #161b1f;      /* row hover, chrome */
+  --surface-2: #1e252b;    /* active state */
+  --line: #232b31;         /* hairlines, inert glyphs */
+  --text: #e2e8ec;
+  --muted: #8b979e;
+  --accent: #34c5dd;
+  --accent-dim: rgba(52, 197, 221, 0.32);  /* tag borders */
+  --selection: rgba(52, 197, 221, 0.28);
+
+  --font-sans: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-fast: 150ms;   /* hover, color */
+  --t-panel: 400ms;  /* disclosure */
+
+  --radius: 3px;     /* tags only */
+  --hairline: 0.5px solid var(--line);
+
+  --page-max: 80rem;
+  --page-pad: clamp(1.25rem, 5vw, 2rem);
+  --rail-w: 17rem;
+  --col-gap: clamp(2.5rem, 6vw, 5rem);
+  --section-gap: clamp(4rem, 10vw, 6rem);
+  --block-pad: clamp(3rem, 8vh, 6rem);
+  --footer-max: 46rem;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+}
+body {
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+* { box-sizing: border-box; }
+
+a { color: inherit; text-decoration: none; transition: color var(--t-fast) var(--ease); }
+a:hover { color: var(--accent); }
+
+::selection { background: var(--selection); color: #fff; }
+
+/* Content must sit between the filter's two layer stacks (z 0 and z 30). */
+.shell, main { position: relative; z-index: 1; }

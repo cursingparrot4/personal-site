@@ -3,6 +3,7 @@ import type { Profile } from "@/lib/types";
 export const profile: Profile = {
   name: "Aryan Ahlawat",
   headline: "i build and ship machine-learning systems.", // tune to taste, keep it one honest line
+  promptMeta: "cs · systems",
   focus: ["machine learning", "retrieval / RAG", "computer vision", "low-level systems"],
   bio:
     "cs student at Queen's on the AI stream, minoring in economics. i work across applied " +

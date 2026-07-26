@@ -1,4 +1,4 @@
-# Aryan Ahlawat — personal site spec
+﻿# Aryan Ahlawat — personal site spec
 
 A personal portfolio + resume site for a Queen's Bachelor of Computing (AI stream) student.
 This file is the source of intent. Read it before planning or generating code. Every
@@ -53,20 +53,22 @@ specific content.
 
 ---
 
-## 4. Palette — "Crimson" (dark only)
+## 4. Palette — "Graphite Cyan" (dark only)
 
-Cool near-black base so the scarlet accent pops. CSS custom properties in `globals.css`:
+Graphite near-black base so the cyan accent reads as terminal phosphor. CSS custom
+properties in `globals.css`:
 
 ```css
 :root {
-  --bg:         #100E11;  /* page background */
-  --surface:    #1A171C;  /* cards / elevated */
-  --surface-hi: #23202B;  /* hover / higher elevation */
-  --text:       #E8E4EA;  /* primary text */
-  --muted:      #8F8A96;  /* meta, secondary */
-  --border:     #29242D;  /* hairline rules */
-  --accent:     #F0475E;  /* crimson — links, tags, focus */
-  --accent-dim: rgba(240,71,94,0.27); /* tag borders, subtle fills */
+  --bg:         #0D1114;  /* page background */
+  --surface:    #161B1F;  /* row hover, chrome */
+  --surface-hi: #1E252B;  /* active state */
+  --text:       #E2E8EC;  /* primary text */
+  --muted:      #8B979E;  /* meta, secondary */
+  --border:     #232B31;  /* hairline rules, inert glyphs */
+  --accent:     #34C5DD;  /* cyan — links, tags, focus */
+  --accent-dim: rgba(52,197,221,0.32); /* tag borders, subtle fills */
+  --selection:  rgba(52,197,221,0.28); /* ::selection (text #fff) */
 }
 ```
 
@@ -78,11 +80,19 @@ Cool near-black base so the scarlet accent pops. CSS custom properties in `globa
 - Elevation is conveyed by `--surface`/`--surface-hi` + `--border`, never by shadow.
 
 **Contrast notes (WCAG)**
-- `--text` on `--bg` ≈ 14:1 — excellent.
-- `--muted` on `--bg` ≈ 4.6:1 — OK for meta at ≥14px; do **not** use `--muted` for long body
+- `--text` on `--bg` ≈ 15:1 — excellent.
+- `--muted` on `--bg` ≈ 6.5:1 — OK for meta at ≥14px; do **not** use `--muted` for long body
   copy or anything under 14px.
-- `--accent` on `--bg` ≈ 4.9:1 — fine for links/UI and large text; pair with underline so
+- `--accent` on `--bg` ≈ 9:1 — fine for links/UI and large text; pair with underline so
   color is never the only signal.
+
+**Atmosphere layer** — `components/NullscapeFilter.tsx` mounts two fixed, `aria-hidden`,
+`pointer-events: none` stacks that sandwich the page: *atmosphere* at `z-index: 0` (haze,
+cyan light beam, fog, vignette) and *texture* at `z-index: 30` (scanlines, dither, colour
+bands, animated grain, colour grade). Every opacity is scaled by `--ns-k`, the strength
+knob, at `0.2` by default — subtle enough that text stays fully legible. Page content sits
+at `z-index: 1` between them (`main`, `footer` in `globals.css`). Animation is dropped
+under `prefers-reduced-motion`; the layers stay.
 
 ---
 
@@ -120,8 +130,9 @@ Two families, self-hosted via `next/font`:
   + a scrolling **content** column, inside an `80rem` max-width centered wrapper with
   `--page-pad: clamp(1.25rem, 5vw, 2rem)` gutters. Collapses to a single column below
   **900px**, where the rail becomes a stacked header.
-- The rail (`components/Rail.tsx`) holds name, headline, focus areas, navigation, and
-  contact (pinned to the bottom on desktop via `margin-top:auto`). It replaces a top nav bar.
+- The rail (`components/Rail.tsx`) holds a mono prompt row (`~/aryan-ahlawat` … `cs · systems`,
+  hairline underneath, toggled by `showPrompt`), then name, headline, focus areas, navigation,
+  and contact (pinned to the bottom on desktop via `margin-top:auto`). It replaces a top nav bar.
 - Content column caps prose at ~62ch; `--container: 46rem` remains available for narrow
   article layouts (project detail).
 - **Spacing scale** (4px base), as CSS vars `--space-1…9`:
@@ -141,8 +152,12 @@ Two families, self-hosted via `next/font`:
   closed). Height animates via the `grid-template-rows: 0fr → 1fr` trick, 400ms; the chevron
   rotates 180°. Collapsed shows the summary; expanded reveals the full description + links
   (projects) or the detail note (experience).
-- **Scroll-spy rail nav** (`RailNav`, home only): an `IntersectionObserver` highlights the
-  section in view — the active item's tick grows and turns `--accent`.
+- **Scroll-spy rail nav** (`RailNav`, home only): the active section is the last one whose
+  top has crossed a line 35% down the viewport — the active item's tick grows and turns
+  `--accent`. Derived from scroll position (rAF-throttled `scroll`/`resize`, plus a
+  `ResizeObserver` for accordion reflow) rather than raw `IntersectionObserver` callbacks,
+  so it stays correct when sections straddle the line, when a section is shorter than the
+  band, and when the page bottoms out before the last section reaches the line.
 - **Hover:** 150ms ease. Row hover raises a `--surface` background and turns the index +
   chevron toward `--accent`. That's the whole hover vocabulary.
 - **Focus:** `outline: 2px solid var(--accent)` via `:focus-visible` on every control.
@@ -176,7 +191,7 @@ Two families, self-hosted via `next/font`:
 ## 10. Site map & composition
 
 ```
-/                 home — hero → selected work → about/experience → contact
+/                 home — about → experience → selected work → contact
 /projects         full data-driven project index
 /projects/[slug]  optional per-project writeup (screenshots, decisions, metrics)
 public/resume.pdf linked from hero (copied from the repo's resume PDF)
@@ -185,28 +200,31 @@ public/resume.pdf linked from hero (copied from the repo's resume PDF)
 ### `/` home — wireframe (split rail + scrolling content)
 
 ```
-┌─────────────────────┬──────────────────────────────────────────┐
-│ Aryan Ahlawat       │  001 — selected work                      │
-│ i build and ship    │  Selected work                            │
-│ machine-learning …  │  ───────────────────────────────────────  │
-│                     │  01  VisualizeIt   [award]         2025 ⌄ │  ← accordion
-│ — machine learning  │      real-time CV + diffusion inpainting   │
-│ — retrieval / RAG   │      YOLOv8 · PyTorch · Stable Diffusion    │
-│ — computer vision   │  ───────────────────────────────────────  │
-│ — low-level systems │  02  Cognitive RAG                 2026 ⌄ │
-│                     │      hybrid retrieval, multi-hop QA        │
-│ ▬▬▬ selected work   │  ───────────────────────────────────────  │  ← scroll-spy
-│ ──  about           │  03  Churn Classification Engine   2025 ⌄ │     active tick
-│ ──  contact         │      0.82 F1 across 7,000+ users           │
-│                     │  all projects →                            │
-│ projects            │                                            │
-│ resume ↗            │  002 — about                               │
-│                     │  About                                     │
-│                     │  [bio] · Experience (expandable rows)      │
-│ github ↗ (pinned    │                                            │
-│ email ↗   to        │  003 — contact                             │
-│ linkedin ↗ bottom)  │  [email] · [github] · [linkedin]           │
-└─────────────────────┴──────────────────────────────────────────┘
+┌─────────────────────┬────────────────────────────────────────────┐
+│ ~/aryan-ahlawat     │  001 — about                               │
+│         cs · systems│  About                                     │
+│ ─────────────────── │  [bio, capped ~62ch]                       │
+│ Aryan Ahlawat       │                                            │
+│ i build and ship    │  002 — experience                          │
+│ machine-learning …  │  Experience                                │
+│                     │  ────────────────────────────────────────  │
+│ — machine learning  │  Software Developer Co-op  Co-operators  ⌄ │  ← accordion
+│ — retrieval / RAG   │  ────────────────────────────────────────  │
+│ — computer vision   │  Design Team Engineer      QMIND         ⌄ │
+│ — low-level systems │                                            │
+│                     │  003 — projects                            │
+│ ──  about           │  Selected work                             │
+│ ▬▬▬ experience      │  ────────────────────────────────────────  │  ← scroll-spy
+│ ──  projects        │  01  VisualizeIt   [award]          2025 ⌄ │     active tick
+│ ──  contact         │      real-time CV + diffusion inpainting   │
+│                     │      YOLOv8 · PyTorch · Stable Diffusion   │
+│ projects            │  all projects →                            │
+│ resume ↗            │                                            │
+│                     │  004 — contact                             │
+│ github ↗ (pinned    │  Contact                                   │
+│ email ↗   to        │  [email] · [github] · [linkedin]           │
+│ linkedin ↗ bottom)  │                                            │
+└─────────────────────┴────────────────────────────────────────────┘
    sticky (100dvh)        scrolls · footer (© · location · src ↗) spans full width below
 ```
 Below 900px the rail stacks on top as a header (name, tagline, focus, horizontal nav +
@@ -230,6 +248,7 @@ real alt text. No comment sections, no share buttons.
 export const profile: Profile = {
   name: "Aryan Ahlawat",
   headline: "i build and ship machine-learning systems.", // tune to taste, keep it one honest line
+  promptMeta: "cs · systems",                    // right side of the rail's prompt row
   focus: ["machine learning", "retrieval / RAG", "computer vision", "low-level systems"],
   bio:
     "cs student at Queen's on the AI stream, minoring in economics. i work across applied " +

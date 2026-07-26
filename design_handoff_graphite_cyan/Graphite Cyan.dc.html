@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #0d1114; }
+  body { -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { color: #34c5dd; }
+  ::selection { background: rgba(52,197,221,0.28); color: #fff; }
+  @keyframes ns-beam { 0% { transform: translate3d(-3%, 2%, 0) scale(1); opacity: .7 } 50% { transform: translate3d(3%, -2%, 0) scale(1.07); opacity: 1 } 100% { transform: translate3d(-3%, 2%, 0) scale(1); opacity: .7 } }
+  @keyframes ns-haze { 0%,100% { transform: translate3d(0,0,0) } 50% { transform: translate3d(1.5%, -1.5%, 0) } }
+  @keyframes ns-grain { 0%,100% { transform: translate(0,0) } 20% { transform: translate(-1%, 1%) } 40% { transform: translate(1%, -1%) } 60% { transform: translate(-1.5%, -1%) } 80% { transform: translate(1%, 1.5%) } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important } }
+</style>
+</helmet>
+
+<div style="position:relative;background:#0d1114;color:#e2e8ec;font-family:'Space Grotesk',system-ui,sans-serif;font-size:16px;line-height:1.65;min-height:100dvh">
+
+  <div aria-hidden="true" style="{{ atmosWrap }}">
+    <div style="position:absolute;inset:-20%;background:radial-gradient(58% 48% at 20% 10%, #0f2c3a 0%, rgba(15,44,58,0) 62%), radial-gradient(45% 42% at 88% 74%, #10303d 0%, rgba(16,48,61,0) 60%);animation:ns-haze 28s ease-in-out infinite"></div>
+    <div style="{{ beamStyle }}"></div>
+    <div style="{{ fogStyle }}"></div>
+    <div style="position:absolute;inset:0;box-shadow:inset 0 0 260px 70px rgba(4,8,11,.9), inset 0 0 70px 0 rgba(4,8,11,.55)"></div>
+  </div>
+
+  <div aria-hidden="true" style="{{ filterWrap }}">
+    <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg, rgba(6,12,16,.28) 0px, rgba(6,12,16,.28) 1px, rgba(255,255,255,0) 1px, rgba(255,255,255,0) 3px);opacity:.5"></div>
+    <div style="{{ ditherStyle }}"></div>
+    <div style="{{ bandStyle }}"></div>
+    <div style="{{ grainStyle }}"></div>
+    <div style="{{ gradeStyle }}"></div>
+  </div>
+
+
+  <div style="position:fixed;top:12px;right:12px;z-index:50;display:flex;gap:2px;font-family:'JetBrains Mono',monospace;font-size:11px;background:#161b1f;border:0.5px solid #232b31;padding:3px">
+    <button type="button" onClick="{{ goHome }}" style="{{ tabHome }}">home</button>
+    <button type="button" onClick="{{ goProjects }}" style="{{ tabProjects }}">projects</button>
+    <button type="button" onClick="{{ goDetail }}" style="{{ tabDetail }}">detail</button>
+    <button type="button" onClick="{{ go404 }}" style="{{ tab404 }}">404</button>
+  </div>
+
+  <main style="position:relative;z-index:1">
+    <div style="max-width:80rem;margin-inline:auto;padding-inline:clamp(1.25rem,5vw,2rem);display:grid;grid-template-columns:17rem minmax(0,1fr);gap:clamp(2.5rem,6vw,5rem);align-items:start">
+
+      <aside style="position:sticky;top:0;align-self:start;height:100dvh;display:flex;flex-direction:column;padding-block:clamp(3rem,8vh,6rem) 48px">
+        <div>
+          <sc-if value="{{ showPrompt }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;align-items:baseline;gap:12px;padding-bottom:14px;margin-bottom:20px;border-bottom:0.5px solid #232b31;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8b979e">
+              <span><span style="{{ accentText }}">~/</span>aryan-ahlawat</span>
+              <span style="margin-left:auto">cs · systems</span>
+            </div>
+          </sc-if>
+          <a href="#" style="display:block;font-size:clamp(1.75rem,2.4vw,2.25rem);font-weight:500;letter-spacing:-0.02em;line-height:1.05;color:#e2e8ec;text-wrap:balance" style-hover="color:#34c5dd">Aryan Ahlawat</a>
+          <p style="margin:16px 0 0;font-family:'JetBrains Mono',monospace;font-size:13px;color:#8b979e;max-width:24ch">i build and ship machine-learning systems.</p>
+          <ul style="margin:24px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8b979e">
+            <sc-for list="{{ focus }}" as="f" hint-placeholder-count="4">
+              <li><span style="color:#232b31">— </span>{{ f }}</li>
+            </sc-for>
+          </ul>
+        </div>
+
+        <nav style="margin-top:64px;display:flex;flex-direction:column;gap:32px" aria-label="Primary">
+          <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+            <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px;font-family:'JetBrains Mono',monospace;font-size:13px">
+              <sc-for list="{{ sections }}" as="s" hint-placeholder-count="3">
+                <li>
+                  <a href="{{ s.href }}" style="{{ s.linkStyle }}">
+                    <span style="{{ s.bulletStyle }}"></span>{{ s.label }}
+                  </a>
+                </li>
+              </sc-for>
+            </ul>
+          </sc-if>
+          <sc-if value="{{ notHome }}">
+            <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px;font-family:'JetBrains Mono',monospace;font-size:13px">
+              <li><a href="#" onClick="{{ goHome }}" style="color:#8b979e" style-hover="color:#34c5dd">home</a></li>
+            </ul>
+          </sc-if>
+          <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px;font-family:'JetBrains Mono',monospace;font-size:13px">
+            <li><a href="#" onClick="{{ goProjects }}" style="color:#8b979e" style-hover="color:#34c5dd">projects</a></li>
+            <li><a href="/resume.pdf" style="color:#8b979e" style-hover="color:#34c5dd">resume <span aria-hidden="true">↗</span></a></li>
+          </ul>
+        </nav>
+
+        <div style="margin-top:auto;padding-top:32px;display:flex;flex-direction:column;gap:8px;font-family:'JetBrains Mono',monospace;font-size:13px">
+          <a href="https://github.com/TODO" style="color:#8b979e;width:fit-content" style-hover="color:#34c5dd">github <span aria-hidden="true">↗</span></a>
+          <a href="mailto:aryanahlawat2006@gmail.com" style="color:#8b979e;width:fit-content" style-hover="color:#34c5dd">email <span aria-hidden="true">↗</span></a>
+          <a href="https://www.linkedin.com/in/TODO" style="color:#8b979e;width:fit-content" style-hover="color:#34c5dd">linkedin <span aria-hidden="true">↗</span></a>
+        </div>
+      </aside>
+
+      <div style="min-width:0;padding-block:clamp(3rem,8vh,6rem) 64px">
+
+        <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <section id="work" style="margin-top:0;scroll-margin-top:32px">
+              <p style="display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;letter-spacing:0.06em;color:#8b979e;margin:0 0 12px">
+                <span style="color:#34c5dd">001</span><span style="color:#232b31">—</span>selected work
+              </p>
+              <h2 style="margin:0 0 32px;font-size:1.5rem;font-weight:500;line-height:1.1;letter-spacing:-0.01em">Selected work</h2>
+              <div>
+                <sc-for list="{{ featured }}" as="p" hint-placeholder-count="3">
+                  <div style="{{ p.rowStyle }}">
+                    <button type="button" onClick="{{ p.toggle }}" style="width:100%;background:none;border:none;text-align:left;cursor:pointer;color:#e2e8ec;font:inherit;display:grid;grid-template-columns:auto 1fr auto auto;align-items:baseline;column-gap:16px;padding:24px 8px;transition:background 150ms cubic-bezier(0.22,1,0.36,1)" style-hover="background:#161b1f">
+                      <span style="{{ p.indexStyle }}">{{ p.num }}</span>
+                      <span style="min-width:0">
+                        <span style="display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 12px">
+                          <span style="font-size:1.125rem;font-weight:500;letter-spacing:-0.005em">{{ p.name }}</span>
+                          <sc-if value="{{ p.award }}">
+                            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#34c5dd">{{ p.award }}</span>
+                          </sc-if>
+                        </span>
+                        <span style="display:block;margin-top:8px;color:#8b979e;font-size:16px">{{ p.tagline }}</span>
+                        <span style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px">
+                          <sc-for list="{{ p.stack }}" as="tech" hint-placeholder-count="3">
+                            <span style="display:inline-block;padding:0.15em 0.5em;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8b979e;border:0.5px solid rgba(52,197,221,0.32);border-radius:3px;white-space:nowrap">{{ tech }}</span>
+                          </sc-for>
+                        </span>
+                      </span>
+                      <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#8b979e">{{ p.year }}</span>
+                      <span style="{{ p.chevronStyle }}">⌄</span>
+                    </button>
+                    <div style="{{ p.panelStyle }}">
+                      <div style="overflow:hidden">
+                        <p style="margin:0;padding:0 8px 24px;margin-left:calc(16px + 1.5em);max-width:60ch;color:#e2e8ec;line-height:1.65">{{ p.description }}</p>
+                        <p style="margin:0;display:flex;flex-wrap:wrap;gap:24px;padding:0 8px 32px;margin-left:calc(16px + 1.5em);font-family:'JetBrains Mono',monospace;font-size:13px">
+                          <a href="{{ p.repo }}" style="color:#8b979e;border-bottom:1px solid transparent" style-hover="color:#34c5dd;border-bottom-color:#34c5dd">repo <span aria-hidden="true">↗</span></a>
+                          <a href="#" onClick="{{ p.openDetail }}" style="color:#8b979e;border-bottom:1px solid transparent" style-hover="color:#34c5dd;border-bottom-color:#34c5dd">details <span aria-hidden="true">→</span></a>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <p style="margin:32px 0 0;font-family:'JetBrains Mono',monospace;font-size:13px">
+                <a href="#" onClick="{{ goProjects }}" style="color:#e2e8ec;border-bottom:1px solid transparent" style-hover="color:#34c5dd;border-bottom-color:#34c5dd">all projects →</a>
+              </p>
+            </section>
+
+            <section id="about" style="margin-top:clamp(4rem,10vw,6rem);scroll-margin-top:32px">
+              <p style="display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;letter-spacing:0.06em;color:#8b979e;margin:0 0 12px">
+                <span style="color:#34c5dd">002</span><span style="color:#232b31">—</span>about
+              </p>
+              <h2 style="margin:0 0 32px;font-size:1.5rem;font-weight:500;line-height:1.1;letter-spacing:-0.01em">About</h2>
+              <p style="margin:0;max-width:62ch;color:#e2e8ec;line-height:1.65">cs student at Queen's on the AI stream, minoring in economics. i work across applied ML — RAG pipelines at QMIND, computer vision on VisualizeIt, regression models at Acetech — and enjoy the low-level end too, from PID drive-control in C to API plumbing. currently a software developer co-op at Co-operators.</p>
+              <h3 style="margin:48px 0 16px;font-size:1.125rem;font-weight:500;line-height:1.1">Experience</h3>
+              <div style="border-top:0.5px solid #232b31">
+                <sc-for list="{{ experience }}" as="e" hint-placeholder-count="5">
+                  <div style="border-bottom:0.5px solid #232b31">
+                    <button type="button" onClick="{{ e.toggle }}" style="width:100%;background:none;border:none;text-align:left;color:#e2e8ec;font:inherit;cursor:pointer;display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 12px;padding:16px 8px;transition:background 150ms cubic-bezier(0.22,1,0.36,1)" style-hover="background:#161b1f">
+                      <span style="font-size:1.125rem;font-weight:500">{{ e.role }}</span>
+                      <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#34c5dd">{{ e.org }}</span>
+                      <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#8b979e;margin-left:auto">{{ e.period }}</span>
+                      <span style="{{ e.chevronStyle }}">⌄</span>
+                    </button>
+                    <div style="{{ e.panelStyle }}">
+                      <div style="overflow:hidden">
+                        <p style="margin:0;padding:0 8px 24px;color:#8b979e;max-width:62ch;line-height:1.65">{{ e.note }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+
+            <section id="contact" style="margin-top:clamp(4rem,10vw,6rem);scroll-margin-top:32px">
+              <p style="display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;letter-spacing:0.06em;color:#8b979e;margin:0 0 12px">
+                <span style="color:#34c5dd">003</span><span style="color:#232b31">—</span>contact
+              </p>
+              <h2 style="margin:0 0 32px;font-size:1.5rem;font-weight:500;line-height:1.1;letter-spacing:-0.01em">Contact</h2>
+              <p style="margin:0 0 24px;max-width:50ch;color:#e2e8ec">Open to internships and interesting problems — reach out.</p>
+              <p style="margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:13px">
+                <a href="mailto:aryanahlawat2006@gmail.com" style="color:#e2e8ec;border-bottom:1px solid transparent" style-hover="color:#34c5dd;border-bottom-color:#34c5dd">aryanahlawat2006@gmail.com</a>
+                <span style="color:#232b31" aria-hidden="true">·</span>
+                <a href="https://github.com/TODO" style="color:#e2e8ec;border-bottom:1px solid transparent" style-hover="color:#34c5dd;border-bottom-color:#34c5dd">github<span aria-hidden="true" style="margin-left:0.15em;font-size:0.85em">↗</span></a>
+                <span style="color:#232b31" aria-hidden="true">·</span>
+                <a href="https://www.linkedin.com/in/TODO" style="color:#e2e8ec;border-bottom:1px solid transparent" style-hover="color:#34c5dd;border-bottom-color:#34c5dd">linkedin<span aria-hidden="true" style="margin-left:0.15em;font-size:0.85em">↗</span></a>
+              </p>
+            </section>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isProjects }}">
+          <div>
+            <header style="margin-bottom:32px">
+              <p style="margin:0 0 12px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;letter-spacing:0.06em;color:#8b979e">index</p>
+              <h1 style="margin:0;font-size:clamp(2.5rem,6vw,4rem);letter-spacing:-0.02em;font-weight:500;line-height:1.1">Projects</h1>
+            </header>
+            <div>
+              <sc-for list="{{ allProjects }}" as="p" hint-placeholder-count="3">
+                <div style="{{ p.rowStyle }}">
+                  <button type="button" onClick="{{ p.toggle }}" style="width:100%;background:none;border:none;text-align:left;cursor:pointer;color:#e2e8ec;font:inherit;display:grid;grid-template-columns:auto 1fr auto auto;align-items:baseline;column-gap:16px;padding:24px 8px;transition:background 150ms cubic-bezier(0.22,1,0.36,1)" style-hover="background:#161b1f">
+                    <span style="{{ p.indexStyle }}">{{ p.num }}</span>
+                    <span style="min-width:0">
+                      <span style="display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 12px">
+                        <span style="font-size:1.125rem;font-weight:500;letter-spacing:-0.005em">{{ p.name }}</span>
+                        <sc-if value="{{ p.award }}">
+                          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#34c5dd">{{ p.award }}</span>
+                        </sc-if>
+                      </span>
+                      <span style="display:block;margin-top:8px;color:#8b979e;font-size:16px">{{ p.tagline }}</span>
+                      <span style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px">
+                        <sc-for list="{{ p.stack }}" as="tech" hint-placeholder-count="3">
+                          <span style="display:inline-block;padding:0.15em 0.5em;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8b979e;border:0.5px solid rgba(52,197,221,0.32);border-radius:3px;white-space:nowrap">{{ tech }}</span>
+                        </sc-for>
+                      </span>
+                    </span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#8b979e">{{ p.year }}</span>
+                    <span style="{{ p.chevronStyle }}">⌄</span>
+                  </button>
+                  <div style="{{ p.panelStyle }}">
+                    <div style="overflow:hidden">
+                      <p style="margin:0;padding:0 8px 24px;margin-left:calc(16px + 1.5em);max-width:60ch;color:#e2e8ec;line-height:1.65">{{ p.description }}</p>
+                      <p style="margin:0;display:flex;flex-wrap:wrap;gap:24px;padding:0 8px 32px;margin-left:calc(16px + 1.5em);font-family:'JetBrains Mono',monospace;font-size:13px">
+                        <a href="{{ p.repo }}" style="color:#8b979e;border-bottom:1px solid transparent" style-hover="color:#34c5dd;border-bottom-color:#34c5dd">repo <span aria-hidden="true">↗</span></a>
+                        <a href="#" onClick="{{ p.openDetail }}" style="color:#8b979e;border-bottom:1px solid transparent" style-hover="color:#34c5dd;border-bottom-color:#34c5dd">details <span aria-hidden="true">→</span></a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isDetail }}">
+          <article style="max-width:60ch">
+            <p style="margin:0 0 48px;font-family:'JetBrains Mono',monospace;font-size:13px">
+              <a href="#" onClick="{{ goProjects }}" style="color:#8b979e" style-hover="color:#34c5dd">← projects</a>
+            </p>
+            <header style="margin-bottom:24px">
+              <h1 style="margin:0;font-size:clamp(2.5rem,6vw,4rem);letter-spacing:-0.02em;font-weight:500;line-height:1.1">{{ detail.name }}</h1>
+              <p style="margin:12px 0 0;color:#8b979e">{{ detail.tagline }}</p>
+              <p style="margin:16px 0 0;display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#8b979e">
+                <span>{{ detail.year }}</span>
+                <span style="color:#232b31" aria-hidden="true">·</span>
+                <span style="color:#34c5dd">{{ detail.award }}</span>
+              </p>
+            </header>
+            <ul style="display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0 0 32px">
+              <sc-for list="{{ detail.stack }}" as="tech" hint-placeholder-count="4">
+                <li><span style="display:inline-block;padding:0.15em 0.5em;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8b979e;border:0.5px solid rgba(52,197,221,0.32);border-radius:3px;white-space:nowrap">{{ tech }}</span></li>
+              </sc-for>
+            </ul>
+            <p style="margin:0;line-height:1.65;color:#e2e8ec">{{ detail.description }}</p>
+            <p style="margin:48px 0 0;display:flex;flex-wrap:wrap;gap:24px;font-family:'JetBrains Mono',monospace;font-size:13px">
+              <a href="{{ detail.repo }}" style="color:#e2e8ec;border-bottom:1px solid transparent" style-hover="color:#34c5dd;border-bottom-color:#34c5dd">repo<span aria-hidden="true" style="margin-left:0.15em;font-size:0.85em">↗</span></a>
+            </p>
+          </article>
+        </sc-if>
+
+        <sc-if value="{{ is404 }}">
+          <div style="padding-top:32px">
+            <p style="margin:0 0 12px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#34c5dd">404</p>
+            <h1 style="margin:0;font-size:clamp(2.5rem,6vw,4rem);letter-spacing:-0.02em;font-weight:500;line-height:1.1">Page not found</h1>
+            <p style="margin:32px 0 0;font-family:'JetBrains Mono',monospace;font-size:13px">
+              <a href="#" onClick="{{ goHome }}" style="color:#8b979e" style-hover="color:#34c5dd">← home</a>
+            </p>
+          </div>
+        </sc-if>
+
+      </div>
+    </div>
+  </main>
+
+  <footer style="position:relative;z-index:1;border-top:0.5px solid #232b31;margin-top:clamp(4rem,10vw,6rem)">
+    <div style="max-width:46rem;margin-inline:auto;padding:32px clamp(1.25rem,5vw,2rem);display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#8b979e">
+      <span>© 2026 aryan ahlawat</span>
+      <span style="color:#232b31" aria-hidden="true">·</span>
+      <span>kingston, on</span>
+      <span style="color:#232b31" aria-hidden="true">·</span>
+      <a href="https://github.com/TODO" style="color:#8b979e" style-hover="color:#34c5dd">src<span aria-hidden="true" style="margin-left:0.15em;font-size:0.85em">↗</span></a>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accentColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#34c5dd&quot;,&quot;options&quot;:[&quot;#34c5dd&quot;,&quot;#4ade9b&quot;,&quot;#e8b34a&quot;,&quot;#8ea2ff&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Theme&quot;},&quot;showPrompt&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Theme&quot;},&quot;atmosphere&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.2,&quot;min&quot;:0,&quot;max&quot;:1.6,&quot;step&quot;:0.1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Nullscape filter&quot;},&quot;dither&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Nullscape filter&quot;},&quot;grain&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Nullscape filter&quot;},&quot;beamColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#34c5dd&quot;,&quot;options&quot;:[&quot;#34c5dd&quot;,&quot;#2f8fd6&quot;,&quot;#4ade9b&quot;,&quot;#ff007f&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Nullscape filter&quot;}}">
+const EASE = "cubic-bezier(0.22,1,0.36,1)";
+const NOISE = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E\")";
+
+const PROJECTS = [
+  { slug: "visualizeit", name: "VisualizeIt", tagline: "real-time computer vision + diffusion inpainting.", description: "YOLOv8 (Nano) for millisecond object detection anchoring OpenCV CSRT tracking, with Stable Diffusion inpainting to map context-aware texture overlays onto tracked regions.", stack: ["YOLOv8", "PyTorch", "Stable Diffusion", "OpenCV"], year: 2025, award: "Mayor's Innovation Award", repo: "https://github.com/TODO" },
+  { slug: "cognitive-rag", name: "Cognitive RAG", tagline: "hybrid retrieval for multi-hop question answering.", description: "LangChain agents over a hybrid retrieval pipeline (BM25 sparse + bi-encoder dense), fused with reciprocal rank fusion and a Hugging Face cross-encoder re-ranker for precision on multi-hop QA. (QMIND design-team work.)", stack: ["LangChain", "BM25", "cross-encoder", "Python"], year: 2026, award: "", repo: "https://github.com/TODO" },
+  { slug: "churn-classification-engine", name: "Churn Classification Engine", tagline: "0.82 F1 across 7,000+ users.", description: "End-to-end classification pipeline (logistic regression + random-forest ensembles) segmenting 7,000+ users by churn probability.", stack: ["Python", "scikit-learn", "seaborn"], year: 2025, award: "", repo: "https://github.com/TODO" },
+];
+
+const EXPERIENCE = [
+  { role: "Software Developer Co-op", org: "Co-operators", period: "May–Aug 2026", note: "RESTful Prefill API integrations for real-time quote auto-population (AWS Lambda, Lex, Python)." },
+  { role: "Design Team Engineer", org: "QMIND", period: "Sep 2025–Apr 2026", note: "Cognitive RAG system — LangChain agents, hybrid BM25 + dense retrieval, RRF + cross-encoder re-ranking." },
+  { role: "Machine Learning Co-op", org: "Acetech", period: "May–Aug 2025", note: "PyTorch MLP regression for lab-test durations — 12% MSE reduction over baseline; automated data-cleaning pipelines." },
+  { role: "Drive Control Developer", org: "Queen's Knights Robotics", period: "Oct 2024–Mar 2025", note: "Low-level drive-control in C/FreeRTOS, PID controllers; motion algorithms cut path deviation ~20%." },
+  { role: "Research Assistant", org: "University of Toronto", period: "Jun 2023–Feb 2024", note: "Agent-based economic simulations (COBWEB) modeling cooperative vs. competitive behavior." },
+];
+
+class Component extends DCLogic {
+  state = { screen: "home", active: "work", openRows: {}, openExp: {}, detailSlug: "visualizeit" };
+
+  componentDidMount() {
+    this.obs = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) this.setState({ active: e.target.id });
+    }, { rootMargin: "-35% 0px -55% 0px", threshold: 0 });
+    setTimeout(() => {
+      for (const id of ["work", "about", "contact"]) {
+        const el = document.getElementById(id);
+        if (el) this.obs.observe(el);
+      }
+    }, 300);
+  }
+  componentWillUnmount() { if (this.obs) this.obs.disconnect(); }
+
+  nav(screen) { return (ev) => { if (ev) ev.preventDefault(); this.setState({ screen }); window.scrollTo(0, 0); }; }
+
+  tab(name) {
+    const on = this.state.screen === name;
+    return { background: on ? "#1e252b" : "transparent", color: on ? "#e2e8ec" : "#8b979e", border: "none", padding: "4px 8px", font: "inherit", cursor: "pointer" };
+  }
+
+  row(p, i, keyMap) {
+    const open = !!this.state[keyMap][p.slug];
+    const accent = this.props.accentColor ?? "#34c5dd";
+    return Object.assign({}, p, {
+      num: String(i + 1).padStart(2, "0"),
+      rowStyle: { borderTop: "0.5px solid #232b31", borderBottom: i === 2 ? "0.5px solid #232b31" : undefined },
+      indexStyle: { fontFamily: "'JetBrains Mono',monospace", fontSize: "13px", color: open ? accent : "#8b979e", transition: `color 150ms ${EASE}` },
+      chevronStyle: { fontSize: "1rem", lineHeight: 1, color: open ? accent : "#8b979e", transform: open ? "rotate(180deg)" : "none", transition: `transform 150ms ${EASE}, color 150ms ${EASE}` },
+      panelStyle: { display: "grid", gridTemplateRows: open ? "1fr" : "0fr", transition: `grid-template-rows 400ms ${EASE}` },
+      toggle: () => this.setState((s) => ({ [keyMap]: Object.assign({}, s[keyMap], { [p.slug]: !s[keyMap][p.slug] }) })),
+      openDetail: (ev) => { ev.preventDefault(); this.setState({ screen: "detail", detailSlug: p.slug }); window.scrollTo(0, 0); },
+    });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const accent = this.props.accentColor ?? "#34c5dd";
+    const k = Math.max(0, Math.min(1.6, this.props.atmosphere ?? 0.2));
+    const beamColor = this.props.beamColor ?? accent;
+    const bc = String(beamColor).length === 7 ? beamColor : "#34c5dd";
+    const secs = [{ id: "work", label: "selected work" }, { id: "about", label: "about" }, { id: "contact", label: "contact" }];
+    return {
+      accentText: { color: accent },
+      showPrompt: this.props.showPrompt ?? true,
+      atmosWrap: { position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden", opacity: k > 0 ? 1 : 0 },
+      filterWrap: { position: "fixed", inset: 0, zIndex: 30, pointerEvents: "none", overflow: "hidden", opacity: k > 0 ? 1 : 0 },
+      beamStyle: {
+        position: "absolute", left: "-10%", bottom: "-30%", width: "90%", height: "120%",
+        background: `conic-gradient(from 200deg at 20% 100%, ${bc}00 0deg, ${bc}44 18deg, ${bc}22 30deg, ${bc}00 46deg)`,
+        filter: "blur(26px)", opacity: 0.8 * k, animation: "ns-beam 20s ease-in-out infinite",
+      },
+      fogStyle: { position: "absolute", inset: 0, background: `radial-gradient(120% 90% at 50% 120%, rgba(8,20,28,0) 30%, rgba(9,24,33,${0.5 * k}) 70%, rgba(5,12,17,${0.78 * k}) 100%)` },
+      ditherStyle: (this.props.dither ?? true)
+        ? { position: "absolute", inset: 0, backgroundImage: "repeating-conic-gradient(rgba(255,255,255,.10) 0% 25%, rgba(0,0,0,.10) 0% 50%)", backgroundSize: "4px 4px", mixBlendMode: "overlay", opacity: 0.24 * k }
+        : { display: "none" },
+      bandStyle: (this.props.dither ?? true)
+        ? { position: "absolute", inset: 0, mixBlendMode: "hard-light", opacity: 0.07 * k,
+            background: `repeating-linear-gradient(158deg, ${bc}00 0px, ${bc}00 26px, ${bc}30 26px, ${bc}30 34px, rgba(10,40,55,.35) 34px, rgba(10,40,55,.35) 44px)` }
+        : { display: "none" },
+      grainStyle: (this.props.grain ?? true)
+        ? { position: "absolute", inset: "-8%", backgroundImage: NOISE, backgroundSize: "420px 420px", imageRendering: "pixelated", opacity: 0.14 * k, mixBlendMode: "overlay", animation: "ns-grain .55s steps(1,end) infinite" }
+        : { display: "none" },
+      gradeStyle: {
+        position: "absolute", inset: 0, mixBlendMode: "color",
+        background: `linear-gradient(160deg, rgba(20,70,95,${0.5 * k}) 0%, rgba(15,50,72,${0.32 * k}) 55%, rgba(8,20,32,${0.45 * k}) 100%)`,
+      },
+      focus: ["machine learning", "retrieval / RAG", "computer vision", "low-level systems"],
+      sections: secs.map((x) => {
+        const on = s.active === x.id;
+        return { href: "#" + x.id, label: x.label,
+          linkStyle: { display: "inline-flex", alignItems: "center", gap: "12px", color: on ? "#e2e8ec" : "#8b979e", transition: `color 150ms ${EASE}` },
+          bulletStyle: { width: on ? "2.25rem" : "1.25rem", height: "1px", background: on ? accent : "#232b31", transition: `width 150ms ${EASE}, background 150ms ${EASE}`, flex: "none" } };
+      }),
+      isHome: s.screen === "home", notHome: s.screen !== "home",
+      isProjects: s.screen === "projects", isDetail: s.screen === "detail", is404: s.screen === "404",
+      featured: PROJECTS.map((p, i) => this.row(p, i, "openRows")),
+      allProjects: PROJECTS.map((p, i) => this.row(p, i, "openRows")),
+      detail: PROJECTS.find((p) => p.slug === s.detailSlug) || PROJECTS[0],
+      experience: EXPERIENCE.map((e) => {
+        const open = !!s.openExp[e.org];
+        return Object.assign({}, e, {
+          chevronStyle: { fontSize: "0.9rem", lineHeight: 1, color: open ? accent : "#8b979e", transform: open ? "rotate(180deg)" : "none", transition: `transform 150ms ${EASE}, color 150ms ${EASE}` },
+          panelStyle: { display: "grid", gridTemplateRows: open ? "1fr" : "0fr", transition: `grid-template-rows 400ms ${EASE}` },
+          toggle: () => this.setState((st) => ({ openExp: Object.assign({}, st.openExp, { [e.org]: !st.openExp[e.org] }) })),
+        });
+      }),
+      goHome: this.nav("home"), goProjects: this.nav("projects"), goDetail: this.nav("detail"), go404: this.nav("404"),
+      tabHome: this.tab("home"), tabProjects: this.tab("projects"), tabDetail: this.tab("detail"), tab404: this.tab("404"),
+    };
+  }
+}
+</script>
+</body>
+</html>

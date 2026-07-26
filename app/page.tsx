@@ -9,8 +9,9 @@ import { InlineLink } from "@/components/InlineLink";
 import styles from "./page.module.css";
 
 const sections = [
-  { id: "work", label: "selected work" },
   { id: "about", label: "about" },
+  { id: "experience", label: "experience" },
+  { id: "work", label: "projects" },
   { id: "contact", label: "contact" },
 ];
 
@@ -33,7 +34,15 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
       />
 
-      <Section id="work" index="001" label="selected work" title="Selected work">
+      <Section id="about" index="001" label="about" title="About">
+        <p className={styles.bio}>{profile.bio}</p>
+      </Section>
+
+      <Section id="experience" index="002" label="experience" title="Experience">
+        <ExperienceList items={profile.experience} />
+      </Section>
+
+      <Section id="work" index="003" label="projects" title="Selected work">
         <div className={styles.rows}>
           {featuredProjects.map((project, i) => (
             <ProjectRow key={project.slug} project={project} index={i + 1} />
@@ -44,13 +53,7 @@ export default function Home() {
         </p>
       </Section>
 
-      <Section id="about" index="002" label="about" title="About">
-        <p className={styles.bio}>{profile.bio}</p>
-        <h3 className={styles.subhead}>Experience</h3>
-        <ExperienceList items={profile.experience} />
-      </Section>
-
-      <Section id="contact" index="003" label="contact" title="Contact">
+      <Section id="contact" index="004" label="contact" title="Contact">
         <p className={styles.contactLead}>
           Open to internships and interesting problems — reach out.
         </p>
