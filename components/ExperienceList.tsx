@@ -10,7 +10,7 @@ function ExperienceItem({ exp }: { exp: Experience }) {
   const hasNote = Boolean(exp.note);
 
   return (
-    <div className={styles.item} data-open={open}>
+    <li className={styles.item} data-open={open}>
       <button
         type="button"
         className={styles.header}
@@ -33,8 +33,6 @@ function ExperienceItem({ exp }: { exp: Experience }) {
         <span className={styles.track} aria-hidden="true">
           <span className={styles.node} />
         </span>
-        {/* The slot carries a strut matching .role, so the date sits on the
-            same baseline as the role text regardless of font metrics. */}
         <span className={styles.dateSlot}>
           <span className={`${styles.period} mono`}>{exp.period}</span>
         </span>
@@ -47,17 +45,17 @@ function ExperienceItem({ exp }: { exp: Experience }) {
           </div>
         </div>
       ) : null}
-    </div>
+    </li>
   );
 }
 
-/** Expandable role/org/period rows; click reveals the detail note. */
+/** Expandable role/org/period rows on a timeline rail; click reveals the note. */
 export function ExperienceList({ items }: { items: Experience[] }) {
   return (
-    <div className={styles.list}>
+    <ol className={styles.list}>
       {items.map((exp) => (
         <ExperienceItem key={`${exp.org}-${exp.role}`} exp={exp} />
       ))}
-    </div>
+    </ol>
   );
 }

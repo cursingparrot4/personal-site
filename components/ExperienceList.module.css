@@ -1,7 +1,10 @@
 .list {
+  list-style: none;
+  padding: 0;
+
   /* Cap-height centre of the .role line, measured from the top of a row.
-     Keeps the chevron on the title line while the node tracks the box centre. */
-  --node-y: calc(var(--space-4) + 0.905rem);
+     Only the chevron uses it — the node tracks the box centre instead. */
+  --title-y: calc(var(--space-4) + 0.905rem);
   --track-w: 0.75rem;
   /* Fixed so every row's spine lands on the same x — an auto column would
      size to each row's own date string and make the timeline zigzag. */
@@ -94,7 +97,6 @@
 
 .dateSlot {
   flex: 1;
-  min-width: 0;
   /* Strut matching .role: centring this box lands the date's baseline within
      0.5px of the title's on a collapsed row, without a magic offset. */
   font-size: var(--fs-h3);
@@ -164,7 +166,9 @@
     background var(--dur-fast) var(--ease),
     box-shadow var(--dur-slow) var(--ease);
 }
-.item:hover .node {
+/* Keyed off the button, not the row, so the dot only reacts where the row is
+   actually clickable — the rail itself isn't. */
+.header:hover:not(:disabled) ~ .rail .node {
   border-color: var(--accent);
 }
 .item[data-open="true"] .node {
@@ -178,7 +182,7 @@
 .chevron {
   position: absolute;
   right: var(--space-2);
-  top: var(--node-y);
+  top: var(--title-y);
   font-size: 0.9rem;
   line-height: 1;
   color: var(--muted);

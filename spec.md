@@ -351,7 +351,10 @@ components/
                    + Space Grotesk title + rhythm; id doubles as the scroll-spy anchor.
   ProjectRow.tsx   (client) expandable row. Collapsed: index | name/tagline/stack | year |
                    chevron. Expanded: description + repo/demo/details links.
-  ExperienceList.tsx (client) expandable role/org/period rows; expand reveals the note.
+  ExperienceList.tsx (client) <ol> of expandable role/org rows; expand reveals the note.
+                   Right gutter is a timeline: one static spine capped on the first and
+                   last node, each row's node + date centred on the row box so they glide
+                   down as it expands. Open state = accent node/date/title, never the line.
   InlineLink.tsx   the one link style: text color, accent underline on hover, optional ↗.
   Tag.tsx          mono pill, --accent-dim border, no fill. Used for stack items.
 ```
