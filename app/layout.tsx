@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { site } from "@/lib/site";
-import { Footer } from "@/components/Footer";
 import { NullscapeFilter } from "@/components/NullscapeFilter";
 import "./globals.css";
 
@@ -50,7 +49,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         <main id="main">{children}</main>
-        <Footer />
       </body>
     </html>
   );

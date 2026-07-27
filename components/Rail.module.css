@@ -147,6 +147,12 @@
   .sectionNav {
     display: none;
   }
+  /* On the home page the nav holds only that hidden list, so it would collapse
+     to an empty box that still contributes its margin. Drop it entirely; on
+     other pages it keeps the "Home" link (.pageNav) and stays. */
+  .nav:not(:has(.pageNav)) {
+    display: none;
+  }
   .pageNav {
     flex-direction: row;
     gap: var(--space-5);

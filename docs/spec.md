@@ -91,7 +91,7 @@ properties in `globals.css`:
 cyan light beam, fog, vignette) and *texture* at `z-index: 30` (scanlines, dither, colour
 bands, animated grain, colour grade). Every opacity is scaled by `--ns-k`, the strength
 knob, at `0.2` by default — subtle enough that text stays fully legible. Page content sits
-at `z-index: 1` between them (`main`, `footer` in `globals.css`). Animation is dropped
+at `z-index: 1` between them (`main` in `globals.css`). Animation is dropped
 under `prefers-reduced-motion`; the layers stay.
 
 ---
@@ -101,7 +101,7 @@ under `prefers-reduced-motion`; the layers stay.
 Two families, self-hosted via `next/font`:
 
 - **Space Grotesk** — name, headings, section titles, body prose. Weights 400/500/700.
-- **JetBrains Mono** — metadata, nav, labels, index numbers (`01`), tags, years, footer.
+- **JetBrains Mono** — metadata, nav, labels, index numbers (`01`), tags, years.
   Weight 400/500.
 
 **Type scale** (expose as CSS vars; base 16px):
@@ -132,7 +132,10 @@ Two families, self-hosted via `next/font`:
   **900px**, where the rail becomes a stacked header.
 - The rail (`components/Rail.tsx`) holds a mono prompt row (`~/aryan-ahlawat` … `cs · systems`,
   hairline underneath, toggled by `showPrompt`), then name, headline, focus areas, navigation,
-  and contact (pinned to the bottom on desktop via `margin-top:auto`). It replaces a top nav bar.
+  and a pinned bottom block (`margin-top:auto`) holding resume ↗, github ↗, email ↗ and
+  linkedin ↗. It replaces a top nav bar. The nav itself holds only the scroll-spy sections
+  on the home page, or a single "Home" link elsewhere — there is no rail link to /projects,
+  since the home page's "All projects →" already covers it.
 - Content column caps prose at ~62ch; `--container: 46rem` remains available for narrow
   article layouts (project detail).
 - **Spacing scale** (4px base), as CSS vars `--space-1…9`:
@@ -170,15 +173,15 @@ Two families, self-hosted via `next/font`:
 
 - Mobile-first. One breakpoint that matters: **`640px`**.
 - `< 640px`: `ProjectRow` stacks (index inline before name; year drops to the meta line);
-  nav is a single inline row of links (no hamburger — there are ≤4 links).
+  nav is a single inline row of links (no hamburger — there are few enough).
 - Tap targets ≥ 44px. Hero display size handled by the `clamp()` above.
 
 ---
 
 ## 9. Accessibility
 
-- Semantic landmarks: `<header>`/`<nav>`, `<main>`, `<section>` with `aria-labelledby`,
-  `<footer>`. One `<h1>` (the name).
+- Semantic landmarks: `<header>`/`<nav>`, `<main>`, `<section>` with `aria-labelledby`.
+  One `<h1>` (the name).
 - **Skip-to-content** link, visible on focus.
 - `:focus-visible` rings on every interactive element (§7).
 - Links carry a non-color signal (underline) in addition to accent.
@@ -194,7 +197,7 @@ Two families, self-hosted via `next/font`:
 /                 home — about → experience → selected work → contact
 /projects         full data-driven project index
 /projects/[slug]  optional per-project writeup (screenshots, decisions, metrics)
-public/resume.pdf linked from hero (copied from the repo's resume PDF)
+public/resume.pdf linked from the rail's pinned bottom block
 ```
 
 ### `/` home — wireframe (split rail + scrolling content)
@@ -218,14 +221,14 @@ public/resume.pdf linked from hero (copied from the repo's resume PDF)
 │ ──  projects        │  01  VisualizeIt   [award]          2025 ⌄ │     active tick
 │ ──  contact         │      real-time CV + diffusion inpainting   │
 │                     │      YOLOv8 · PyTorch · Stable Diffusion   │
-│ projects            │  all projects →                            │
-│ resume ↗            │                                            │
-│                     │  004 — contact                             │
-│ github ↗ (pinned    │  Contact                                   │
-│ email ↗   to        │  [email] · [github] · [linkedin]           │
-│ linkedin ↗ bottom)  │                                            │
+│                     │  All projects →                            │
+│                     │                                            │
+│ resume ↗  (pinned   │  004 — contact                             │
+│ github ↗    to      │  Contact                                   │
+│ email ↗   bottom)   │  [email] · [github] · [linkedin]           │
+│ linkedin ↗          │                                            │
 └─────────────────────┴────────────────────────────────────────────┘
-   sticky (100dvh)        scrolls · footer (© · location · src ↗) spans full width below
+   sticky (100dvh)        scrolls · no footer; the page ends with the content
 ```
 Below 900px the rail stacks on top as a header (name, tagline, focus, horizontal nav +
 contact); the scroll-spy list is hidden.
@@ -248,7 +251,7 @@ this document:
 
 - `content/profile.ts` — name, headline, bio, focus list, links, experience.
 - `content/projects.ts` — the project list. `featured: true` puts one on the home page.
-- `lib/site.ts` — domain, location, footer source link.
+- `lib/site.ts` — name, domain, description. Feeds metadata, sitemap and robots.
 - `lib/types.ts` — the shapes those files must satisfy (see also §12 below).
 
 This section used to inline a full copy of both content files. It drifted out of date the
@@ -292,7 +295,6 @@ components/
   Rail.tsx         sticky identity rail: name (→ /), headline, focus list, nav, contact.
   RailNav.tsx      (client) in-page scroll-spy nav for the home sections.
   PageHeader.tsx   eyebrow + big title, shared by /projects and 404.
-  Footer.tsx       mono: © year · name · location · "Source ↗" link to the repo.
   Section.tsx      props: { id; index; label; title; children }. Mono "NNN — label" eyebrow
                    + Space Grotesk title + rhythm; id doubles as the scroll-spy anchor.
   ProjectRow.tsx   (client) expandable row. Collapsed: index | name/tagline/stack | year |
@@ -342,7 +344,7 @@ content/
   profile.ts            name, headline, bio, links, experience
 lib/
   types.ts              Project, Profile, Experience
-  site.ts               domain, location, footer source link
+  site.ts               name, domain, description
 public/
   resume.pdf            served at /resume.pdf; the rail links to it
 ```
@@ -357,7 +359,7 @@ module. This is why there are fewer `.module.css` files than components.
 ## 16. Build order
 
 1. Scaffold Next.js + TS; wire `globals.css` tokens (§4–6) and `next/font` (§5).
-2. Primitives: `Section`, `Nav`, `Footer` — lock the rhythm first.
+2. Primitives: `Section`, `Rail` — lock the rhythm first.
 3. Home: `Hero` → featured `ProjectRow` list from `content/projects.ts` → about/experience
    → contact.
 4. `/projects` full index reusing `ProjectRow`.

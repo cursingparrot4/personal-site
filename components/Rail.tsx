@@ -57,21 +57,12 @@ export function Rail({ sections, showPrompt = true }: Props) {
             </li>
           </ul>
         )}
-        <ul className={styles.pageNav}>
-          <li>
-            <Link href="/projects" className="link-muted">
-              Projects
-            </Link>
-          </li>
-          <li>
-            <ExternalLink href="/resume.pdf" className="link-muted">
-              Resume
-            </ExternalLink>
-          </li>
-        </ul>
       </nav>
 
       <div className={`${styles.contact} mono`}>
+        <ExternalLink href="/resume.pdf" className={`link-muted ${styles.contactLink}`}>
+          Resume
+        </ExternalLink>
         <ExternalLink href={profile.links.github} className={`link-muted ${styles.contactLink}`}>
           GitHub
         </ExternalLink>

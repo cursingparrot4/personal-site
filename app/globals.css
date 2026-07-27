@@ -194,8 +194,7 @@ svg {
 }
 
 /* Content sits between the Nullscape filter's two layer stacks (z 0 and z 30). */
-main,
-footer {
+main {
   position: relative;
   z-index: 1;
 }

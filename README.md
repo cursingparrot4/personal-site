@@ -51,13 +51,13 @@ Two rules explain where any given style lives:
    | `sep`                      | the inert `·` between meta items                             |
    | `tag`                      | the outlined pill used for stack items                       |
 
-   So a footer link is `class="link-muted"` and a project-row link is
+   So a rail link is `class="link-muted"` and a project-row link is
    `class="link-muted link-underline"` — neither redeclares the hover behaviour. Change the
    hover once in `globals.css` and every link follows.
 
 2. **Everything used once or twice stays in the component's own `.module.css`**, scoped so
-   it can't leak. `Footer.module.css` holds only the two rules that are genuinely the
-   footer's own.
+   it can't leak. `Shell.module.css` holds only the grid that is genuinely the shell's
+   own.
 
 The upshot: **components outnumber stylesheets.** `Tag.tsx`, `links.tsx` and `RailNav.tsx`
 have no stylesheet at all — the first two are built from utilities, and `RailNav` borrows
@@ -148,17 +148,23 @@ The index (`"001"`) is written by hand, so you control the numbering.
 
 ### …change the sidebar?
 
-`components/Rail.tsx` for the structure (nav links, resume link, contact links),
-`content/profile.ts` for the words (name, headline, focus list, prompt row).
+`components/Rail.tsx` for the structure, `content/profile.ts` for the words (name,
+headline, focus list, prompt row).
+
+The rail has two link groups. The **nav** shows the scroll-spy sections on the home page
+and a single "Home" link everywhere else — it deliberately has no `/projects` link, since
+the home page ends with "All projects →". The **pinned bottom block** holds the off-site
+links: resume, GitHub, email, LinkedIn.
 
 ### …change the page title, description, or social preview?
 
 `app/layout.tsx` → `metadata`, which reads from `lib/site.ts`. Per-page overrides live in
 each page's own exported `metadata` (see `app/projects/page.tsx`).
 
-### …change the domain or the footer's "Source" link?
+### …change the domain?
 
-`lib/site.ts`. It feeds metadata, the sitemap, `robots.txt` and the footer.
+`lib/site.ts`. It feeds page metadata, the sitemap and `robots.txt`. It holds only three
+values — name, url, description — because nothing else needs a site-wide constant.
 
 ### …update the resume?
 
@@ -188,18 +194,18 @@ export default function Writing() {
 
 ## The components, briefly
 
-|                             |                                                                                    |
-| --------------------------- | ---------------------------------------------------------------------------------- |
-| `Shell`                     | two-column page frame: sticky rail + content. Collapses to one column under 900px. |
-| `Rail`                      | the left sidebar — identity, nav, contact. On mobile it becomes a stacked header.  |
-| `RailNav`                   | the scroll-spy nav that highlights the section you're looking at (home only).      |
-| `Section`                   | `001 — label` eyebrow + title + content. Owns the vertical rhythm.                 |
-| `PageHeader`                | eyebrow + big title. Used by `/projects` and the 404 page.                         |
-| `ProjectRow`                | one expandable project row. Shared by the home page and `/projects`.               |
-| `ExperienceList`            | the timeline of jobs; each row expands to show its note.                           |
-| `links`                     | two exports: `InlineLink` for prose, `ExternalLink` for anything off-site.         |
-| `Tag`                       | the outlined mono pill used for stack items.                                       |
-| `Footer`, `NullscapeFilter` | mounted once each in `app/layout.tsx`.                                             |
+|                   |                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------- |
+| `Shell`           | two-column page frame: sticky rail + content. Collapses to one column under 900px. |
+| `Rail`            | the left sidebar — identity, nav, contact. On mobile it becomes a stacked header.  |
+| `RailNav`         | the scroll-spy nav that highlights the section you're looking at (home only).      |
+| `Section`         | `001 — label` eyebrow + title + content. Owns the vertical rhythm.                 |
+| `PageHeader`      | eyebrow + big title. Used by `/projects` and the 404 page.                         |
+| `ProjectRow`      | one expandable project row. Shared by the home page and `/projects`.               |
+| `ExperienceList`  | the timeline of jobs; each row expands to show its note.                           |
+| `links`           | two exports: `InlineLink` for prose, `ExternalLink` for anything off-site.         |
+| `Tag`             | the outlined mono pill used for stack items.                                       |
+| `NullscapeFilter` | the decorative grain/scanline overlay. Mounted once in `app/layout.tsx`.           |
 
 Most components are server components. `"use client"` appears only where there's real
 browser state — `ProjectRow`, `ExperienceList` (expand/collapse) and `RailNav` (scroll
@@ -223,9 +229,9 @@ URLs in `content/projects.ts`:
 A project with an empty `links: {}` just renders without link buttons, so neither one
 breaks anything as-is.
 
-One thing worth a second look: `lib/site.ts` points `sourceUrl` at
-`github.com/cursingparrot4/arna-site`. The footer's `Source ↗` link 404s for visitors
-while that repo is private.
+There is no footer. The site ends with the content — no copyright line, no location, no
+repo link. `site.location` and `site.sourceUrl` were removed along with it, since nothing
+else read them.
 
 ## docs/
 

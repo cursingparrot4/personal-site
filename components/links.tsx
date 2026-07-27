@@ -35,7 +35,7 @@ type InlineProps = ExternalProps & {
 /**
  * The standard text link — body-coloured, accent underline on hover. Use this
  * in prose; use ExternalLink directly when the surrounding block sets its own
- * colour (the rail, the footer, project rows).
+ * colour (the rail, project rows).
  */
 export function InlineLink({ href, children, external, className }: InlineProps) {
   const cls = ["link-text", "link-underline", className].filter(Boolean).join(" ");
