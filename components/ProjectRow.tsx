@@ -49,11 +49,15 @@ export function ProjectRow({ project, index }: Props) {
           </span>
         </span>
 
-        <span className={`${styles.year} mono`}>{year}</span>
         <span className={styles.chevron} aria-hidden="true">
           ⌄
         </span>
       </button>
+
+      {/* Right gutter — the column the experience timeline occupies above. */}
+      <span className={styles.yearSlot}>
+        <span className={`${styles.year} mono`}>{year}</span>
+      </span>
 
       <div id={panelId} className={styles.panel} role="region" inert={!open}>
         <div className={styles.panelInner}>

@@ -5,13 +5,15 @@
   /* Cap-height centre of the .role line, measured from the top of a row.
      Only the chevron uses it — the node tracks the box centre instead. */
   --title-y: calc(var(--space-4) + 0.905rem);
-  --track-w: 0.75rem;
-  /* Fixed so every row's spine lands on the same x — an auto column would
-     size to each row's own date string and make the timeline zigzag. */
-  --rail-w: 10rem;
+  /* --rail-w / --track-w are global: the project list mirrors this column. */
 }
 
 .item {
+  /* How far the hover fill bleeds past the header before it's gone: the whole
+     rest of the row — column gap, spine and date — so it lands on the same
+     right edge as the hairlines rather than stopping somewhere inside them. */
+  --fill-fade: calc(var(--space-5) + var(--rail-w));
+
   display: grid;
   grid-template-columns: 1fr var(--rail-w);
   /* Explicit rows — header, panel, hairline. Without them the rows are
@@ -21,12 +23,14 @@
   column-gap: var(--space-5);
 }
 
-/* Hairlines are drawn as grid items so they stop at the text column
-   and never run out under the timeline. */
+/* Hairlines run the full row — text column and gutter both — so the rows read
+   as full-width bands and the spine crosses them rather than hanging off the
+   end of a short line. The ::after follows .rail in paint order, so the
+   crossing draws as a grid intersection. */
 .item::after,
 .item:first-child::before {
   content: "";
-  grid-column: 1;
+  grid-column: 1 / -1;
   border-top: 0.5px solid var(--border);
 }
 .item::after {
@@ -60,6 +64,25 @@
 }
 .header:hover:not(:disabled) {
   background: var(--surface);
+}
+
+/* The header only owns the text column, but the hairlines now run the full row,
+   so a fill that stopped dead at the column edge read as a seam. This carries it
+   into the gutter and fades it out. Painted below .rail (static vs. positioned,
+   and earlier in DOM order), so the spine and node stay legible over it. */
+.header::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 100%;
+  width: var(--fill-fade);
+  background: linear-gradient(to right, var(--surface), transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.header:hover:not(:disabled)::after {
+  opacity: 1;
 }
 .header:disabled {
   cursor: default;
@@ -97,6 +120,10 @@
 
 .dateSlot {
   flex: 1;
+  /* Lifts the date into the positioned layer, above .header::after's fade —
+     inline content of a static box would otherwise paint under it and get
+     washed out. .rail follows .header in the DOM, so no z-index is needed. */
+  position: relative;
   /* Strut matching .role: centring this box lands the date's baseline within
      0.5px of the title's on a collapsed row, without a magic offset. */
   font-size: var(--fs-h3);
@@ -114,6 +141,12 @@
   color: var(--muted);
   white-space: nowrap;
   transition: color var(--dur-fast) var(--ease);
+}
+/* Lifts with the chevron on the same muted → text step, so the date reads as
+   part of the row you're pointing at. Scoped away from open rows so it can't
+   out-specify their accent below. */
+.item:not([data-open="true"]) .header:hover:not(:disabled) ~ .rail .period {
+  color: var(--text);
 }
 .item[data-open="true"] .period {
   color: var(--accent);
@@ -222,12 +255,9 @@
 }
 
 @media (max-width: 640px) {
-  .list {
-    --rail-w: 9rem;
-    --track-w: 0.5rem;
-  }
   .item {
     column-gap: var(--space-3);
+    --fill-fade: calc(var(--space-3) + var(--rail-w));
   }
   .rail {
     gap: var(--space-2);

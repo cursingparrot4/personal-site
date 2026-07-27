@@ -14,10 +14,6 @@
   color: var(--accent);
 }
 
-.dash {
-  color: var(--border);
-}
-
 .title {
   font-size: var(--fs-h2);
   letter-spacing: -0.01em;

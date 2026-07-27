@@ -40,10 +40,23 @@
   --page-pad: clamp(1.25rem, 5vw, 2rem);
   --section-gap: clamp(4rem, 10vw, 6rem);
 
+  /* Row gutter — the fixed right column shared by the experience timeline and
+     the project rows. Shared so the two lists' hairlines, chevrons and dates
+     land on the same x; a per-list value would silently drift apart. */
+  --rail-w: 10rem;
+  --track-w: 0.75rem;
+
   /* Motion */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --dur-fast: 150ms;
   --dur-slow: 400ms;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --rail-w: 9rem;
+    --track-w: 0.5rem;
+  }
 }
 
 /* ============================================================

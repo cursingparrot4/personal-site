@@ -34,15 +34,15 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
       />
 
-      <Section id="about" index="001" label="About" title="About">
+      <Section id="about" index="001" label="~/.profile" title="About">
         <p className={styles.bio}>{profile.bio}</p>
       </Section>
 
-      <Section id="experience" index="002" label="Experience" title="Experience">
+      <Section id="experience" index="002" label="~/.history" title="Experience">
         <ExperienceList items={profile.experience} />
       </Section>
 
-      <Section id="work" index="003" label="Projects" title="Selected Work">
+      <Section id="work" index="003" label="~/bin/builds" title="Recent Projects">
         <div>
           {featuredProjects.map((project, i) => (
             <ProjectRow key={project.slug} project={project} index={i + 1} />
@@ -53,28 +53,9 @@ export default function Home() {
         </p>
       </Section>
 
-      <Section id="contact" index="004" label="Contact" title="Contact">
+      <Section id="contact" index="004" label="~/.forward" title="Contact">
         <p className={styles.contactLead}>
           Open to internships and interesting problems — reach out.
-        </p>
-        <p className={`${styles.contact} mono`}>
-          <InlineLink href={`mailto:${profile.links.email}`}>{profile.links.email}</InlineLink>
-          <span className="sep" aria-hidden="true">
-            ·
-          </span>
-          <InlineLink href={profile.links.github} external>
-            GitHub
-          </InlineLink>
-          {profile.links.linkedin ? (
-            <>
-              <span className="sep" aria-hidden="true">
-                ·
-              </span>
-              <InlineLink href={profile.links.linkedin} external>
-                LinkedIn
-              </InlineLink>
-            </>
-          ) : null}
         </p>
       </Section>
     </Shell>

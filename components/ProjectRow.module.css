@@ -1,12 +1,43 @@
 .row {
+  /* Mirrors ExperienceList .item: text column + the shared right gutter, so
+     both lists' hairlines, chevrons and dates line up down the page. */
+  display: grid;
+  grid-template-columns: 1fr var(--rail-w);
+  /* Explicit rows — header, panel, hairline — so the pseudo-element rules
+     below can place themselves rather than landing in implicit rows. */
+  grid-template-rows: auto auto auto;
+  column-gap: var(--space-5);
+
+  /* Cap-height centre of the .name line, measured from the top of a row. */
+  --title-y: calc(var(--space-5) + 0.905rem);
+
+  /* Matches the experience list: the fill bleeds across the whole rest of the
+     row — gutter and year included — dying out on the hairlines' right edge. */
+  --fill-fade: calc(var(--space-5) + var(--rail-w));
+}
+
+/* Full-row hairlines — same construction as the experience list, so the two
+   lists' separators start and end on the same x down the whole page. */
+.row::after,
+.row:first-child::before {
+  content: "";
+  grid-column: 1 / -1;
   border-top: 0.5px solid var(--border);
 }
-.row:last-child {
-  border-bottom: 0.5px solid var(--border);
+.row::after {
+  grid-row: 3;
+}
+.row:first-child::before {
+  grid-row: 1;
+  align-self: start;
+  z-index: 1; /* shares the cell with .header — stay above its hover fill */
 }
 
 .header {
   /* reset button */
+  position: relative;
+  grid-column: 1;
+  grid-row: 1;
   width: 100%;
   background: none;
   border: none;
@@ -16,14 +47,32 @@
   font: inherit;
 
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto 1fr;
   align-items: baseline;
   column-gap: var(--space-4);
-  padding: var(--space-5) var(--space-2);
+  /* Right padding reserves the chevron's lane so wrapped text can't run under it. */
+  padding: var(--space-5) calc(var(--space-2) + 1.25rem) var(--space-5) var(--space-2);
   transition: background var(--dur-fast) var(--ease);
 }
 .header:hover {
   background: var(--surface);
+}
+
+/* Carries the hover fill past the text column and fades it out, so it doesn't
+   stop dead partway along a hairline that now runs the full row. */
+.header::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 100%;
+  width: var(--fill-fade);
+  background: linear-gradient(to right, var(--surface), transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.header:hover::after {
+  opacity: 1;
 }
 .header:focus-visible {
   outline: 2px solid var(--accent);
@@ -76,15 +125,48 @@
   gap: var(--space-2);
 }
 
+/* ---- right gutter ------------------------------------------------------- */
+
+.yearSlot {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+  /* Above .header::after's fade — see the same note in ExperienceList. */
+  position: relative;
+  /* Clears the width the experience timeline's spine occupies, so the years
+     here start on the same x as the periods there. */
+  margin-left: calc(var(--track-w) + var(--space-3));
+  padding-top: var(--space-5);
+  /* Strut matching .name: the meta-sized year inside then sits on the title's
+     baseline without a magic offset. */
+  font-size: var(--fs-h3);
+  line-height: var(--lh-body);
+}
+
 .year {
   font-size: var(--fs-meta);
   color: var(--muted);
+  white-space: nowrap;
+  transition: color var(--dur-fast) var(--ease);
+}
+/* Matches the chevron's lift, as in the experience list. */
+.row:not([data-open="true"]) .header:hover ~ .yearSlot .year {
+  color: var(--text);
+}
+.row[data-open="true"] .year {
+  color: var(--accent);
 }
 
+/* Pinned rather than flowed, so the arrow holds the title's line however the
+   name/tagline/stack below it wrap. */
 .chevron {
-  font-size: 1rem;
+  position: absolute;
+  right: var(--space-2);
+  top: var(--title-y);
+  font-size: 0.9rem;
   line-height: 1;
   color: var(--muted);
+  transform: translateY(-50%);
   transition:
     transform var(--dur-fast) var(--ease),
     color var(--dur-fast) var(--ease);
@@ -93,12 +175,14 @@
   color: var(--text);
 }
 .row[data-open="true"] .chevron {
-  transform: rotate(180deg);
+  transform: translateY(-50%) rotate(180deg);
   color: var(--accent);
 }
 
 /* ---- expanding panel (grid-rows trick for smooth height) ---- */
 .panel {
+  grid-column: 1;
+  grid-row: 2;
   display: grid;
   grid-template-rows: 0fr;
   transition: grid-template-rows var(--dur-slow) var(--ease);
@@ -130,18 +214,12 @@
 }
 
 @media (max-width: 640px) {
+  .row,
   .header {
-    grid-template-columns: auto 1fr auto;
     column-gap: var(--space-3);
   }
-  /* chevron drops to the year cell's row visually; keep year inline */
-  .year {
-    grid-column: 2;
-    margin-top: var(--space-3);
-  }
-  .chevron {
-    grid-column: 3;
-    grid-row: 1;
+  .row {
+    --fill-fade: calc(var(--space-3) + var(--rail-w));
   }
   .desc,
   .links {
