@@ -22,7 +22,7 @@ export type Profile = {
   headline: string; // one line, what you do
   /** right side of the rail's terminal prompt row, e.g. "cs · systems" */
   promptMeta: string;
-  focus: string[]; // ["machine learning", ...]
+  focus: string[]; // ["Machine learning", ...]
   bio: string;
   links: { github: string; email: string; linkedin?: string };
   experience: Experience[];

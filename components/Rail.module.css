@@ -8,10 +8,6 @@
   padding-block: clamp(3rem, 8vh, 6rem) var(--space-7);
 }
 
-.top {
-  /* identity block */
-}
-
 /* ---- terminal prompt row ---- */
 .prompt {
   display: flex;
@@ -118,14 +114,6 @@
   background: var(--accent);
 }
 
-.pageLink {
-  color: var(--muted);
-  transition: color var(--dur-fast) var(--ease);
-}
-.pageLink:hover {
-  color: var(--accent);
-}
-
 /* ---- contact (pinned bottom on desktop) ---- */
 .contact {
   margin-top: auto;
@@ -136,13 +124,9 @@
   font-size: var(--fs-meta);
 }
 
+/* colour comes from .link-muted; this just stops the hit area spanning the rail */
 .contactLink {
-  color: var(--muted);
-  transition: color var(--dur-fast) var(--ease);
   width: fit-content;
-}
-.contactLink:hover {
-  color: var(--accent);
 }
 
 /* ---- mobile: rail becomes a stacked header ---- */

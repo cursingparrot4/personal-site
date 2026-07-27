@@ -3,7 +3,7 @@ import styles from "./Section.module.css";
 type Props = {
   /** zero-padded index, e.g. "001" */
   index: string;
-  /** mono eyebrow label, e.g. "selected work" */
+  /** mono eyebrow label, e.g. "Projects" */
   label: string;
   /** Space Grotesk section title, e.g. "Selected work" */
   title: string;
@@ -20,7 +20,7 @@ export function Section({ index, label, title, id, children }: Props) {
   const headingId = `${id}-heading`;
   return (
     <section className={styles.section} id={id} aria-labelledby={headingId}>
-      <p className={`${styles.eyebrow} mono`}>
+      <p className={`eyebrow mono ${styles.eyebrowRow}`}>
         <span className={styles.index}>{index}</span>
         <span className={styles.dash} aria-hidden="true">
           —
@@ -30,7 +30,7 @@ export function Section({ index, label, title, id, children }: Props) {
       <h2 id={headingId} className={styles.title}>
         {title}
       </h2>
-      <div className={styles.body}>{children}</div>
+      <div>{children}</div>
     </section>
   );
 }

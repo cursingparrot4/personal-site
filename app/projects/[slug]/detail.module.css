@@ -7,22 +7,8 @@
   margin-bottom: var(--space-7);
 }
 
-.backLink {
-  color: var(--muted);
-  transition: color var(--dur-fast) var(--ease);
-}
-.backLink:hover {
-  color: var(--accent);
-}
-
 .header {
   margin-bottom: var(--space-5);
-}
-
-.title {
-  font-size: var(--fs-display);
-  letter-spacing: -0.02em;
-  font-weight: 500;
 }
 
 .tagline {
@@ -41,10 +27,6 @@
 
 .award {
   color: var(--accent);
-}
-
-.sep {
-  color: var(--border);
 }
 
 .stack {

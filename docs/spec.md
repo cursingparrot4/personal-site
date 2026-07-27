@@ -241,74 +241,19 @@ real alt text. No comment sections, no share buttons.
 
 ---
 
-## 11. Content (real — from résumé; verify `TODO`s before launch)
+## 11. Content
 
-### `content/profile.ts`
-```ts
-export const profile: Profile = {
-  name: "Aryan Ahlawat",
-  headline: "i build and ship machine-learning systems.", // tune to taste, keep it one honest line
-  promptMeta: "cs · systems",                    // right side of the rail's prompt row
-  focus: ["machine learning", "retrieval / RAG", "computer vision", "low-level systems"],
-  bio:
-    "cs student at Queen's on the AI stream, minoring in economics. i work across applied " +
-    "ML — RAG pipelines at QMIND, computer vision on VisualizeIt, regression models at " +
-    "Acetech — and enjoy the low-level end too, from PID drive-control in C to API plumbing. " +
-    "currently a software developer co-op at Co-operators.",
-  links: {
-    github: "https://github.com/TODO",            // TODO: real handle
-    email:  "aryanahlawat2006@gmail.com",         // résumé contact (session email 23tj56@queensu.ca — confirm which to show)
-    linkedin: "https://www.linkedin.com/in/TODO", // TODO
-  },
-  experience: [
-    { role: "Software Developer Co-op", org: "Co-operators",         period: "May–Aug 2026", note: "RESTful Prefill API integrations for real-time quote auto-population (AWS Lambda, Lex, Python)." },
-    { role: "Design Team Engineer",     org: "QMIND",                period: "Sep 2025–Apr 2026", note: "Cognitive RAG system — LangChain agents, hybrid BM25 + dense retrieval, RRF + cross-encoder re-ranking." },
-    { role: "Machine Learning Co-op",   org: "Acetech",              period: "May–Aug 2025", note: "PyTorch MLP regression for lab-test durations — 12% MSE reduction over baseline; automated data-cleaning pipelines." },
-    { role: "Drive Control Developer",  org: "Queen's Knights Robotics", period: "Oct 2024–Mar 2025", note: "Low-level drive-control in C/FreeRTOS, PID controllers; motion algorithms cut path deviation ~20%." },
-    { role: "Research Assistant",       org: "University of Toronto", period: "Jun 2023–Feb 2024", note: "Agent-based economic simulations (COBWEB) modeling cooperative vs. competitive behavior." },
-  ],
-};
-```
+Content is **not specified here** — it lives in the repo and changes independently of
+this document:
 
-### `content/projects.ts`
-```ts
-export const projects: Project[] = [
-  {
-    slug: "visualizeit",
-    name: "VisualizeIt",
-    tagline: "real-time computer vision + diffusion inpainting.",
-    description: "YOLOv8 (Nano) for millisecond object detection anchoring OpenCV CSRT tracking, with Stable Diffusion inpainting to map context-aware texture overlays onto tracked regions.",
-    stack: ["YOLOv8", "PyTorch", "Stable Diffusion", "OpenCV"],
-    year: 2025,
-    award: "Mayor's Innovation Award",
-    links: { repo: "https://github.com/TODO", demo: undefined }, // TODO
-    featured: true,
-  },
-  {
-    slug: "cognitive-rag",
-    name: "Cognitive RAG",
-    tagline: "hybrid retrieval for multi-hop question answering.",
-    description: "LangChain agents over a hybrid retrieval pipeline (BM25 sparse + bi-encoder dense), fused with reciprocal rank fusion and a Hugging Face cross-encoder re-ranker for precision on multi-hop QA. (QMIND design-team work.)",
-    stack: ["LangChain", "BM25", "cross-encoder", "Python"],
-    year: 2026,
-    links: { repo: "https://github.com/TODO" }, // TODO — confirm shareable
-    featured: true,
-  },
-  {
-    slug: "churn-classification-engine",
-    name: "Churn Classification Engine",
-    tagline: "0.82 F1 across 7,000+ users.",
-    description: "End-to-end classification pipeline (logistic regression + random-forest ensembles) segmenting 7,000+ users by churn probability.",
-    stack: ["Python", "scikit-learn", "seaborn"],
-    year: 2025,
-    links: { repo: "https://github.com/TODO" }, // TODO
-    featured: true,
-  },
-];
-```
-> Featured seeds 3 rows for the home page. Add/prune freely; adding a project is one object.
-> The `Cognitive RAG` entry is derived from QMIND experience — drop it if you'd rather keep
-> `projects` to standalone builds only.
+- `content/profile.ts` — name, headline, bio, focus list, links, experience.
+- `content/projects.ts` — the project list. `featured: true` puts one on the home page.
+- `lib/site.ts` — domain, location, footer source link.
+- `lib/types.ts` — the shapes those files must satisfy (see also §12 below).
+
+This section used to inline a full copy of both content files. It drifted out of date the
+first time the résumé changed, so the copy was removed rather than maintained twice. Read
+the actual files; they are short and commented.
 
 ---
 
@@ -346,17 +291,20 @@ components/
   Shell.tsx        two-column layout: <Rail> + scrolling content. Optional `sections` prop.
   Rail.tsx         sticky identity rail: name (→ /), headline, focus list, nav, contact.
   RailNav.tsx      (client) in-page scroll-spy nav for the home sections.
-  Footer.tsx       mono: © year · name · location · "src ↗" link to the repo.
+  PageHeader.tsx   eyebrow + big title, shared by /projects and 404.
+  Footer.tsx       mono: © year · name · location · "Source ↗" link to the repo.
   Section.tsx      props: { id; index; label; title; children }. Mono "NNN — label" eyebrow
                    + Space Grotesk title + rhythm; id doubles as the scroll-spy anchor.
   ProjectRow.tsx   (client) expandable row. Collapsed: index | name/tagline/stack | year |
-                   chevron. Expanded: description + repo/demo/details links.
+                   chevron. Expanded: description + repo/demo/writeup/details links.
   ExperienceList.tsx (client) <ol> of expandable role/org rows; expand reveals the note.
                    Right gutter is a timeline: one static spine capped on the first and
                    last node, each row's node + date centred on the row box so they glide
                    down as it expands. Open state = accent node/date/title, never the line.
-  InlineLink.tsx   the one link style: text color, accent underline on hover, optional ↗.
+  links.tsx        InlineLink (prose links) + ExternalLink (new tab, safe rel, trailing ↗).
+                   Colour/underline come from the link-* utilities, not from this file.
   Tag.tsx          mono pill, --accent-dim border, no fill. Used for stack items.
+  NullscapeFilter.tsx  decorative overlay, mounted once in the root layout.
 ```
 Server components by default; `RailNav`, `ProjectRow`, and `ExperienceList` are client
 components (local expand state / IntersectionObserver).
@@ -379,23 +327,30 @@ components (local expand state / IntersectionObserver).
 
 ```
 app/
-  layout.tsx            root layout, fonts, metadata, theme tokens, skip-link
+  layout.tsx            root layout, fonts, metadata, skip-link
   page.tsx              home
-  globals.css           palette + spacing + type tokens, base element styles
-  opengraph-image.tsx   generated OG card
+  globals.css           tokens, base element styles, shared utilities
+  not-found.tsx         404
   sitemap.ts robots.ts
   projects/
     page.tsx            full index
-    [slug]/page.tsx     detail (optional per project)
-components/             Nav, Footer, Section, Hero, ProjectRow, Tag  (+ .module.css each)
+    [slug]/page.tsx     detail (one per project, pre-rendered)
+components/             see §13. A component has a .module.css only when it needs styles
+                        that aren't already a utility — several have none.
 content/
   projects.ts           typed project data (single source of truth)
   profile.ts            name, headline, bio, links, experience
 lib/
-  types.ts              Project, Profile
+  types.ts              Project, Profile, Experience
+  site.ts               domain, location, footer source link
 public/
-  resume.pdf            copied from "Aryan Ahlawat Resume-6.pdf"
+  resume.pdf            served at /resume.pdf; the rail links to it
 ```
+
+**Styling rule.** A recipe used by three or more components is a utility class in
+`globals.css` (`mono`, `arrow`, `link-muted`, `link-text`, `link-underline`, `eyebrow`,
+`page-title`, `sep`, `tag`). Anything used once or twice stays in the component's own
+module. This is why there are fewer `.module.css` files than components.
 
 ---
 

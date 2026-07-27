@@ -1,0 +1,9 @@
+# build output
+.next/
+out/
+
+# lockfiles
+package-lock.json
+
+# design bundle — a prototype exported from another tool, kept verbatim
+docs/design-handoff/

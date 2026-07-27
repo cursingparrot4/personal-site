@@ -13,9 +13,10 @@
 # deploy
 .vercel
 
-# misc
+# secrets — never commit these
 .DS_Store
 *.pem
+recovery-codes.txt
 
 # debug
 npm-debug.log*
@@ -23,7 +24,14 @@ yarn-debug.log*
 yarn-error.log*
 *.log
 
-# working resume files (the deployed copy lives at public/resume.pdf)
+# browser-automation artifacts (traces, videos, screenshots)
+/.playwright/
+/test-results/
+/playwright-report/
+
+# Working resume files at the repo root. Only /*.pdf — one level — so the
+# deployed copy at public/resume.pdf is still committed. Don't broaden this
+# to *.pdf or the site's resume link silently 404s in production.
 /*.pdf
 
 # env files

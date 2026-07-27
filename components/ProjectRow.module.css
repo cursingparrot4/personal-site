@@ -129,18 +129,6 @@
   font-size: var(--fs-meta);
 }
 
-.link {
-  color: var(--muted);
-  border-bottom: 1px solid transparent;
-  transition:
-    color var(--dur-fast) var(--ease),
-    border-color var(--dur-fast) var(--ease);
-}
-.link:hover {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-}
-
 @media (max-width: 640px) {
   .header {
     grid-template-columns: auto 1fr auto;

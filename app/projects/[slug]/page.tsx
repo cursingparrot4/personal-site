@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { projects, getProject } from "@/content/projects";
 import { Shell } from "@/components/Shell";
 import { Tag } from "@/components/Tag";
-import { InlineLink } from "@/components/InlineLink";
+import { InlineLink } from "@/components/links";
 import styles from "./detail.module.css";
 
 // Pre-render every project at build time.
@@ -26,11 +26,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProjectDetail({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function ProjectDetail({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const project = getProject(slug);
   if (!project) notFound();
@@ -41,19 +37,19 @@ export default async function ProjectDetail({
     <Shell>
       <article className={styles.article}>
         <p className={`${styles.back} mono`}>
-          <Link href="/projects" className={styles.backLink}>
-            ← projects
+          <Link href="/projects" className="link-muted">
+            ← Projects
           </Link>
         </p>
 
         <header className={styles.header}>
-          <h1 className={styles.title}>{name}</h1>
+          <h1 className="page-title">{name}</h1>
           <p className={styles.tagline}>{tagline}</p>
           <p className={`${styles.meta} mono`}>
             <span>{year}</span>
             {award ? (
               <>
-                <span className={styles.sep} aria-hidden="true">
+                <span className="sep" aria-hidden="true">
                   ·
                 </span>
                 <span className={styles.award}>{award}</span>
@@ -76,17 +72,17 @@ export default async function ProjectDetail({
           <p className={`${styles.links} mono`}>
             {links.repo ? (
               <InlineLink href={links.repo} external>
-                repo
+                Repo
               </InlineLink>
             ) : null}
             {links.demo ? (
               <InlineLink href={links.demo} external>
-                demo
+                Demo
               </InlineLink>
             ) : null}
             {links.writeup ? (
               <InlineLink href={links.writeup} external>
-                writeup
+                Writeup
               </InlineLink>
             ) : null}
           </p>

@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import Link from "next/link";
 import type { Project } from "@/lib/types";
+import { ExternalLink } from "./links";
 import { Tag } from "./Tag";
 import styles from "./ProjectRow.module.css";
 
@@ -59,17 +60,22 @@ export function ProjectRow({ project, index }: Props) {
           {description ? <p className={styles.desc}>{description}</p> : null}
           <p className={`${styles.links} mono`}>
             {links.repo ? (
-              <a href={links.repo} target="_blank" rel="noopener noreferrer" className={styles.link}>
-                repo <span aria-hidden="true">↗</span>
-              </a>
+              <ExternalLink href={links.repo} className="link-muted link-underline">
+                Repo
+              </ExternalLink>
             ) : null}
             {links.demo ? (
-              <a href={links.demo} target="_blank" rel="noopener noreferrer" className={styles.link}>
-                demo <span aria-hidden="true">↗</span>
-              </a>
+              <ExternalLink href={links.demo} className="link-muted link-underline">
+                Demo
+              </ExternalLink>
             ) : null}
-            <Link href={`/projects/${slug}`} className={styles.link}>
-              details <span aria-hidden="true">→</span>
+            {links.writeup ? (
+              <ExternalLink href={links.writeup} className="link-muted link-underline">
+                Writeup
+              </ExternalLink>
+            ) : null}
+            <Link href={`/projects/${slug}`} className="link-muted link-underline">
+              Details <span aria-hidden="true">→</span>
             </Link>
           </p>
         </div>

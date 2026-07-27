@@ -1,0 +1,14 @@
+.header {
+  margin-bottom: var(--space-6);
+}
+
+/* overrides the muted .eyebrow utility — used for the 404 code */
+.accent {
+  color: var(--accent);
+}
+
+/* the children slot, e.g. a "← Home" link under the title */
+.sub {
+  margin-top: var(--space-6);
+  font-size: var(--fs-meta);
+}

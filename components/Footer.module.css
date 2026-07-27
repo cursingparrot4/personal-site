@@ -14,20 +14,3 @@
   font-size: var(--fs-meta);
   color: var(--muted);
 }
-
-.sep {
-  color: var(--border);
-}
-
-.link {
-  color: var(--muted);
-  transition: color var(--dur-fast) var(--ease);
-}
-.link:hover {
-  color: var(--accent);
-}
-
-.arrow {
-  margin-left: 0.15em;
-  font-size: 0.85em;
-}

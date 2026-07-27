@@ -5,14 +5,14 @@ import { Shell } from "@/components/Shell";
 import { Section } from "@/components/Section";
 import { ProjectRow } from "@/components/ProjectRow";
 import { ExperienceList } from "@/components/ExperienceList";
-import { InlineLink } from "@/components/InlineLink";
+import { InlineLink } from "@/components/links";
 import styles from "./page.module.css";
 
 const sections = [
-  { id: "about", label: "about" },
-  { id: "experience", label: "experience" },
-  { id: "work", label: "projects" },
-  { id: "contact", label: "contact" },
+  { id: "about", label: "About" },
+  { id: "experience", label: "Experience" },
+  { id: "work", label: "Projects" },
+  { id: "contact", label: "Contact" },
 ];
 
 // JSON-LD Person schema for richer search results.
@@ -34,44 +34,44 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
       />
 
-      <Section id="about" index="001" label="about" title="About">
+      <Section id="about" index="001" label="About" title="About">
         <p className={styles.bio}>{profile.bio}</p>
       </Section>
 
-      <Section id="experience" index="002" label="experience" title="Experience">
+      <Section id="experience" index="002" label="Experience" title="Experience">
         <ExperienceList items={profile.experience} />
       </Section>
 
-      <Section id="work" index="003" label="projects" title="Selected work">
-        <div className={styles.rows}>
+      <Section id="work" index="003" label="Projects" title="Selected Work">
+        <div>
           {featuredProjects.map((project, i) => (
             <ProjectRow key={project.slug} project={project} index={i + 1} />
           ))}
         </div>
         <p className={`${styles.more} mono`}>
-          <InlineLink href="/projects">all projects →</InlineLink>
+          <InlineLink href="/projects">All projects →</InlineLink>
         </p>
       </Section>
 
-      <Section id="contact" index="004" label="contact" title="Contact">
+      <Section id="contact" index="004" label="Contact" title="Contact">
         <p className={styles.contactLead}>
           Open to internships and interesting problems — reach out.
         </p>
         <p className={`${styles.contact} mono`}>
           <InlineLink href={`mailto:${profile.links.email}`}>{profile.links.email}</InlineLink>
-          <span className={styles.sep} aria-hidden="true">
+          <span className="sep" aria-hidden="true">
             ·
           </span>
           <InlineLink href={profile.links.github} external>
-            github
+            GitHub
           </InlineLink>
           {profile.links.linkedin ? (
             <>
-              <span className={styles.sep} aria-hidden="true">
+              <span className="sep" aria-hidden="true">
                 ·
               </span>
               <InlineLink href={profile.links.linkedin} external>
-                linkedin
+                LinkedIn
               </InlineLink>
             </>
           ) : null}

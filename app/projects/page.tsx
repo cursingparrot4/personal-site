@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Shell } from "@/components/Shell";
+import { PageHeader } from "@/components/PageHeader";
 import { ProjectRow } from "@/components/ProjectRow";
 import { projects } from "@/content/projects";
-import styles from "./projects.module.css";
 
 export const metadata: Metadata = {
   title: "Projects",
@@ -12,10 +12,7 @@ export const metadata: Metadata = {
 export default function ProjectsPage() {
   return (
     <Shell>
-      <header className={styles.header}>
-        <p className={`${styles.eyebrow} mono`}>index</p>
-        <h1 className={styles.title}>Projects</h1>
-      </header>
+      <PageHeader eyebrow="Index" title="Projects" />
       <div>
         {projects.map((project, i) => (
           <ProjectRow key={project.slug} project={project} index={i + 1} />

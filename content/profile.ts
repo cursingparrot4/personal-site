@@ -2,25 +2,25 @@ import type { Profile } from "@/lib/types";
 
 export const profile: Profile = {
   name: "Aryan Ahlawat",
-  headline: "i build and ship machine-learning systems.", // tune to taste, keep it one honest line
-  promptMeta: "cs · systems",
-  focus: ["machine learning", "retrieval / RAG", "computer vision", "low-level systems"],
+  headline: "SITE STILL A WIP.", // tune to taste, keep it one honest line
+  promptMeta: "CS · Data Science",
+  focus: ["Machine learning", "Retrieval / RAG", "Computer vision", "Low-level systems"],
   bio:
-    "cs student at Queen's on the AI stream, minoring in economics. i work across applied " +
+    "CS student at Queen's on the AI stream, minoring in economics. I work across applied " +
     "ML — RAG pipelines at QMIND, computer vision on VisualizeIt, regression models at " +
-    "Acetech — and enjoy the low-level end too, from PID drive-control in C to API plumbing. " +
-    "currently a software developer co-op at Co-operators.",
+    "Acetech — and enjoy the low-level end too, from PID drive-control in C to API development. " +
+    "Currently a software developer co-op at Co-operators.",
   links: {
-    github: "https://github.com/TODO", // TODO: real handle
-    email: "aryanahlawat2006@gmail.com", // TODO: confirm which email to show publicly
-    linkedin: "https://www.linkedin.com/in/TODO", // TODO
+    github: "https://github.com/cursingparrot4",
+    email: "aryanahlawat2006@gmail.com",
+    linkedin: "https://www.linkedin.com/in/aryan-ahlawat-82912b29a/",
   },
   experience: [
     {
       role: "Software Developer Co-op",
       org: "Co-operators",
       period: "May–Aug 2026",
-      note: "RESTful Prefill API integrations for real-time quote auto-population (AWS Lambda, Lex, Python).",
+      note: "RESTful Prefill API integrations that auto-populate insurance quoting forms in real time, orchestrating retrieval across internal services and third-party endpoints. Spec-driven docs generated straight from OpenAPI, so published references stay in sync with the contracts.",
     },
     {
       role: "Design Team Engineer",

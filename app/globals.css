@@ -96,9 +96,89 @@ svg {
   max-width: 100%;
 }
 
+/* ============================================================
+   Utilities — the handful of recipes used on three or more
+   components. Anything used once belongs in that component's
+   own .module.css, not here.
+   ============================================================ */
+
 /* Mono utility for meta text */
 .mono {
   font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+/* Trailing ↗ on external links — rendered by components/links.tsx */
+.arrow {
+  display: inline-block;
+  margin-left: 0.35em;
+  font-size: 0.85em;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+/* ---- links ----
+   Pick one colour class; add .link-underline for the hover rule.
+   e.g. class="link-muted link-underline" */
+.link-muted,
+.link-text {
+  transition:
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+.link-muted {
+  color: var(--muted);
+}
+.link-text {
+  color: var(--text);
+}
+.link-muted:hover,
+.link-text:hover {
+  color: var(--accent);
+}
+
+.link-underline {
+  border-bottom: 1px solid transparent;
+}
+.link-underline:hover {
+  border-bottom-color: var(--accent);
+}
+
+.link-muted:hover .arrow,
+.link-text:hover .arrow {
+  transform: translate(1px, -1px);
+}
+
+/* ---- typography ---- */
+
+/* Mono label above a title, e.g. "Index" or "001 — Projects" */
+.eyebrow {
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: var(--space-3);
+}
+
+/* The large page heading on /projects, /projects/[slug] and 404 */
+.page-title {
+  font-size: var(--fs-display);
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}
+
+/* The inert "·" between inline meta items */
+.sep {
+  color: var(--border);
+}
+
+/* Outlined mono pill — stack items */
+.tag {
+  display: inline-block;
+  padding: 0.15em 0.5em;
+  font-size: var(--fs-label);
+  color: var(--muted);
+  border: 0.5px solid var(--accent-dim);
+  border-radius: 3px;
+  white-space: nowrap;
 }
 
 /* Visible focus for keyboard users only */

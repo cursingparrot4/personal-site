@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { profile } from "@/content/profile";
+import { ExternalLink } from "./links";
 import { RailNav } from "./RailNav";
 import styles from "./Rail.module.css";
 
@@ -20,7 +21,7 @@ const handle = profile.name.toLowerCase().replace(/\s+/g, "-");
 export function Rail({ sections, showPrompt = true }: Props) {
   return (
     <aside className={styles.rail}>
-      <div className={styles.top}>
+      <div>
         {showPrompt ? (
           <p className={`${styles.prompt} mono`}>
             <span>
@@ -50,52 +51,43 @@ export function Rail({ sections, showPrompt = true }: Props) {
         ) : (
           <ul className={styles.pageNav}>
             <li>
-              <Link href="/" className={styles.pageLink}>
-                home
+              <Link href="/" className="link-muted">
+                Home
               </Link>
             </li>
           </ul>
         )}
         <ul className={styles.pageNav}>
           <li>
-            <Link href="/projects" className={styles.pageLink}>
-              projects
+            <Link href="/projects" className="link-muted">
+              Projects
             </Link>
           </li>
           <li>
-            <a
-              href="/resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.pageLink}
-            >
-              resume <span aria-hidden="true">↗</span>
-            </a>
+            <ExternalLink href="/resume.pdf" className="link-muted">
+              Resume
+            </ExternalLink>
           </li>
         </ul>
       </nav>
 
       <div className={`${styles.contact} mono`}>
-        <a
-          href={profile.links.github}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.contactLink}
-        >
-          github <span aria-hidden="true">↗</span>
-        </a>
-        <a href={`mailto:${profile.links.email}`} className={styles.contactLink}>
-          email <span aria-hidden="true">↗</span>
+        <ExternalLink href={profile.links.github} className={`link-muted ${styles.contactLink}`}>
+          GitHub
+        </ExternalLink>
+        <a href={`mailto:${profile.links.email}`} className={`link-muted ${styles.contactLink}`}>
+          Email
+          <span className="arrow" aria-hidden="true">
+            ↗
+          </span>
         </a>
         {profile.links.linkedin ? (
-          <a
+          <ExternalLink
             href={profile.links.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.contactLink}
+            className={`link-muted ${styles.contactLink}`}
           >
-            linkedin <span aria-hidden="true">↗</span>
-          </a>
+            LinkedIn
+          </ExternalLink>
         ) : null}
       </div>
     </aside>

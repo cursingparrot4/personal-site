@@ -47,7 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <NullscapeFilter />
         <a href="#main" className="skip-link">
-          skip to content
+          Skip to content
         </a>
         <main id="main">{children}</main>
         <Footer />
