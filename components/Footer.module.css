@@ -1,0 +1,26 @@
+.footer {
+  /* Matches the shell's own gutters so the hairline lines up with the content
+     column's left edge rather than running to the window. */
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: var(--page-pad);
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-5);
+  padding-block: var(--space-5) var(--space-7);
+  border-top: 0.5px solid var(--border);
+  font-size: var(--fs-label);
+  color: var(--muted);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+}

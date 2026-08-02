@@ -13,7 +13,12 @@ export type Project = {
 export type Experience = {
   role: string;
   org: string;
+  /** display string shown in the list, e.g. "May–Aug 2026" */
   period: string;
+  /** inclusive month bounds, "YYYY-MM". Drive the duration chart's axis —
+   *  `period` stays separate so its wording is free to differ from the data. */
+  start: string;
+  end: string;
   note?: string;
 };
 
@@ -24,6 +29,10 @@ export type Profile = {
   promptMeta: string;
   focus: string[]; // ["Machine learning", ...]
   bio: string;
+  /** city shown in the rail status block and the footer */
+  location: string;
+  /** availability line in the rail; omit to hide the status block entirely */
+  status?: string;
   links: { github: string; email: string; linkedin?: string };
   experience: Experience[];
 };

@@ -114,10 +114,57 @@
   background: var(--accent);
 }
 
-/* ---- contact (pinned bottom on desktop) ---- */
-.contact {
+/* ---- availability + contact (pinned bottom on desktop) ----
+   The status block carries the `auto` margin, so the two blocks fall to the
+   bottom as one unit rather than leaving a gap between them on tall viewports. */
+.status {
   margin-top: auto;
   padding-top: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--fs-label);
+  color: var(--muted);
+}
+
+.statusLine {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  color: var(--text);
+}
+
+/* No text of its own, so it can't sit on the baseline by itself — nudged to
+   land on the x-height of the label beside it. */
+.dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translateY(-1px);
+  animation: statusPulse 2.8s var(--ease) infinite;
+}
+
+/* A ring that expands and fades — the accent never fills area, per spec §4. */
+@keyframes statusPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--accent-dim);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(52, 197, 221, 0);
+  }
+}
+
+.location {
+  padding-left: calc(6px + var(--space-3));
+}
+
+.contact {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 0.5px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -157,8 +204,25 @@
     flex-direction: row;
     gap: var(--space-5);
   }
+  /* Stacked header: the status reads as one inline meta line, not a block. */
+  .status {
+    margin-top: var(--space-5);
+    padding-top: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-4);
+  }
+  .location {
+    padding-left: 0;
+  }
+  .location::before {
+    content: "· ";
+    color: var(--border);
+  }
   .contact {
-    margin-top: var(--space-6);
+    margin-top: var(--space-5);
+    padding-top: var(--space-5);
     flex-direction: row;
     flex-wrap: wrap;
     gap: var(--space-4) var(--space-5);

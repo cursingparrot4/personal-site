@@ -38,18 +38,24 @@ public/      static files served as-is (resume.pdf lives here)
 Two rules explain where any given style lives:
 
 1. **A recipe used in three or more places is a utility class in `app/globals.css`.**
-   There are nine, and between them they cover most of the site's surface:
+   There are ten, and between them they cover most of the site's surface:
 
-   |                            |                                                              |
-   | -------------------------- | ------------------------------------------------------------ |
-   | `mono`                     | switch to JetBrains Mono (meta text, labels, nav)            |
-   | `link-muted` / `link-text` | grey or body-coloured link, cyan on hover                    |
-   | `link-underline`           | add the cyan underline on hover — combine with either colour |
-   | `arrow`                    | the trailing `↗` on off-site links                          |
-   | `eyebrow`                  | the small mono label above a title                           |
-   | `page-title`               | the big display heading                                      |
-   | `sep`                      | the inert `·` between meta items                             |
-   | `tag`                      | the outlined pill used for stack items                       |
+   |                            |                                                                   |
+   | -------------------------- | ----------------------------------------------------------------- |
+   | `mono`                     | switch to JetBrains Mono (meta text, labels, nav)                 |
+   | `link-muted` / `link-text` | grey or body-coloured link, cyan on hover                         |
+   | `link-underline`           | the cyan rule that grows in on hover — combine with either colour |
+   | `arrow`                    | the trailing `↗` on off-site links                               |
+   | `eyebrow`                  | the small mono label above a title                                |
+   | `page-title`               | the big display heading                                           |
+   | `sep`                      | the inert `·` between meta items                                  |
+   | `tag`                      | the outlined pill used for stack items                            |
+   | `rise` + `rise-1..3`       | the load entrance; the numbered class picks the stagger delay     |
+
+   `rise` is the one utility that _has_ to be global. CSS Modules hashes `@keyframes`
+   names and the `animation-name` that points at them, so a module declaring
+   `animation: rise-in …` compiles to a name matching no keyframe — no error, no
+   animation. Keep both the keyframe and the class in `globals.css`.
 
    So a rail link is `class="link-muted"` and a project-row link is
    `class="link-muted link-underline"` — neither redeclares the hover behaviour. Change the
@@ -69,8 +75,9 @@ have no stylesheet at all — the first two are built from utilities, and `RailN
 
 ### …change my bio, headline, name, or social links?
 
-`content/profile.ts`. That one file feeds the sidebar, the About section, the contact row
-and the JSON-LD search metadata.
+`content/profile.ts`. That one file feeds the sidebar, the About section, the footer and
+the JSON-LD search metadata. `status` is the availability line in the rail — drop the field
+and the line disappears; `location` shows in both the rail and the footer.
 
 ### …add or edit a job?
 
@@ -81,10 +88,18 @@ array order. `note` is optional; a row without one simply isn't expandable.
 {
   role: "Software Developer Co-op",
   org: "Co-operators",
-  period: "May–Aug 2026",
+  period: "May–Aug 2026",   // the string shown in the list — word it however you like
+  start: "2026-05",         // YYYY-MM, drives the duration chart's axis
+  end: "2026-08",
   note: "What you actually did. One line.",   // optional
 }
 ```
+
+`start`/`end` are separate from `period` on purpose: the chart needs real months to place
+and size the bar, while `period` stays free to read however you want. Get them wrong and
+the bar is wrong — the chart is only as honest as those two fields. The first entry's bar
+is drawn in full accent as the most recent, which is another reason to keep the array
+newest-first.
 
 ### …add a project?
 
@@ -197,12 +212,14 @@ export default function Writing() {
 |                   |                                                                                    |
 | ----------------- | ---------------------------------------------------------------------------------- |
 | `Shell`           | two-column page frame: sticky rail + content. Collapses to one column under 900px. |
-| `Rail`            | the left sidebar — identity, nav, contact. On mobile it becomes a stacked header.  |
+| `Rail`            | the left sidebar — identity, nav, availability, contact. Stacked header on mobile. |
+| `Footer`          | the closing rule: `© year · name · location · src ↗`. Spans both columns.        |
 | `RailNav`         | the scroll-spy nav that highlights the section you're looking at (home only).      |
 | `Section`         | `001 — label` eyebrow + title + content. Owns the vertical rhythm.                 |
 | `PageHeader`      | eyebrow + big title. Used by `/projects` and the 404 page.                         |
 | `ProjectRow`      | one expandable project row. Shared by the home page and `/projects`.               |
-| `ExperienceList`  | the timeline of jobs; each row expands to show its note.                           |
+| `ExperienceChart` | duration chart above the job list — one bar per role, sized by `start`/`end`.      |
+| `ExperienceList`  | the list of jobs; each row expands to show its note.                               |
 | `links`           | two exports: `InlineLink` for prose, `ExternalLink` for anything off-site.         |
 | `Tag`             | the outlined mono pill used for stack items.                                       |
 | `NullscapeFilter` | the decorative grain/scanline overlay. Mounted once in `app/layout.tsx`.           |
@@ -229,9 +246,9 @@ URLs in `content/projects.ts`:
 A project with an empty `links: {}` just renders without link buttons, so neither one
 breaks anything as-is.
 
-There is no footer. The site ends with the content — no copyright line, no location, no
-repo link. `site.location` and `site.sourceUrl` were removed along with it, since nothing
-else read them.
+The headline in `content/profile.ts` is still the `SITE STILL A WIP.` placeholder. It shows
+under your name on every page. The OG card deliberately does not use it — see
+`docs/opengraph-image.source.html` — so update both when you write the real one.
 
 ## docs/
 

@@ -13,3 +13,14 @@
   max-width: 50ch;
   color: var(--text);
 }
+
+/* The page's only call to action, so unlike a prose link it carries a resting
+   rule: at --text colour with a hover-only underline it was indistinguishable
+   from the sentence around it. */
+.cta {
+  border-bottom: 1px solid var(--accent-dim);
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.cta:hover {
+  border-bottom-color: var(--accent);
+}

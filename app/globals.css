@@ -40,23 +40,10 @@
   --page-pad: clamp(1.25rem, 5vw, 2rem);
   --section-gap: clamp(4rem, 10vw, 6rem);
 
-  /* Row gutter — the fixed right column shared by the experience timeline and
-     the project rows. Shared so the two lists' hairlines, chevrons and dates
-     land on the same x; a per-list value would silently drift apart. */
-  --rail-w: 10rem;
-  --track-w: 0.75rem;
-
   /* Motion */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --dur-fast: 150ms;
   --dur-slow: 400ms;
-}
-
-@media (max-width: 640px) {
-  :root {
-    --rail-w: 9rem;
-    --track-w: 0.5rem;
-  }
 }
 
 /* ============================================================
@@ -148,11 +135,19 @@ svg {
   color: var(--accent);
 }
 
+/* The rule is a background, not a border, so it can grow from the left instead
+   of switching on. The transparent border stays purely to reserve the 1px, so
+   adding .link-underline to something never shifts it by a pixel. */
 .link-underline {
   border-bottom: 1px solid transparent;
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size var(--dur-fast) var(--ease);
 }
 .link-underline:hover {
-  border-bottom-color: var(--accent);
+  background-size: 100% 1px;
 }
 
 .link-muted:hover .arrow,
@@ -194,6 +189,42 @@ svg {
   white-space: nowrap;
 }
 
+/* ---- entrance ----
+   One staggered reveal on load (spec §7, §17) — not scroll-triggered, which
+   §2 rules out. Keyframes live here rather than in a module because CSS Modules
+   scopes @keyframes names, and the rail and the content column share this one.
+
+   Declared `backwards` with no resting `opacity: 0`: the hidden state exists
+   only inside the keyframe, so if the animation never runs — reduced motion,
+   an extension, an old engine — the content is simply visible rather than
+   stuck transparent. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* Both the keyframe and the class that uses it have to live here. CSS Modules
+   hashes @keyframes names *and* the animation-name referencing them, so a
+   module that says `animation: rise-in ...` compiles to a name that resolves to
+   nothing — no error, just no animation. Don't move these into the modules.
+   The delays are separate classes for the same reason: a module setting only
+   animation-delay would depend on the bundled stylesheet order to beat the
+   shorthand below. */
+.rise {
+  animation: rise-in var(--dur-slow) var(--ease) backwards;
+}
+.rise-1 {
+  animation-delay: 60ms;
+}
+.rise-2 {
+  animation-delay: 120ms;
+}
+.rise-3 {
+  animation-delay: 160ms;
+}
+
 /* Visible focus for keyboard users only */
 :focus-visible {
   outline: 2px solid var(--accent);
@@ -207,7 +238,8 @@ svg {
 }
 
 /* Content sits between the Nullscape filter's two layer stacks (z 0 and z 30). */
-main {
+main,
+footer {
   position: relative;
   z-index: 1;
 }

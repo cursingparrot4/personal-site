@@ -52,6 +52,17 @@ export const projects: Project[] = [
     links: {}, // TODO: repo URL
     // not featured — shows on /projects only
   },
+  {
+    slug: "stubook",
+    name: "Stubook",
+    tagline: "Offline-first Flutter app for daily study planning.",
+    description:
+      "A cross-platform study-planning app built with Flutter, shipped to the iOS App Store. Hive provides an offline-first local NoSQL store for tasks and schedules, with a table-calendar view for planning study sessions and swipeable list actions for quick task management. Built as core developer.",
+    stack: ["Flutter", "Dart", "Hive"],
+    year: 2024,
+    links: { repo: "https://github.com/joeyhlu/stubook_master" },
+    // not featured — shows on /projects only
+  },
 ];
 
 /** Helpers so pages don't re-implement filtering. */

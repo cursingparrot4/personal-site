@@ -26,6 +26,7 @@ yarn-error.log*
 
 # browser-automation artifacts (traces, videos, screenshots)
 /.playwright/
+/.playwright-cli/
 /test-results/
 /playwright-report/
 

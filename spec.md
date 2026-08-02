@@ -10,14 +10,15 @@ placeholder marked `TODO` needs a real value before launch; everything else is d
 
 Aryan works across **applied ML/AI** (RAG systems, computer vision, regression) with a
 **low-level/systems** streak (PID drive-control in C, robotics, API plumbing). The site's
-job: make a recruiter or collaborator believe, in ~20 seconds, that this person *builds and
-ships real systems* — backed by concrete numbers, not adjectives.
+job: make a recruiter or collaborator believe, in ~20 seconds, that this person _builds and
+ships real systems_ — backed by concrete numbers, not adjectives.
 
 **Voice**
+
 - Sentence case everywhere. Never Title Case, never ALL CAPS, never emoji.
 - Concrete over adjectival: "0.82 F1 across 7,000+ users", not "highly skilled in ML".
 - First person, terse. No "passionate", "results-driven", "leverage", "cutting-edge".
-- The aesthetic is systems/terminal; the *content* is honest ML/AI. Never fake being a
+- The aesthetic is systems/terminal; the _content_ is honest ML/AI. Never fake being a
   kernel hacker. The contrast (clean systems styling over ML work) is the point.
 
 ---
@@ -29,6 +30,7 @@ borders, one accent color, generous whitespace. Inspired by the terminal/IDE wor
 literally faking a terminal window.
 
 **Deliberately avoid** (the tells that make a portfolio look auto-generated):
+
 - Fake-terminal chrome (traffic-light dots, blinking prompt, `$` cursors, typewriter effects)
 - Purple/indigo gradients, glassmorphism, mesh backgrounds, glow/neon
 - "Hi, I'm X 👋" hero, emoji section headers
@@ -60,26 +62,28 @@ properties in `globals.css`:
 
 ```css
 :root {
-  --bg:         #0D1114;  /* page background */
-  --surface:    #161B1F;  /* row hover, chrome */
-  --surface-hi: #1E252B;  /* active state */
-  --text:       #E2E8EC;  /* primary text */
-  --muted:      #8B979E;  /* meta, secondary */
-  --border:     #232B31;  /* hairline rules, inert glyphs */
-  --accent:     #34C5DD;  /* cyan — links, tags, focus */
-  --accent-dim: rgba(52,197,221,0.32); /* tag borders, subtle fills */
-  --selection:  rgba(52,197,221,0.28); /* ::selection (text #fff) */
+  --bg: #0d1114; /* page background */
+  --surface: #161b1f; /* row hover, chrome */
+  --surface-hi: #1e252b; /* active state */
+  --text: #e2e8ec; /* primary text */
+  --muted: #8b979e; /* meta, secondary */
+  --border: #232b31; /* hairline rules, inert glyphs */
+  --accent: #34c5dd; /* cyan — links, tags, focus */
+  --accent-dim: rgba(52, 197, 221, 0.32); /* tag borders, subtle fills */
+  --selection: rgba(52, 197, 221, 0.28); /* ::selection (text #fff) */
 }
 ```
 
 **Usage rules**
-- Accent is used *sparingly*: links, hover/active states, focus rings, tag outlines, the
+
+- Accent is used _sparingly_: links, hover/active states, focus rings, tag outlines, the
   index number on a hovered row. It must **never fill a large area**.
 - Default link color is `--text` with an accent underline on hover — not accent-by-default,
   which turns prose into a rash of red.
 - Elevation is conveyed by `--surface`/`--surface-hi` + `--border`, never by shadow.
 
 **Contrast notes (WCAG)**
+
 - `--text` on `--bg` ≈ 15:1 — excellent.
 - `--muted` on `--bg` ≈ 6.5:1 — OK for meta at ≥14px; do **not** use `--muted` for long body
   copy or anything under 14px.
@@ -87,8 +91,8 @@ properties in `globals.css`:
   color is never the only signal.
 
 **Atmosphere layer** — `components/NullscapeFilter.tsx` mounts two fixed, `aria-hidden`,
-`pointer-events: none` stacks that sandwich the page: *atmosphere* at `z-index: 0` (haze,
-cyan light beam, fog, vignette) and *texture* at `z-index: 30` (scanlines, dither, colour
+`pointer-events: none` stacks that sandwich the page: _atmosphere_ at `z-index: 0` (haze,
+cyan light beam, fog, vignette) and _texture_ at `z-index: 30` (scanlines, dither, colour
 bands, animated grain, colour grade). Every opacity is scaled by `--ns-k`, the strength
 knob, at `0.2` by default — subtle enough that text stays fully legible. Page content sits
 at `z-index: 1` between them (`main`, `footer` in `globals.css`). Animation is dropped
@@ -106,16 +110,17 @@ Two families, self-hosted via `next/font`:
 
 **Type scale** (expose as CSS vars; base 16px):
 
-| Token            | Family         | Size                          | Weight | Line-height | Tracking | Use                          |
-|------------------|----------------|-------------------------------|--------|-------------|----------|------------------------------|
-| `--fs-display`   | Space Grotesk  | `clamp(2.5rem, 6vw, 4rem)`    | 500    | 1.05        | -0.02em  | hero name                    |
-| `--fs-h2`        | Space Grotesk  | `1.5rem`                      | 500    | 1.15        | -0.01em  | section headings             |
-| `--fs-h3`        | Space Grotesk  | `1.125rem`                    | 500    | 1.25        | -0.005em | project name                 |
-| `--fs-body`      | Space Grotesk  | `1rem`                        | 400    | 1.65        | 0        | bio, prose                   |
-| `--fs-meta`      | JetBrains Mono | `0.8125rem`                   | 400    | 1.5         | 0        | nav, taglines, years         |
-| `--fs-label`     | JetBrains Mono | `0.75rem`                     | 500    | 1.4         | 0.06em   | section labels, tags, index  |
+| Token          | Family         | Size                       | Weight | Line-height | Tracking | Use                         |
+| -------------- | -------------- | -------------------------- | ------ | ----------- | -------- | --------------------------- |
+| `--fs-display` | Space Grotesk  | `clamp(2.5rem, 6vw, 4rem)` | 500    | 1.05        | -0.02em  | hero name                   |
+| `--fs-h2`      | Space Grotesk  | `1.5rem`                   | 500    | 1.15        | -0.01em  | section headings            |
+| `--fs-h3`      | Space Grotesk  | `1.125rem`                 | 500    | 1.25        | -0.005em | project name                |
+| `--fs-body`    | Space Grotesk  | `1rem`                     | 400    | 1.65        | 0        | bio, prose                  |
+| `--fs-meta`    | JetBrains Mono | `0.8125rem`                | 400    | 1.5         | 0        | nav, taglines, years        |
+| `--fs-label`   | JetBrains Mono | `0.75rem`                  | 500    | 1.4         | 0.06em   | section labels, tags, index |
 
 **Rules**
+
 - Section headers get a small mono **label + index** above the Space Grotesk title, e.g.
   `` `002 — selected work` `` in mono/`--muted`, then `Selected work` (sentence case) in
   Space Grotesk. This is the core "systems" tell, done tastefully.
@@ -127,9 +132,9 @@ Two families, self-hosted via `next/font`:
 ## 6. Layout & spacing
 
 - **Two-column shell** (`components/Shell.tsx`): a sticky identity **rail** (left, ~17rem)
-  + a scrolling **content** column, inside an `80rem` max-width centered wrapper with
-  `--page-pad: clamp(1.25rem, 5vw, 2rem)` gutters. Collapses to a single column below
-  **900px**, where the rail becomes a stacked header.
+  - a scrolling **content** column, inside an `80rem` max-width centered wrapper with
+    `--page-pad: clamp(1.25rem, 5vw, 2rem)` gutters. Collapses to a single column below
+    **900px**, where the rail becomes a stacked header.
 - The rail (`components/Rail.tsx`) holds a mono prompt row (`~/aryanahlawat2006@gmail.com` … `cs · systems`,
   hairline underneath, toggled by `showPrompt`), then name, headline, focus areas, navigation,
   and contact (pinned to the bottom on desktop via `margin-top:auto`). It replaces a top nav bar.
@@ -142,6 +147,32 @@ Two families, self-hosted via `next/font`:
 - Dividers are **0.5px** hairlines in `--border` (`border-top: 0.5px solid var(--border)` or
   a 1px rule at 50% opacity for crispness on non-retina). Rows separated by rules, never
   boxed in cards.
+
+---
+
+## 7a. The experience timeline
+
+The section leads with a **duration chart** (`ExperienceChart`), then the expandable rows.
+
+Each role carries `start` / `end` as `"YYYY-MM"` alongside its display `period`. The chart
+maps them onto one axis — a label column of orgs, a plot with a January gridline per year,
+and one bar per role placed by start and sized by duration. The most recent bar (index 0,
+since the array is newest-first) takes full `--accent`; the rest sit at `--accent-dim`.
+
+The point is that it encodes something the list cannot: how long each role actually ran,
+where they overlap, and where the gaps are. The earlier version — a static spine with an
+evenly spaced node per row — was decorative by construction, giving a four-month co-op and
+a nine-month term identical weight.
+
+It also paid for itself structurally. That spine lived in a fixed right gutter whose width
+was set by the longest period string (`"Sep 2025–Apr 2026"`), and the project rows were
+pinned to the same width so the two lists' dates aligned. On a 390px screen that gutter left
+~190px of text column: five-line taglines, two-line roles. With the temporal reading moved
+into the chart, both lists just push their date to the end of the row, the shared
+`--rail-w` / `--track-w` tokens are gone, and the mobile special-cases went with them.
+
+`role="img"` with a summary label: every bar restates a period the list spells out in text
+directly below, so exposing the lanes individually would only duplicate it for AT.
 
 ---
 
@@ -158,8 +189,16 @@ Two families, self-hosted via `next/font`:
   `ResizeObserver` for accordion reflow) rather than raw `IntersectionObserver` callbacks,
   so it stays correct when sections straddle the line, when a section is shorter than the
   band, and when the page bottoms out before the last section reaches the line.
+- **Entrance:** one staggered reveal on load — opacity 0 → 1 with an 8px rise, 400ms, the
+  rail's four blocks at 0/60/120/160ms and the content column at 60ms. Never scroll-driven
+  (§2 rules that out) and never re-run. Lives in `globals.css` as the `rise` / `rise-1..3`
+  utilities: CSS Modules hashes both `@keyframes` names and the `animation-name` pointing at
+  them, so a module-local declaration silently animates nothing. The hidden state exists
+  only inside the keyframe (`animation-fill-mode: backwards`, no resting `opacity: 0`), so
+  content that never animates is visible rather than invisible.
 - **Hover:** 150ms ease. Row hover raises a `--surface` background and turns the index +
-  chevron toward `--accent`. That's the whole hover vocabulary.
+  chevron toward `--accent`. Link underlines grow from the left (an animated
+  `background-size`, not a border colour swap). That's the whole hover vocabulary.
 - **Focus:** `outline: 2px solid var(--accent)` via `:focus-visible` on every control.
 - **`prefers-reduced-motion: reduce`** collapses all transition durations to ~0 (global
   rule), so accordions snap instead of sliding.
@@ -168,9 +207,13 @@ Two families, self-hosted via `next/font`:
 
 ## 8. Responsive
 
-- Mobile-first. One breakpoint that matters: **`640px`**.
-- `< 640px`: `ProjectRow` stacks (index inline before name; year drops to the meta line);
-  nav is a single inline row of links (no hamburger — there are ≤4 links).
+- Mobile-first. Two breakpoints: **`900px`** (rail → stacked header) and **`640px`**
+  (tighter gutters, smaller period text), plus a narrow **`34rem`** step described below.
+- `< 640px`: nav is a single inline row of links (no hamburger — there are ≤4 links).
+- Neither list reserves a fixed date gutter any more (§7a). Both push their date to the end
+  of the row with `margin-left: auto`, so the two right-align on the same edge at every
+  width and the layout has nothing to special-case. Below `34rem` the experience period
+  drops onto its own line rather than competing with the role for one flex row.
 - Tap targets ≥ 44px. Hero display size handled by the `clamp()` above.
 
 ---
@@ -207,11 +250,11 @@ public/resume.pdf linked from hero (copied from the repo's resume PDF)
 │ Aryan Ahlawat       │                                            │
 │ i build and ship    │  002 — experience                          │
 │ machine-learning …  │  Experience                                │
-│                     │  ────────────────────────────────────────  │
-│ — machine learning  │  Software Developer Co-op  Co-operators  ⌄ │  ← accordion
-│ — retrieval / RAG   │  ────────────────────────────────────────  │
-│ — computer vision   │  Design Team Engineer      QMIND         ⌄ │
-│ — low-level systems │                                            │
+│                     │  Co-operators │        ▬▬▬  ← duration chart │
+│ — machine learning  │  QMIND        │     ▬▬▬▬▬▬                   │
+│ — retrieval / RAG   │  Acetech      │  ▬▬▬        2025      2026    │
+│ — computer vision   │  ────────────────────────────────────────  │
+│ — low-level systems │  Software Dev Co-op  Co-operators  May–Aug ⌄ │  ← accordion
 │                     │  003 — projects                            │
 │ ──  about           │  Selected work                             │
 │ ▬▬▬ experience      │  ────────────────────────────────────────  │  ← scroll-spy
@@ -222,19 +265,32 @@ public/resume.pdf linked from hero (copied from the repo's resume PDF)
 │ resume ↗            │                                            │
 │                     │  004 — contact                             │
 │ github ↗ (pinned    │  Contact                                   │
-│ email ↗   to        │  [email] · [github] · [linkedin]           │
+│ email ↗   to        │  one line · mailto on "reach out"          │
 │ linkedin ↗ bottom)  │                                            │
 └─────────────────────┴────────────────────────────────────────────┘
-   sticky (100dvh)        scrolls · footer (© · location · src ↗) spans full width below
+   sticky (100dvh)        scrolls · footer (© · name · location · src ↗) full width below
 ```
+
 Below 900px the rail stacks on top as a header (name, tagline, focus, horizontal nav +
-contact); the scroll-spy list is hidden.
+availability + contact); the scroll-spy list is hidden.
+
+**Contact carries no link list.** Resume/GitHub/email/LinkedIn are pinned in the rail on
+every page; repeating them below only splits the target. The section is one sentence with
+the mailto on "reach out" — enough that the page ends on something clickable without
+duplicating the rail.
+
+**The rail's lower half is one unit.** The availability block (`profile.status` +
+`profile.location`) takes the `margin-top: auto`, with the contact links under a hairline
+directly beneath it. Pinning only the links left a few hundred px of dead space between the
+nav and the bottom of the rail on tall viewports.
 
 ### `/projects` — full index
+
 Same `ProjectRow` component, all projects (no `featured` filter), optionally grouped by year.
 Header: `Projects`. Rows link to `/projects/[slug]` when a writeup exists, else to the repo.
 
 ### `/projects/[slug]` — detail (optional, ship writeups incrementally)
+
 `← projects` back-link · project name (h1) · year + stack (mono) · links (repo/demo) ·
 2–4 short paragraphs: what it does, key decisions, what the numbers mean · screenshots with
 real alt text. No comment sections, no share buttons.
@@ -244,40 +300,70 @@ real alt text. No comment sections, no share buttons.
 ## 11. Content (real — from résumé; verify `TODO`s before launch)
 
 ### `content/profile.ts`
+
 ```ts
 export const profile: Profile = {
   name: "Aryan Ahlawat",
   headline: "i build and ship machine-learning systems.", // tune to taste, keep it one honest line
-  promptMeta: "cs · systems",                    // right side of the rail's prompt row
+  promptMeta: "cs · systems", // right side of the rail's prompt row
   focus: ["machine learning", "retrieval / RAG", "computer vision", "low-level systems"],
   bio:
     "cs student at Queen's on the AI stream, minoring in economics. i work across applied " +
     "ML — RAG pipelines at QMIND, computer vision on VisualizeIt, regression models at " +
     "Acetech — and enjoy the low-level end too, from PID drive-control in C to API plumbing. " +
     "currently a software developer co-op at Co-operators.",
+  location: "Toronto, ON", // rail status block + footer
+  status: "Open to winter 2027 internships", // rail availability line; omit to hide it
   links: {
-    github: "https://github.com/TODO",            // TODO: real handle
-    email:  "aryanahlawat2006@gmail.com",         // résumé contact (session email 23tj56@queensu.ca — confirm which to show)
+    github: "https://github.com/TODO", // TODO: real handle
+    email: "aryanahlawat2006@gmail.com", // résumé contact (session email 23tj56@queensu.ca — confirm which to show)
     linkedin: "https://www.linkedin.com/in/TODO", // TODO
   },
   experience: [
-    { role: "Software Developer Co-op", org: "Co-operators",         period: "May–Aug 2026", note: "RESTful Prefill API integrations for real-time quote auto-population (AWS Lambda, Lex, Python)." },
-    { role: "Design Team Engineer",     org: "QMIND",                period: "Sep 2025–Apr 2026", note: "Cognitive RAG system — LangChain agents, hybrid BM25 + dense retrieval, RRF + cross-encoder re-ranking." },
-    { role: "Machine Learning Co-op",   org: "Acetech",              period: "May–Aug 2025", note: "PyTorch MLP regression for lab-test durations — 12% MSE reduction over baseline; automated data-cleaning pipelines." },
-    { role: "Drive Control Developer",  org: "Queen's Knights Robotics", period: "Oct 2024–Mar 2025", note: "Low-level drive-control in C/FreeRTOS, PID controllers; motion algorithms cut path deviation ~20%." },
-    { role: "Research Assistant",       org: "University of Toronto", period: "Jun 2023–Feb 2024", note: "Agent-based economic simulations (COBWEB) modeling cooperative vs. competitive behavior." },
+    {
+      role: "Software Developer Co-op",
+      org: "Co-operators",
+      period: "May–Aug 2026",
+      note: "RESTful Prefill API integrations for real-time quote auto-population (AWS Lambda, Lex, Python).",
+    },
+    {
+      role: "Design Team Engineer",
+      org: "QMIND",
+      period: "Sep 2025–Apr 2026",
+      note: "Cognitive RAG system — LangChain agents, hybrid BM25 + dense retrieval, RRF + cross-encoder re-ranking.",
+    },
+    {
+      role: "Machine Learning Co-op",
+      org: "Acetech",
+      period: "May–Aug 2025",
+      note: "PyTorch MLP regression for lab-test durations — 12% MSE reduction over baseline; automated data-cleaning pipelines.",
+    },
+    {
+      role: "Drive Control Developer",
+      org: "Queen's Knights Robotics",
+      period: "Oct 2024–Mar 2025",
+      note: "Low-level drive-control in C/FreeRTOS, PID controllers; motion algorithms cut path deviation ~20%.",
+    },
+    {
+      role: "Research Assistant",
+      org: "University of Toronto",
+      period: "Jun 2023–Feb 2024",
+      note: "Agent-based economic simulations (COBWEB) modeling cooperative vs. competitive behavior.",
+    },
   ],
 };
 ```
 
 ### `content/projects.ts`
+
 ```ts
 export const projects: Project[] = [
   {
     slug: "visualizeit",
     name: "VisualizeIt",
     tagline: "real-time computer vision + diffusion inpainting.",
-    description: "YOLOv8 (Nano) for millisecond object detection anchoring OpenCV CSRT tracking, with Stable Diffusion inpainting to map context-aware texture overlays onto tracked regions.",
+    description:
+      "YOLOv8 (Nano) for millisecond object detection anchoring OpenCV CSRT tracking, with Stable Diffusion inpainting to map context-aware texture overlays onto tracked regions.",
     stack: ["YOLOv8", "PyTorch", "Stable Diffusion", "OpenCV"],
     year: 2025,
     award: "Mayor's Innovation Award",
@@ -288,7 +374,8 @@ export const projects: Project[] = [
     slug: "cognitive-rag",
     name: "Cognitive RAG",
     tagline: "hybrid retrieval for multi-hop question answering.",
-    description: "LangChain agents over a hybrid retrieval pipeline (BM25 sparse + bi-encoder dense), fused with reciprocal rank fusion and a Hugging Face cross-encoder re-ranker for precision on multi-hop QA. (QMIND design-team work.)",
+    description:
+      "LangChain agents over a hybrid retrieval pipeline (BM25 sparse + bi-encoder dense), fused with reciprocal rank fusion and a Hugging Face cross-encoder re-ranker for precision on multi-hop QA. (QMIND design-team work.)",
     stack: ["LangChain", "BM25", "cross-encoder", "Python"],
     year: 2026,
     links: { repo: "https://github.com/TODO" }, // TODO — confirm shareable
@@ -298,7 +385,8 @@ export const projects: Project[] = [
     slug: "churn-classification-engine",
     name: "Churn Classification Engine",
     tagline: "0.82 F1 across 7,000+ users.",
-    description: "End-to-end classification pipeline (logistic regression + random-forest ensembles) segmenting 7,000+ users by churn probability.",
+    description:
+      "End-to-end classification pipeline (logistic regression + random-forest ensembles) segmenting 7,000+ users by churn probability.",
     stack: ["Python", "scikit-learn", "seaborn"],
     year: 2025,
     links: { repo: "https://github.com/TODO" }, // TODO
@@ -306,6 +394,7 @@ export const projects: Project[] = [
   },
 ];
 ```
+
 > Featured seeds 3 rows for the home page. Add/prune freely; adding a project is one object.
 > The `Cognitive RAG` entry is derived from QMIND experience — drop it if you'd rather keep
 > `projects` to standalone builds only.
@@ -318,20 +407,22 @@ export const projects: Project[] = [
 export type Project = {
   slug: string;
   name: string;
-  tagline: string;       // one honest line, sentence case
-  description?: string;  // detail page
-  stack: string[];       // ["PyTorch", "LangChain"]
+  tagline: string; // one honest line, sentence case
+  description?: string; // detail page
+  stack: string[]; // ["PyTorch", "LangChain"]
   year: number;
-  award?: string;        // e.g. "Mayor's Innovation Award"
+  award?: string; // e.g. "Mayor's Innovation Award"
   links: { repo?: string; demo?: string; writeup?: string };
-  featured?: boolean;    // shown on home
+  featured?: boolean; // shown on home
 };
 
 export type Profile = {
   name: string;
-  headline: string;      // one line, what you do
-  focus: string[];       // ["machine learning", ...]
+  headline: string; // one line, what you do
+  focus: string[]; // ["machine learning", ...]
   bio: string;
+  location: string; // rail status block + footer
+  status?: string; // availability line; omit and the line disappears
   links: { github: string; email: string; linkedin?: string };
   experience: { role: string; org: string; period: string; note?: string }[];
 };
@@ -351,13 +442,15 @@ components/
                    + Space Grotesk title + rhythm; id doubles as the scroll-spy anchor.
   ProjectRow.tsx   (client) expandable row. Collapsed: index | name/tagline/stack | year |
                    chevron. Expanded: description + repo/demo/details links.
+  ExperienceChart.tsx  duration chart above the list — one bar per role, placed and sized
+                   from start/end months on a shared axis. Server component, pure render.
   ExperienceList.tsx (client) <ol> of expandable role/org rows; expand reveals the note.
-                   Right gutter is a timeline: one static spine capped on the first and
-                   last node, each row's node + date centred on the row box so they glide
-                   down as it expands. Open state = accent node/date/title, never the line.
+                   Period is inline at the end of the header row, not in a gutter.
+                   Open state = accent role/period/chevron.
   InlineLink.tsx   the one link style: text color, accent underline on hover, optional ↗.
   Tag.tsx          mono pill, --accent-dim border, no fill. Used for stack items.
 ```
+
 Server components by default; `RailNav`, `ProjectRow`, and `ExperienceList` are client
 components (local expand state / IntersectionObserver).
 
@@ -367,8 +460,14 @@ components (local expand state / IntersectionObserver).
 
 - Next Metadata API in `app/layout.tsx`: title template `"%s — Aryan Ahlawat"`, description,
   canonical, Open Graph + Twitter card.
-- **Static OG image** (`app/opengraph-image.tsx` via `next/og`) — name + headline on `--bg`,
-  Space Grotesk. No stock art.
+- **Static OG image** — `app/opengraph-image.png`, committed, with its alt text in
+  `app/opengraph-image.alt.txt`. Name + a one-line summary on `--bg`, Space Grotesk, no
+  stock art. Rendered from `docs/opengraph-image.source.html` by screenshotting it at
+  1200×630 rather than generated by `next/og`: `@vercel/og` fails to prerender on Windows
+  (`fileURLToPath` on a bundled font path), and shooting real HTML gets the actual
+  Space Grotesk / JetBrains Mono instead of the fallback face. Regeneration steps are in
+  the comment at the top of that file. It does **not** use `profile.headline` — a
+  placeholder there would become the preview text on every share.
 - `app/sitemap.ts`, `app/robots.ts`, favicon/apple-icon.
 - **JSON-LD `Person`** in the home page (name, url, sameAs: github/linkedin, alumniOf Queen's).
 - `lang="en"`, sensible `<title>` per route.

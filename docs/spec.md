@@ -10,14 +10,15 @@ placeholder marked `TODO` needs a real value before launch; everything else is d
 
 Aryan works across **applied ML/AI** (RAG systems, computer vision, regression) with a
 **low-level/systems** streak (PID drive-control in C, robotics, API plumbing). The site's
-job: make a recruiter or collaborator believe, in ~20 seconds, that this person *builds and
-ships real systems* — backed by concrete numbers, not adjectives.
+job: make a recruiter or collaborator believe, in ~20 seconds, that this person _builds and
+ships real systems_ — backed by concrete numbers, not adjectives.
 
 **Voice**
+
 - Sentence case everywhere. Never Title Case, never ALL CAPS, never emoji.
 - Concrete over adjectival: "0.82 F1 across 7,000+ users", not "highly skilled in ML".
 - First person, terse. No "passionate", "results-driven", "leverage", "cutting-edge".
-- The aesthetic is systems/terminal; the *content* is honest ML/AI. Never fake being a
+- The aesthetic is systems/terminal; the _content_ is honest ML/AI. Never fake being a
   kernel hacker. The contrast (clean systems styling over ML work) is the point.
 
 ---
@@ -29,6 +30,7 @@ borders, one accent color, generous whitespace. Inspired by the terminal/IDE wor
 literally faking a terminal window.
 
 **Deliberately avoid** (the tells that make a portfolio look auto-generated):
+
 - Fake-terminal chrome (traffic-light dots, blinking prompt, `$` cursors, typewriter effects)
 - Purple/indigo gradients, glassmorphism, mesh backgrounds, glow/neon
 - "Hi, I'm X 👋" hero, emoji section headers
@@ -60,26 +62,28 @@ properties in `globals.css`:
 
 ```css
 :root {
-  --bg:         #0D1114;  /* page background */
-  --surface:    #161B1F;  /* row hover, chrome */
-  --surface-hi: #1E252B;  /* active state */
-  --text:       #E2E8EC;  /* primary text */
-  --muted:      #8B979E;  /* meta, secondary */
-  --border:     #232B31;  /* hairline rules, inert glyphs */
-  --accent:     #34C5DD;  /* cyan — links, tags, focus */
-  --accent-dim: rgba(52,197,221,0.32); /* tag borders, subtle fills */
-  --selection:  rgba(52,197,221,0.28); /* ::selection (text #fff) */
+  --bg: #0d1114; /* page background */
+  --surface: #161b1f; /* row hover, chrome */
+  --surface-hi: #1e252b; /* active state */
+  --text: #e2e8ec; /* primary text */
+  --muted: #8b979e; /* meta, secondary */
+  --border: #232b31; /* hairline rules, inert glyphs */
+  --accent: #34c5dd; /* cyan — links, tags, focus */
+  --accent-dim: rgba(52, 197, 221, 0.32); /* tag borders, subtle fills */
+  --selection: rgba(52, 197, 221, 0.28); /* ::selection (text #fff) */
 }
 ```
 
 **Usage rules**
-- Accent is used *sparingly*: links, hover/active states, focus rings, tag outlines, the
+
+- Accent is used _sparingly_: links, hover/active states, focus rings, tag outlines, the
   index number on a hovered row. It must **never fill a large area**.
 - Default link color is `--text` with an accent underline on hover — not accent-by-default,
   which turns prose into a rash of red.
 - Elevation is conveyed by `--surface`/`--surface-hi` + `--border`, never by shadow.
 
 **Contrast notes (WCAG)**
+
 - `--text` on `--bg` ≈ 15:1 — excellent.
 - `--muted` on `--bg` ≈ 6.5:1 — OK for meta at ≥14px; do **not** use `--muted` for long body
   copy or anything under 14px.
@@ -87,8 +91,8 @@ properties in `globals.css`:
   color is never the only signal.
 
 **Atmosphere layer** — `components/NullscapeFilter.tsx` mounts two fixed, `aria-hidden`,
-`pointer-events: none` stacks that sandwich the page: *atmosphere* at `z-index: 0` (haze,
-cyan light beam, fog, vignette) and *texture* at `z-index: 30` (scanlines, dither, colour
+`pointer-events: none` stacks that sandwich the page: _atmosphere_ at `z-index: 0` (haze,
+cyan light beam, fog, vignette) and _texture_ at `z-index: 30` (scanlines, dither, colour
 bands, animated grain, colour grade). Every opacity is scaled by `--ns-k`, the strength
 knob, at `0.2` by default — subtle enough that text stays fully legible. Page content sits
 at `z-index: 1` between them (`main` in `globals.css`). Animation is dropped
@@ -106,16 +110,17 @@ Two families, self-hosted via `next/font`:
 
 **Type scale** (expose as CSS vars; base 16px):
 
-| Token            | Family         | Size                          | Weight | Line-height | Tracking | Use                          |
-|------------------|----------------|-------------------------------|--------|-------------|----------|------------------------------|
-| `--fs-display`   | Space Grotesk  | `clamp(2.5rem, 6vw, 4rem)`    | 500    | 1.05        | -0.02em  | hero name                    |
-| `--fs-h2`        | Space Grotesk  | `1.5rem`                      | 500    | 1.15        | -0.01em  | section headings             |
-| `--fs-h3`        | Space Grotesk  | `1.125rem`                    | 500    | 1.25        | -0.005em | project name                 |
-| `--fs-body`      | Space Grotesk  | `1rem`                        | 400    | 1.65        | 0        | bio, prose                   |
-| `--fs-meta`      | JetBrains Mono | `0.8125rem`                   | 400    | 1.5         | 0        | nav, taglines, years         |
-| `--fs-label`     | JetBrains Mono | `0.75rem`                     | 500    | 1.4         | 0.06em   | section labels, tags, index  |
+| Token          | Family         | Size                       | Weight | Line-height | Tracking | Use                         |
+| -------------- | -------------- | -------------------------- | ------ | ----------- | -------- | --------------------------- |
+| `--fs-display` | Space Grotesk  | `clamp(2.5rem, 6vw, 4rem)` | 500    | 1.05        | -0.02em  | hero name                   |
+| `--fs-h2`      | Space Grotesk  | `1.5rem`                   | 500    | 1.15        | -0.01em  | section headings            |
+| `--fs-h3`      | Space Grotesk  | `1.125rem`                 | 500    | 1.25        | -0.005em | project name                |
+| `--fs-body`    | Space Grotesk  | `1rem`                     | 400    | 1.65        | 0        | bio, prose                  |
+| `--fs-meta`    | JetBrains Mono | `0.8125rem`                | 400    | 1.5         | 0        | nav, taglines, years        |
+| `--fs-label`   | JetBrains Mono | `0.75rem`                  | 500    | 1.4         | 0.06em   | section labels, tags, index |
 
 **Rules**
+
 - Section headers get a small mono **label + index** above the Space Grotesk title, e.g.
   `` `002 — selected work` `` in mono/`--muted`, then `Selected work` (sentence case) in
   Space Grotesk. This is the core "systems" tell, done tastefully.
@@ -127,9 +132,9 @@ Two families, self-hosted via `next/font`:
 ## 6. Layout & spacing
 
 - **Two-column shell** (`components/Shell.tsx`): a sticky identity **rail** (left, ~17rem)
-  + a scrolling **content** column, inside an `80rem` max-width centered wrapper with
-  `--page-pad: clamp(1.25rem, 5vw, 2rem)` gutters. Collapses to a single column below
-  **900px**, where the rail becomes a stacked header.
+  - a scrolling **content** column, inside an `80rem` max-width centered wrapper with
+    `--page-pad: clamp(1.25rem, 5vw, 2rem)` gutters. Collapses to a single column below
+    **900px**, where the rail becomes a stacked header.
 - The rail (`components/Rail.tsx`) holds a mono prompt row (`~/aryan-ahlawat` … `cs · systems`,
   hairline underneath, toggled by `showPrompt`), then name, headline, focus areas, navigation,
   and a pinned bottom block (`margin-top:auto`) holding resume ↗, github ↗, email ↗ and
@@ -230,14 +235,17 @@ public/resume.pdf linked from the rail's pinned bottom block
 └─────────────────────┴────────────────────────────────────────────┘
    sticky (100dvh)        scrolls · no footer; the page ends with the content
 ```
+
 Below 900px the rail stacks on top as a header (name, tagline, focus, horizontal nav +
 contact); the scroll-spy list is hidden.
 
 ### `/projects` — full index
+
 Same `ProjectRow` component, all projects (no `featured` filter), optionally grouped by year.
 Header: `Projects`. Rows link to `/projects/[slug]` when a writeup exists, else to the repo.
 
 ### `/projects/[slug]` — detail (optional, ship writeups incrementally)
+
 `← projects` back-link · project name (h1) · year + stack (mono) · links (repo/demo) ·
 2–4 short paragraphs: what it does, key decisions, what the numbers mean · screenshots with
 real alt text. No comment sections, no share buttons.
@@ -266,19 +274,19 @@ the actual files; they are short and commented.
 export type Project = {
   slug: string;
   name: string;
-  tagline: string;       // one honest line, sentence case
-  description?: string;  // detail page
-  stack: string[];       // ["PyTorch", "LangChain"]
+  tagline: string; // one honest line, sentence case
+  description?: string; // detail page
+  stack: string[]; // ["PyTorch", "LangChain"]
   year: number;
-  award?: string;        // e.g. "Mayor's Innovation Award"
+  award?: string; // e.g. "Mayor's Innovation Award"
   links: { repo?: string; demo?: string; writeup?: string };
-  featured?: boolean;    // shown on home
+  featured?: boolean; // shown on home
 };
 
 export type Profile = {
   name: string;
-  headline: string;      // one line, what you do
-  focus: string[];       // ["machine learning", ...]
+  headline: string; // one line, what you do
+  focus: string[]; // ["machine learning", ...]
   bio: string;
   links: { github: string; email: string; linkedin?: string };
   experience: { role: string; org: string; period: string; note?: string }[];
@@ -308,6 +316,7 @@ components/
   Tag.tsx          mono pill, --accent-dim border, no fill. Used for stack items.
   NullscapeFilter.tsx  decorative overlay, mounted once in the root layout.
 ```
+
 Server components by default; `RailNav`, `ProjectRow`, and `ExperienceList` are client
 components (local expand state / IntersectionObserver).
 

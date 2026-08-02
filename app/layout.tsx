@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { site } from "@/lib/site";
 import { NullscapeFilter } from "@/components/NullscapeFilter";
+import { Footer } from "@/components/Footer";
 import "./globals.css";
 
 const sans = Space_Grotesk({
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         <main id="main">{children}</main>
+        <Footer />
       </body>
     </html>
   );

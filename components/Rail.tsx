@@ -21,7 +21,8 @@ const handle = profile.name.toLowerCase().replace(/\s+/g, "-");
 export function Rail({ sections, showPrompt = true }: Props) {
   return (
     <aside className={styles.rail}>
-      <div>
+      {/* `rise*` are the global entrance utilities — see globals.css. */}
+      <div className="rise">
         {showPrompt ? (
           <p className={`${styles.prompt} mono`}>
             <span>
@@ -45,7 +46,7 @@ export function Rail({ sections, showPrompt = true }: Props) {
         </ul>
       </div>
 
-      <nav className={styles.nav} aria-label="Primary">
+      <nav className={`${styles.nav} rise rise-1`} aria-label="Primary">
         {sections ? (
           <RailNav sections={sections} />
         ) : (
@@ -59,7 +60,19 @@ export function Rail({ sections, showPrompt = true }: Props) {
         )}
       </nav>
 
-      <div className={`${styles.contact} mono`}>
+      {/* Availability — sits above the pinned contact block, so the rail's lower
+          half reads as one unit instead of leaving a void under the nav. */}
+      <div className={`${styles.status} mono rise rise-2`}>
+        {profile.status ? (
+          <p className={styles.statusLine}>
+            <span className={styles.dot} aria-hidden="true" />
+            {profile.status}
+          </p>
+        ) : null}
+        <p className={styles.location}>{profile.location}</p>
+      </div>
+
+      <div className={`${styles.contact} mono rise rise-3`}>
         <ExternalLink href="/resume.pdf" className={`link-muted ${styles.contactLink}`}>
           Resume
         </ExternalLink>

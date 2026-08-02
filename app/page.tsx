@@ -4,6 +4,7 @@ import { featuredProjects } from "@/content/projects";
 import { Shell } from "@/components/Shell";
 import { Section } from "@/components/Section";
 import { ProjectRow } from "@/components/ProjectRow";
+import { ExperienceChart } from "@/components/ExperienceChart";
 import { ExperienceList } from "@/components/ExperienceList";
 import { InlineLink } from "@/components/links";
 import styles from "./page.module.css";
@@ -39,6 +40,7 @@ export default function Home() {
       </Section>
 
       <Section id="experience" index="002" label="~/.history" title="Experience">
+        <ExperienceChart items={profile.experience} />
         <ExperienceList items={profile.experience} />
       </Section>
 
@@ -55,7 +57,11 @@ export default function Home() {
 
       <Section id="contact" index="004" label="~/.forward" title="Contact">
         <p className={styles.contactLead}>
-          Open to internships and interesting problems — reach out.
+          Open to internships and interesting problems —{" "}
+          <a href={`mailto:${profile.links.email}`} className={`link-text ${styles.cta}`}>
+            reach out
+          </a>
+          .
         </p>
       </Section>
     </Shell>

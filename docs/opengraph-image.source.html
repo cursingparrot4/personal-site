@@ -1,0 +1,173 @@
+<!doctype html>
+<!--
+  Source for app/opengraph-image.png (spec §14).
+
+  Rendered rather than generated: next/og's build step fails on Windows, and
+  screenshotting the real page gets us the actual Space Grotesk / JetBrains Mono
+  instead of its fallback font. To regenerate after editing this file, serve it
+  and shoot the viewport at exactly 1200x630, e.g.
+
+    cp docs/opengraph-image.source.html public/__og.html
+    npm run dev
+    playwright-cli run-code "async page => {
+      await page.setViewportSize({ width: 1200, height: 630 });
+      await page.goto('http://localhost:3000/__og.html', { waitUntil: 'networkidle' });
+      await page.evaluate(() => document.fonts.ready);
+      await page.screenshot({ path: 'app/opengraph-image.png' });
+    }"
+    rm public/__og.html
+
+  Keep the headline here in sync with content/profile.ts by hand.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        box-sizing: border-box;
+      }
+      body {
+        width: 1200px;
+        height: 630px;
+        background: #0d1114;
+        color: #e2e8ec;
+        font-family: "Space Grotesk", sans-serif;
+        overflow: hidden;
+      }
+      .card {
+        position: relative;
+        width: 1200px;
+        height: 630px;
+        padding: 72px 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        isolation: isolate;
+      }
+      /* Same atmosphere vocabulary as the site: a cyan beam and a vignette. */
+      .beam {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: radial-gradient(
+          120% 80% at 78% -10%,
+          rgba(52, 197, 221, 0.16),
+          rgba(52, 197, 221, 0) 60%
+        );
+      }
+      .vignette {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: radial-gradient(90% 70% at 50% 45%, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.55));
+      }
+      .scan {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.014) 0px,
+          rgba(255, 255, 255, 0.014) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .prompt {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 25px;
+        letter-spacing: 0.06em;
+        padding-bottom: 22px;
+        border-bottom: 1px solid #232b31;
+      }
+      .path {
+        color: #34c5dd;
+      }
+      .meta {
+        color: #8b979e;
+        margin-left: auto;
+      }
+      .name {
+        font-size: 96px;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+      .headline {
+        margin-top: 26px;
+        font-size: 34px;
+        color: #8b979e;
+        max-width: 860px;
+        line-height: 1.4;
+      }
+      .focus {
+        display: flex;
+        gap: 12px;
+        margin-top: 40px;
+      }
+      .tag {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 20px;
+        color: #8b979e;
+        border: 1px solid rgba(52, 197, 221, 0.32);
+        border-radius: 4px;
+        padding: 7px 14px;
+      }
+      .foot {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        font-size: 23px;
+        color: #8b979e;
+      }
+      .rule {
+        width: 56px;
+        height: 2px;
+        background: #34c5dd;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="beam"></div>
+      <div class="vignette"></div>
+      <div class="scan"></div>
+
+      <div class="prompt mono">
+        <span class="path">~/</span><span>aryan-ahlawat</span>
+        <span class="meta">CS · Data Science</span>
+      </div>
+
+      <div>
+        <div class="name">Aryan Ahlawat</div>
+        <div class="headline" id="headline">
+          CS student at Queen's — applied ML, retrieval, and low-level systems.
+        </div>
+        <div class="focus">
+          <span class="tag">Machine learning</span>
+          <span class="tag">Retrieval / RAG</span>
+          <span class="tag">Computer vision</span>
+          <span class="tag">Low-level systems</span>
+        </div>
+      </div>
+
+      <div class="foot mono">
+        <span class="rule"></span>
+        <span>aryanahlawat.dev</span>
+      </div>
+    </div>
+  </body>
+</html>

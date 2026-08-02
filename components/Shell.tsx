@@ -15,7 +15,9 @@ export function Shell({ sections, children }: Props) {
   return (
     <div className={styles.shell}>
       <Rail sections={sections} />
-      <div className={styles.content}>{children}</div>
+      {/* Enters as one block just behind the rail; animating each section
+          instead would be the fade-in-on-scroll pattern spec §2 rules out. */}
+      <div className={`${styles.content} rise rise-1`}>{children}</div>
     </div>
   );
 }

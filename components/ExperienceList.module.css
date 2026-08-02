@@ -2,50 +2,25 @@
   list-style: none;
   padding: 0;
 
-  /* Cap-height centre of the .role line, measured from the top of a row.
-     Only the chevron uses it — the node tracks the box centre instead. */
+  /* Cap-height centre of the .role line, measured from the top of a row —
+     the chevron pins itself here rather than flowing with the text. */
   --title-y: calc(var(--space-4) + 0.905rem);
-  /* --rail-w / --track-w are global: the project list mirrors this column. */
 }
 
 .item {
-  /* How far the hover fill bleeds past the header before it's gone: the whole
-     rest of the row — column gap, spine and date — so it lands on the same
-     right edge as the hairlines rather than stopping somewhere inside them. */
-  --fill-fade: calc(var(--space-5) + var(--rail-w));
-
-  display: grid;
-  grid-template-columns: 1fr var(--rail-w);
-  /* Explicit rows — header, panel, hairline. Without them the rows are
-     implicit and .rail's `1 / -1` resolves to a single row, so the spine
-     stops at the header instead of following the panel open. */
-  grid-template-rows: auto auto auto;
-  column-gap: var(--space-5);
+  position: relative;
 }
 
-/* Hairlines run the full row — text column and gutter both — so the rows read
-   as full-width bands and the spine crosses them rather than hanging off the
-   end of a short line. The ::after follows .rail in paint order, so the
-   crossing draws as a grid intersection. */
+/* Hairlines bound every row, so the list reads as a stack of bands. */
 .item::after,
 .item:first-child::before {
   content: "";
-  grid-column: 1 / -1;
+  display: block;
   border-top: 0.5px solid var(--border);
-}
-.item::after {
-  grid-row: 3;
-}
-.item:first-child::before {
-  grid-row: 1;
-  align-self: start;
-  z-index: 1; /* shares the cell with .header — stay above its hover fill */
 }
 
 .header {
   position: relative;
-  grid-column: 1;
-  grid-row: 1;
   width: 100%;
   background: none;
   border: none;
@@ -64,25 +39,6 @@
 }
 .header:hover:not(:disabled) {
   background: var(--surface);
-}
-
-/* The header only owns the text column, but the hairlines now run the full row,
-   so a fill that stopped dead at the column edge read as a seam. This carries it
-   into the gutter and fades it out. Painted below .rail (static vs. positioned,
-   and earlier in DOM order), so the spine and node stay legible over it. */
-.header::after {
-  content: "";
-  position: absolute;
-  inset-block: 0;
-  left: 100%;
-  width: var(--fill-fade);
-  background: linear-gradient(to right, var(--surface), transparent);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--dur-fast) var(--ease);
-}
-.header:hover:not(:disabled)::after {
-  opacity: 1;
 }
 .header:disabled {
   cursor: default;
@@ -106,112 +62,24 @@
   color: var(--accent);
 }
 
-/* ---- Timeline gutter ---------------------------------------------------- */
-
-.rail {
-  grid-column: 2;
-  grid-row: 1 / -1; /* header + panel, so the track grows with the panel */
-  display: flex;
-  /* Node and date are centred on the row box. The row's height animates as
-     the panel opens, so the pair glides to the new centre for free. */
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.dateSlot {
-  flex: 1;
-  /* Lifts the date into the positioned layer, above .header::after's fade —
-     inline content of a static box would otherwise paint under it and get
-     washed out. .rail follows .header in the DOM, so no z-index is needed. */
-  position: relative;
-  /* Strut matching .role: centring this box lands the date's baseline within
-     0.5px of the title's on a collapsed row, without a magic offset. */
-  font-size: var(--fs-h3);
-  line-height: var(--lh-body);
-  transition: font-size var(--dur-slow) var(--ease);
-}
-/* Open, the date no longer sits beside the title, so drop to its own metrics
-   and let it centre on the node instead of on the title's baseline. */
-.item[data-open="true"] .dateSlot {
-  font-size: var(--fs-meta);
-}
-
+/* Pushed to the end of the flex line so the dates form their own ragged-right
+   column, without the fixed gutter that used to reserve it. */
 .period {
+  margin-left: auto;
   font-size: var(--fs-meta);
   color: var(--muted);
   white-space: nowrap;
   transition: color var(--dur-fast) var(--ease);
 }
-/* Lifts with the chevron on the same muted → text step, so the date reads as
-   part of the row you're pointing at. Scoped away from open rows so it can't
-   out-specify their accent below. */
-.item:not([data-open="true"]) .header:hover:not(:disabled) ~ .rail .period {
+.item:not([data-open="true"]) .header:hover:not(:disabled) .period {
   color: var(--text);
 }
 .item[data-open="true"] .period {
   color: var(--accent);
 }
 
-.track {
-  position: relative;
-  align-self: stretch;
-  flex: none;
-  width: var(--track-w);
-}
-
-/* One continuous, state-independent spine — it stays an unbroken anchor no
-   matter which rows are open. Open state is carried by the node/date/title. */
-.track::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  width: 1px;
-  bottom: 0;
-  top: 0;
-  /* Lighter than --border: a hairline that reads as continuous down the
-     whole column needs more contrast than one sitting under a row of text. */
-  background: var(--border);
-  background: color-mix(in srgb, var(--muted) 32%, transparent);
-  transform: translateX(-50%);
-}
-
-/* Cap the ends on the first and last nodes — no line hanging past either end.
-   50% tracks the node as it moves, so the caps follow an expanding end row. */
-.item:first-child .track::before {
-  top: 50%;
-}
-.item:last-child .track::before {
-  bottom: 50%;
-}
-
-.node {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 10px;
-  height: 10px;
-  margin: -5px 0 0 -5px; /* border-box 10px → half is 5 */
-  border: 1px solid var(--accent-dim);
-  border-radius: 50%;
-  background: var(--bg);
-  transition:
-    border-color var(--dur-fast) var(--ease),
-    background var(--dur-fast) var(--ease),
-    box-shadow var(--dur-slow) var(--ease);
-}
-/* Keyed off the button, not the row, so the dot only reacts where the row is
-   actually clickable — the rail itself isn't. */
-.header:hover:not(:disabled) ~ .rail .node {
-  border-color: var(--accent);
-}
-.item[data-open="true"] .node {
-  border-color: var(--accent);
-  background: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-dim);
-}
-
-/* Pinned rather than flowed, so every arrow lands on the same line as its
-   node and date no matter how the role/org text wraps. */
+/* Pinned rather than flowed, so every arrow lands on the title's line no
+   matter how the role/org/period text wraps. */
 .chevron {
   position: absolute;
   right: var(--space-2);
@@ -233,8 +101,6 @@
 }
 
 .panel {
-  grid-column: 1;
-  grid-row: 2;
   display: grid;
   grid-template-rows: 0fr;
   transition: grid-template-rows var(--dur-slow) var(--ease);
@@ -254,15 +120,11 @@
   line-height: var(--lh-body);
 }
 
-@media (max-width: 640px) {
-  .item {
-    column-gap: var(--space-3);
-    --fill-fade: calc(var(--space-3) + var(--rail-w));
-  }
-  .rail {
-    gap: var(--space-2);
-  }
+@media (max-width: 34rem) {
+  /* The period drops onto its own line rather than fighting the role for the
+     same flex row, so neither has to shrink. */
   .period {
-    font-size: var(--fs-label);
+    margin-left: 0;
+    flex-basis: 100%;
   }
 }
