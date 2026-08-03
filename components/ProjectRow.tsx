@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Project } from "@/lib/types";
 import { ExternalLink } from "./links";
 import { Tag } from "./Tag";
+import { projKey, useTimelineSignal } from "./TimelineContext";
 import styles from "./ProjectRow.module.css";
 
 type Props = {
@@ -22,15 +23,19 @@ export function ProjectRow({ project, index }: Props) {
   const panelId = useId();
   const num = String(index).padStart(2, "0");
   const { name, tagline, description, stack, year, award, links, slug } = project;
+  // Lights this project's dot in the timeline. A no-op on /projects, which has
+  // no timeline and so no provider.
+  const { handlers, peeked } = useTimelineSignal(projKey(slug), open);
 
   return (
-    <div className={styles.row} data-open={open}>
+    <div className={styles.row} data-open={open} data-peek={peeked}>
       <button
         type="button"
         className={styles.header}
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((o) => !o)}
+        {...handlers}
       >
         <span className={`${styles.index} mono`} aria-hidden="true">
           {num}

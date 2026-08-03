@@ -75,9 +75,9 @@ have no stylesheet at all — the first two are built from utilities, and `RailN
 
 ### …change my bio, headline, name, or social links?
 
-`content/profile.ts`. That one file feeds the sidebar, the About section, the footer and
-the JSON-LD search metadata. `status` is the availability line in the rail — drop the field
-and the line disappears; `location` shows in both the rail and the footer.
+`content/profile.ts`. That one file feeds the sidebar, the About section and the JSON-LD
+search metadata. `status` is the availability line in the rail — drop the field and the line
+disappears; `location` sits under it.
 
 ### …add or edit a job?
 
@@ -95,11 +95,9 @@ array order. `note` is optional; a row without one simply isn't expandable.
 }
 ```
 
-`start`/`end` are separate from `period` on purpose: the chart needs real months to place
+`start`/`end` are separate from `period` on purpose: the timeline needs real months to place
 and size the bar, while `period` stays free to read however you want. Get them wrong and
-the bar is wrong — the chart is only as honest as those two fields. The first entry's bar
-is drawn in full accent as the most recent, which is another reason to keep the array
-newest-first.
+the bar is wrong — the timeline is only as honest as those two fields.
 
 ### …add a project?
 
@@ -123,6 +121,27 @@ sitemap entry.
 
 `lib/types.ts` defines the shape. If you get a red squiggle, that file is telling you
 which field is wrong or missing.
+
+### …work on the timeline above the job list?
+
+`components/Timeline.tsx`. It draws both lists on one month axis: a bar per role, sized by
+`start`/`end`, and below them a dot per project, placed by `year`. It shows **every**
+project, not just the featured ones, and each dot links to that project's detail page.
+
+Projects only have a year, so projects sharing one are spread evenly across it (the two 2026
+entries land in April and August) purely so they don't stack — that horizontal offset is
+spacing, not data. A dot shows its name only while it's lit, since five names along one lane
+would be unreadable.
+
+The lighting is `components/TimelineContext.tsx`. Rows still own their own open state and
+just announce it; the timeline is a mirror with no state of its own:
+
+- hover or focus a row **or** its mark → both light up (`peek`)
+- expand a row → its mark stays lit with a halo until you collapse it (`lit`)
+
+`TimelineProvider` wraps the experience and projects sections in `app/page.tsx` and renders
+no DOM. Without it — `/projects`, which has rows but no timeline — every signal is a no-op,
+so you can drop `ProjectRow` anywhere without wiring anything up.
 
 ### …choose what shows on the home page vs. the full list?
 
@@ -213,20 +232,20 @@ export default function Writing() {
 | ----------------- | ---------------------------------------------------------------------------------- |
 | `Shell`           | two-column page frame: sticky rail + content. Collapses to one column under 900px. |
 | `Rail`            | the left sidebar — identity, nav, availability, contact. Stacked header on mobile. |
-| `Footer`          | the closing rule: `© year · name · location · src ↗`. Spans both columns.        |
 | `RailNav`         | the scroll-spy nav that highlights the section you're looking at (home only).      |
 | `Section`         | `001 — label` eyebrow + title + content. Owns the vertical rhythm.                 |
 | `PageHeader`      | eyebrow + big title. Used by `/projects` and the 404 page.                         |
 | `ProjectRow`      | one expandable project row. Shared by the home page and `/projects`.               |
-| `ExperienceChart` | duration chart above the job list — one bar per role, sized by `start`/`end`.      |
+| `Timeline`        | the chart above the job list — a bar per role, a dot per project, one axis.        |
 | `ExperienceList`  | the list of jobs; each row expands to show its note.                               |
 | `links`           | two exports: `InlineLink` for prose, `ExternalLink` for anything off-site.         |
 | `Tag`             | the outlined mono pill used for stack items.                                       |
 | `NullscapeFilter` | the decorative grain/scanline overlay. Mounted once in `app/layout.tsx`.           |
 
 Most components are server components. `"use client"` appears only where there's real
-browser state — `ProjectRow`, `ExperienceList` (expand/collapse) and `RailNav` (scroll
-position). Add it only when you need `useState` or an event handler.
+browser state — `ProjectRow`, `ExperienceList` (expand/collapse), `RailNav` (scroll
+position), and `Timeline` + `TimelineContext` (the shared highlight). Add it only when you
+need `useState` or an event handler.
 
 **Every link goes through `components/links.tsx`.** `ExternalLink` is the only place
 `target="_blank" rel="noopener noreferrer"` is written, so a new off-site link can't
@@ -237,14 +256,10 @@ utilities you want.
 
 ## Still to fill in
 
-Two placeholders remain — `grep -rn TODO content lib` to see them live. Both are repo
-URLs in `content/projects.ts`:
-
-- **Cognitive RAG** — QMIND client work; confirm it's shareable before linking it.
-- **Churn Classification Engine** — no public link yet.
-
-A project with an empty `links: {}` just renders without link buttons, so neither one
-breaks anything as-is.
+Every project now has links (`grep -rn TODO content lib` comes back empty). One note:
+**Cognitive RAG** points at a gitfront mirror rather than GitHub, on purpose — that repo
+stays private. A project with an empty `links: {}` just renders without link buttons, so
+adding one without a URL breaks nothing.
 
 The headline in `content/profile.ts` is still the `SITE STILL A WIP.` placeholder. It shows
 under your name on every page. The OG card deliberately does not use it — see
@@ -255,6 +270,10 @@ under your name on every page. The OG card deliberately does not use it — see
 **[`docs/spec.md`](./docs/spec.md)** — the design spec: layout, type scale, motion,
 component contracts. The reference for _why_ something looks the way it does. It describes
 intent only; it deliberately does **not** restate content or code, so it can't drift.
+
+There used to be a second copy at the repo root. The two had diverged in both directions —
+each held edits the other was missing — so they were merged back into this one. **There is
+one spec, and it lives in `docs/`.**
 
 The old `docs/design-handoff/` bundle (design brief + HTML prototype + its runtime, 114 KB)
 was deleted — it had been fully implemented, its values duplicated §4–7 of the spec, and

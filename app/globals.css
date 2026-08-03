@@ -1,5 +1,5 @@
 /* ============================================================
-   Design tokens — see spec.md §4–6. Edit values here only.
+   Design tokens — see docs/spec.md §4–6. Edit values here only.
    ============================================================ */
 :root {
   /* Palette — "Graphite Cyan" (dark) */
@@ -238,8 +238,7 @@ svg {
 }
 
 /* Content sits between the Nullscape filter's two layer stacks (z 0 and z 30). */
-main,
-footer {
+main {
   position: relative;
   z-index: 1;
 }

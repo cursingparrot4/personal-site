@@ -1,0 +1,180 @@
+.chart {
+  /* Label column + plot. The label is the org rather than the role: it's the
+     shorter string, and it's what the list below leads its meta with. */
+  --label-w: 8rem;
+  --gutter: var(--space-4);
+  --bar-h: 6px;
+  --dot: 10px;
+
+  margin-bottom: var(--space-7);
+}
+
+/* ---- axis ----
+   Offset by hand rather than sharing a grid with the lanes: subgrid would tie
+   every lane's placement to the container, and plain auto-placement would pull
+   the first label up beside the axis. Each lane owns its own two columns. */
+.axis {
+  position: relative;
+  height: 1.25rem;
+  margin-left: calc(var(--label-w) + var(--gutter));
+  border-bottom: 0.5px solid var(--border);
+  font-size: var(--fs-label);
+  color: var(--muted);
+}
+
+/* Each year label sits on its gridline, with a short tick dropping onto the
+   axis rule so the mapping from label to position is explicit. */
+.tick {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  padding-inline: 0.35em;
+  line-height: 1;
+}
+.tick::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 1px;
+  height: 4px;
+  background: var(--border);
+}
+
+/* ---- lanes ---- */
+.lane {
+  display: grid;
+  grid-template-columns: var(--label-w) minmax(0, 1fr);
+  column-gap: var(--gutter);
+  align-items: center;
+  min-height: 1.75rem;
+}
+
+.label {
+  font-size: var(--fs-label);
+  color: var(--muted);
+  line-height: 1.3;
+  text-align: right;
+  /* Long orgs wrap rather than clip — the lane's min-height leaves a second
+     line room without pushing the mark off its own centre. */
+  overflow-wrap: anywhere;
+}
+
+.track {
+  position: relative;
+  height: var(--bar-h);
+}
+
+/* ---- marks ----
+   Every mark rests at --accent-dim and lights to full accent. Two lit states,
+   because they mean different things: `peek` (pointer or focus, here or on the
+   matching row) is a momentary "this one"; `lit` (the row is expanded) is a
+   state you left behind and can scroll back to, so it also takes a halo. */
+.bar,
+.dot::after {
+  background: var(--accent-dim);
+  transition:
+    background var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+.bar:hover,
+.bar[data-peek="true"],
+.dot:hover::after,
+.dot:focus-visible::after,
+.dot[data-peek="true"]::after {
+  background: var(--accent);
+}
+.bar[data-lit="true"],
+.dot[data-lit="true"]::after {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.bar {
+  position: absolute;
+  top: 0;
+  height: var(--bar-h);
+  border-radius: 1px;
+  /* A one-month role would otherwise round to nothing. */
+  min-width: 3px;
+}
+
+/* ---- projects lane ----
+   Dots rather than bars: a project has a year, not a span. The padding is the
+   name label's room — it's only painted on hover/open, so without it the lane
+   would jump. */
+.projectLane {
+  margin-top: var(--space-2);
+  padding-top: var(--space-5);
+}
+
+.dot {
+  position: absolute;
+  top: 50%;
+  width: var(--dot);
+  height: var(--dot);
+  /* `left` is the mark's centre, so pull back by half in both axes. */
+  margin: calc(var(--dot) / -2) 0 0 calc(var(--dot) / -2);
+  /* So the focus ring is a circle around a circle. */
+  border-radius: 50%;
+}
+/* The circle is a pseudo-element so it can grow on its own — scaling the link
+   would drag the name label up with it. */
+.dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+/* A 10px target is a 10px target; this widens it to ~26px without moving the
+   dot or letting the box swallow its neighbours. */
+.dot::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+}
+.dot:hover::after,
+.dot:focus-visible::after,
+.dot[data-peek="true"]::after,
+.dot[data-lit="true"]::after {
+  transform: scale(1.3);
+}
+
+.dotLabel {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--fs-label);
+  color: var(--text);
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.dot:hover .dotLabel,
+.dot:focus-visible .dotLabel,
+.dot[data-peek="true"] .dotLabel,
+.dot[data-lit="true"] .dotLabel {
+  opacity: 1;
+}
+/* The outermost dots hang their label inward — centred, a long name would run
+   off the plot. */
+.dot[data-align="start"] .dotLabel {
+  left: 0;
+  transform: none;
+}
+.dot[data-align="end"] .dotLabel {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+@media (max-width: 34rem) {
+  .chart {
+    --label-w: 5.5rem;
+    --gutter: var(--space-3);
+  }
+}

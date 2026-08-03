@@ -30,7 +30,10 @@
   padding: var(--space-5) calc(var(--space-2) + 1.25rem) var(--space-5) var(--space-2);
   transition: background var(--dur-fast) var(--ease);
 }
-.header:hover {
+/* `data-peek` is the same highlight arriving from the other direction — the
+   pointer is on this project's dot in the timeline rather than on the row. */
+.header:hover,
+.row[data-peek="true"] .header {
   background: var(--surface);
 }
 .header:focus-visible {

@@ -2,15 +2,19 @@
 
 import { useId, useState } from "react";
 import type { Experience } from "@/lib/types";
+import { expKey, useTimelineSignal } from "./TimelineContext";
 import styles from "./ExperienceList.module.css";
 
 function ExperienceItem({ exp }: { exp: Experience }) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const hasNote = Boolean(exp.note);
+  // Lights this role's bar in the timeline above, and picks the highlight back
+  // up when the bar itself is hovered.
+  const { handlers, peeked } = useTimelineSignal(expKey(exp.org, exp.role), open);
 
   return (
-    <li className={styles.item} data-open={open}>
+    <li className={styles.item} data-open={open} data-peek={peeked}>
       <button
         type="button"
         className={styles.header}
@@ -18,6 +22,7 @@ function ExperienceItem({ exp }: { exp: Experience }) {
         aria-controls={hasNote ? panelId : undefined}
         onClick={() => hasNote && setOpen((o) => !o)}
         disabled={!hasNote}
+        {...handlers}
       >
         <span className={styles.role}>{exp.role}</span>
         <span className={`${styles.org} mono`}>{exp.org}</span>

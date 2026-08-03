@@ -29,7 +29,7 @@ export type Profile = {
   promptMeta: string;
   focus: string[]; // ["Machine learning", ...]
   bio: string;
-  /** city shown in the rail status block and the footer */
+  /** city shown in the rail's availability block */
   location: string;
   /** availability line in the rail; omit to hide the status block entirely */
   status?: string;

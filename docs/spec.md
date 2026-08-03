@@ -105,8 +105,8 @@ under `prefers-reduced-motion`; the layers stay.
 Two families, self-hosted via `next/font`:
 
 - **Space Grotesk** — name, headings, section titles, body prose. Weights 400/500/700.
-- **JetBrains Mono** — metadata, nav, labels, index numbers (`01`), tags, years.
-  Weight 400/500.
+- **JetBrains Mono** — metadata, nav, labels, index numbers (`01`), tags, years, timeline
+  labels. Weight 400/500.
 
 **Type scale** (expose as CSS vars; base 16px):
 
@@ -137,10 +137,18 @@ Two families, self-hosted via `next/font`:
     **900px**, where the rail becomes a stacked header.
 - The rail (`components/Rail.tsx`) holds a mono prompt row (`~/aryan-ahlawat` … `cs · systems`,
   hairline underneath, toggled by `showPrompt`), then name, headline, focus areas, navigation,
-  and a pinned bottom block (`margin-top:auto`) holding resume ↗, github ↗, email ↗ and
-  linkedin ↗. It replaces a top nav bar. The nav itself holds only the scroll-spy sections
-  on the home page, or a single "Home" link elsewhere — there is no rail link to /projects,
-  since the home page's "All projects →" already covers it.
+  an availability block (`profile.status` + `profile.location`) and a contact block holding
+  resume ↗, github ↗, email ↗ and linkedin ↗. It replaces a top nav bar. The nav itself holds
+  only the scroll-spy sections on the home page, or a single "Home" link elsewhere — there is
+  no rail link to /projects, since the home page's "All projects →" already covers it.
+- **The rail's lower half is one unit.** `margin-top: auto` goes on the _availability_ block,
+  with contact directly beneath it under a hairline. Pinning only the links left a few
+  hundred px of dead space between the nav and the bottom of the rail on tall viewports.
+- **No footer.** The page ends with the contact section. A closing rule carrying the year,
+  name, location and a link to the repo was built and then removed: every value in it
+  already appears in the rail, which is on screen the whole time, so it amounted to a second
+  copy of the identity block wearing a horizontal rule. Nothing needs a site-wide bottom
+  edge. `lib/site.ts` lost its `repo` field with it.
 - Content column caps prose at ~62ch; `--container: 46rem` remains available for narrow
   article layouts (project detail).
 - **Spacing scale** (4px base), as CSS vars `--space-1…9`:
@@ -166,20 +174,90 @@ Two families, self-hosted via `next/font`:
   `ResizeObserver` for accordion reflow) rather than raw `IntersectionObserver` callbacks,
   so it stays correct when sections straddle the line, when a section is shorter than the
   band, and when the page bottoms out before the last section reaches the line.
+- **Entrance:** one staggered reveal on load — opacity 0 → 1 with an 8px rise, 400ms, the
+  rail's four blocks at 0/60/120/160ms and the content column at 60ms. Never scroll-driven
+  (§2 rules that out) and never re-run. Lives in `globals.css` as the `rise` / `rise-1..3`
+  utilities: CSS Modules hashes both `@keyframes` names and the `animation-name` pointing at
+  them, so a module-local declaration silently animates nothing. The hidden state exists
+  only inside the keyframe (`animation-fill-mode: backwards`, no resting `opacity: 0`), so
+  content that never animates is visible rather than invisible.
 - **Hover:** 150ms ease. Row hover raises a `--surface` background and turns the index +
-  chevron toward `--accent`. That's the whole hover vocabulary.
+  chevron toward `--accent`. Link underlines grow from the left (an animated
+  `background-size`, not a border colour swap). That's the whole hover vocabulary.
 - **Focus:** `outline: 2px solid var(--accent)` via `:focus-visible` on every control.
 - **`prefers-reduced-motion: reduce`** collapses all transition durations to ~0 (global
   rule), so accordions snap instead of sliding.
 
 ---
 
+## 7a. The timeline
+
+The experience section leads with a **timeline** (`components/Timeline.tsx`), then the
+expandable rows.
+
+Each role carries `start` / `end` as `"YYYY-MM"` alongside its display `period`. The
+timeline maps them onto one axis — a label column of orgs, a plot with a January gridline
+per year, and one bar per role placed by start and sized by duration. Below the roles, a
+**projects lane** puts a dot per project on the same axis.
+
+The point is that it encodes something the lists cannot: how long each role actually ran,
+where they overlap, where the gaps are, and what got built in between. The earlier version —
+a static spine with an evenly spaced node per row — was decorative by construction, giving a
+four-month co-op and a nine-month term identical weight.
+
+It also paid for itself structurally. That spine lived in a fixed right gutter whose width
+was set by the longest period string (`"Sep 2025–Apr 2026"`), and the project rows were
+pinned to the same width so the two lists' dates aligned. On a 390px screen that gutter left
+~190px of text column: five-line taglines, two-line roles. With the temporal reading moved
+into the timeline, both lists just push their date to the end of the row, the shared
+`--rail-w` / `--track-w` tokens are gone, and the mobile special-cases went with them.
+
+**Projects have a year, not a month.** Projects sharing a year are spread evenly across it
+(two 2026 projects land in April and August) purely so they don't stack. That offset is
+spacing, not data — which is why each dot names its project and its year to assistive tech
+instead of leaving position to do the talking, and why the lane shows every project rather
+than only the featured ones.
+
+**Nothing is labelled until it's the one you mean.** Five project names along one lane would
+be unreadable, so a dot's name is painted only while that dot is lit, positioned above it and
+hanging inward at the ends of the plot so a long name can't run off the edge. The role bars
+need no such treatment — their org already sits in the label column.
+
+**Lighting.** Marks rest at `--accent-dim`. Two lit states, distinct because they mean
+different things:
+
+- `peek` — pointer or keyboard focus, on the mark _or_ on its row: full `--accent`, and the
+  matching row raises its `--surface` hover background. A momentary "this one".
+- `lit` — the row is expanded: full `--accent` plus an `--accent-dim` halo, and dots grow.
+  A state you left behind and can scroll back to.
+
+The wiring is `components/TimelineContext.tsx`: rows keep owning their own open state and
+merely announce it, and the timeline renders as a pure mirror with no state of its own.
+Without a provider — `/projects`, which has rows but no timeline — every signal is a no-op.
+Nothing lights up by default; there is no "most recent" bar that stays on.
+
+**Accessibility.** The role lanes are one `role="img"` with a summary label: every bar
+restates a period the list spells out in text directly below, so exposing the lanes
+individually would only duplicate it. The project dots sit outside that group, because they
+are real links to `/projects/[slug]` and each carries its own accessible name.
+
+---
+
 ## 8. Responsive
 
-- Mobile-first. One breakpoint that matters: **`640px`**.
-- `< 640px`: `ProjectRow` stacks (index inline before name; year drops to the meta line);
-  nav is a single inline row of links (no hamburger — there are few enough).
-- Tap targets ≥ 44px. Hero display size handled by the `clamp()` above.
+- Mobile-first. Two breakpoints: **`900px`** (rail → stacked header) and **`640px`**
+  (tighter gutters), plus a narrow **`34rem`** step described below.
+- `< 640px`: nav is a single inline row of links (no hamburger — there are ≤4 links).
+- Neither list reserves a fixed date gutter any more (§7a). Both push their date to the end
+  of the row with `margin-left: auto`, so the two right-align on the same edge at every
+  width and the layout has nothing to special-case. Below `34rem` the experience period
+  drops onto its own line rather than competing with the role for one flex row, and the
+  timeline's label column narrows to `5.5rem`.
+- Tap targets ≥ 44px. The timeline's dots are the one exception: a transparent
+  pseudo-element widens each from 10px to ~26px, but going further would make neighbouring
+  dots overlap on a narrow plot. They're a shortcut, not a route — every project is still
+  reachable from the rows below and from `/projects`. Hero display size handled by the
+  `clamp()` above.
 
 ---
 
@@ -202,7 +280,7 @@ Two families, self-hosted via `next/font`:
 /                 home — about → experience → selected work → contact
 /projects         full data-driven project index
 /projects/[slug]  optional per-project writeup (screenshots, decisions, metrics)
-public/resume.pdf linked from the rail's pinned bottom block
+public/resume.pdf linked from the rail's contact block
 ```
 
 ### `/` home — wireframe (split rail + scrolling content)
@@ -215,11 +293,13 @@ public/resume.pdf linked from the rail's pinned bottom block
 │ Aryan Ahlawat       │                                            │
 │ i build and ship    │  002 — experience                          │
 │ machine-learning …  │  Experience                                │
+│                     │  Co-operators │           ▬▬▬              │  ← timeline
+│ — machine learning  │  QMIND        │      ▬▬▬▬▬▬                │
+│ — retrieval / RAG   │  Acetech      │   ▬▬▬                      │
+│ — computer vision   │  Projects     │    ●    ●  ●     ●   ●     │
+│ — low-level systems │  ────────────────────────────────────────  │
+│                     │  Software Dev Co-op  Co-operators  May–Aug⌄│  ← accordion
 │                     │  ────────────────────────────────────────  │
-│ — machine learning  │  Software Developer Co-op  Co-operators  ⌄ │  ← accordion
-│ — retrieval / RAG   │  ────────────────────────────────────────  │
-│ — computer vision   │  Design Team Engineer      QMIND         ⌄ │
-│ — low-level systems │                                            │
 │                     │  003 — projects                            │
 │ ──  about           │  Selected work                             │
 │ ▬▬▬ experience      │  ────────────────────────────────────────  │  ← scroll-spy
@@ -228,16 +308,25 @@ public/resume.pdf linked from the rail's pinned bottom block
 │                     │      YOLOv8 · PyTorch · Stable Diffusion   │
 │                     │  All projects →                            │
 │                     │                                            │
-│ resume ↗  (pinned   │  004 — contact                             │
-│ github ↗    to      │  Contact                                   │
-│ email ↗   bottom)   │  [email] · [github] · [linkedin]           │
-│ linkedin ↗          │                                            │
+│ ● open to winter    │  004 — contact                             │
+│   2027 internships  │  Contact                                   │
+│   Toronto, ON       │  one line · mailto on "reach out"          │
+│ ─────────────────── │                                            │
+│ resume ↗  (this     │                                            │
+│ github ↗   half     │                                            │
+│ email ↗    pinned   │                                            │
+│ linkedin ↗ to base) │                                            │
 └─────────────────────┴────────────────────────────────────────────┘
    sticky (100dvh)        scrolls · no footer; the page ends with the content
 ```
 
-Below 900px the rail stacks on top as a header (name, tagline, focus, horizontal nav +
-contact); the scroll-spy list is hidden.
+Below 900px the rail stacks on top as a header (name, tagline, focus, horizontal nav,
+availability + contact); the scroll-spy list is hidden.
+
+**Contact carries no link list.** Resume/GitHub/email/LinkedIn are in the rail on every
+page; repeating them below only splits the target. The section is one sentence with the
+mailto on "reach out" — enough that the page ends on something clickable without duplicating
+the rail.
 
 ### `/projects` — full index
 
@@ -283,15 +372,31 @@ export type Project = {
   featured?: boolean; // shown on home
 };
 
+export type Experience = {
+  role: string;
+  org: string;
+  period: string; // display string, e.g. "May–Aug 2026" — word it however you like
+  start: string; // "YYYY-MM", inclusive. Places and sizes the timeline bar (§7a)
+  end: string; // "YYYY-MM", inclusive
+  note?: string; // omit and the row simply isn't expandable
+};
+
 export type Profile = {
   name: string;
   headline: string; // one line, what you do
+  promptMeta: string; // right side of the rail's prompt row, e.g. "cs · systems"
   focus: string[]; // ["machine learning", ...]
   bio: string;
+  location: string; // rail availability block + footer
+  status?: string; // availability line; omit to hide the block entirely
   links: { github: string; email: string; linkedin?: string };
-  experience: { role: string; org: string; period: string; note?: string }[];
+  experience: Experience[];
 };
 ```
+
+`start`/`end` are separate from `period` deliberately: the timeline needs real months, while
+`period` stays free to read however it wants. The array is **newest-first** and every list
+renders in array order.
 
 ---
 
@@ -300,25 +405,32 @@ export type Profile = {
 ```
 components/
   Shell.tsx        two-column layout: <Rail> + scrolling content. Optional `sections` prop.
-  Rail.tsx         sticky identity rail: name (→ /), headline, focus list, nav, contact.
+  Rail.tsx         sticky identity rail: name (→ /), headline, focus list, nav,
+                   availability, contact.
   RailNav.tsx      (client) in-page scroll-spy nav for the home sections.
   PageHeader.tsx   eyebrow + big title, shared by /projects and 404.
   Section.tsx      props: { id; index; label; title; children }. Mono "NNN — label" eyebrow
                    + Space Grotesk title + rhythm; id doubles as the scroll-spy anchor.
   ProjectRow.tsx   (client) expandable row. Collapsed: index | name/tagline/stack | year |
                    chevron. Expanded: description + repo/demo/writeup/details links.
+                   Reports open/hover to the timeline (§7a).
   ExperienceList.tsx (client) <ol> of expandable role/org rows; expand reveals the note.
-                   Right gutter is a timeline: one static spine capped on the first and
-                   last node, each row's node + date centred on the row box so they glide
-                   down as it expands. Open state = accent node/date/title, never the line.
+                   Period is inline at the end of the header row, not in a gutter.
+                   Open state = accent role/period/chevron. Also reports to the timeline.
+  Timeline.tsx     (client) role bars + project dots on one month axis (§7a). Pure mirror
+                   of the two lists — props in, no state of its own.
+  TimelineContext.tsx  (client) the open/peek channel between the rows and the timeline,
+                   plus the provider that wraps the experience + projects sections. Renders
+                   no DOM; absent provider = every signal is a no-op.
   links.tsx        InlineLink (prose links) + ExternalLink (new tab, safe rel, trailing ↗).
                    Colour/underline come from the link-* utilities, not from this file.
   Tag.tsx          mono pill, --accent-dim border, no fill. Used for stack items.
   NullscapeFilter.tsx  decorative overlay, mounted once in the root layout.
 ```
 
-Server components by default; `RailNav`, `ProjectRow`, and `ExperienceList` are client
-components (local expand state / IntersectionObserver).
+Server components by default; `RailNav`, `ProjectRow`, `ExperienceList`, `Timeline` and
+`TimelineProvider` are client components (local expand state, scroll position, shared
+highlight state).
 
 ---
 
@@ -326,9 +438,15 @@ components (local expand state / IntersectionObserver).
 
 - Next Metadata API in `app/layout.tsx`: title template `"%s — Aryan Ahlawat"`, description,
   canonical, Open Graph + Twitter card.
-- **Static OG image** (`app/opengraph-image.tsx` via `next/og`) — name + headline on `--bg`,
-  Space Grotesk. No stock art.
-- `app/sitemap.ts`, `app/robots.ts`, favicon/apple-icon.
+- **Static OG image** — `app/opengraph-image.png`, committed, with its alt text in
+  `app/opengraph-image.alt.txt`. Name + a one-line summary on `--bg`, Space Grotesk, no
+  stock art. Rendered from `docs/opengraph-image.source.html` by screenshotting it at
+  1200×630 rather than generated by `next/og`: `@vercel/og` fails to prerender on Windows
+  (`fileURLToPath` on a bundled font path), and shooting real HTML gets the actual Space
+  Grotesk / JetBrains Mono instead of the fallback face. Regeneration steps are in the
+  comment at the top of that file. It deliberately does **not** use `profile.headline` — a
+  placeholder there would become the preview text on every share.
+- `app/sitemap.ts`, `app/robots.ts`, `app/icon.svg`.
 - **JSON-LD `Person`** in the home page (name, url, sameAs: github/linkedin, alumniOf Queen's).
 - `lang="en"`, sensible `<title>` per route.
 
@@ -342,6 +460,8 @@ app/
   page.tsx              home
   globals.css           tokens, base element styles, shared utilities
   not-found.tsx         404
+  icon.svg              favicon
+  opengraph-image.png   + .alt.txt — the social card (§14)
   sitemap.ts robots.ts
   projects/
     page.tsx            full index
@@ -356,12 +476,16 @@ lib/
   site.ts               name, domain, description
 public/
   resume.pdf            served at /resume.pdf; the rail links to it
+docs/
+  spec.md               this file — the only spec. There is no second copy.
+  opengraph-image.source.html  the OG card's source (§14)
 ```
 
 **Styling rule.** A recipe used by three or more components is a utility class in
 `globals.css` (`mono`, `arrow`, `link-muted`, `link-text`, `link-underline`, `eyebrow`,
-`page-title`, `sep`, `tag`). Anything used once or twice stays in the component's own
-module. This is why there are fewer `.module.css` files than components.
+`page-title`, `sep`, `tag`, `rise` + `rise-1..3`). Anything used once or twice stays in the
+component's own module. This is why there are fewer `.module.css` files than components.
+`rise` is the one utility that _has_ to be global — see §7.
 
 ---
 
@@ -369,10 +493,10 @@ module. This is why there are fewer `.module.css` files than components.
 
 1. Scaffold Next.js + TS; wire `globals.css` tokens (§4–6) and `next/font` (§5).
 2. Primitives: `Section`, `Rail` — lock the rhythm first.
-3. Home: `Hero` → featured `ProjectRow` list from `content/projects.ts` → about/experience
-   → contact.
+3. Home: about → experience (`Timeline` + `ExperienceList`) → featured `ProjectRow` list
+   from `content/projects.ts` → contact.
 4. `/projects` full index reusing `ProjectRow`.
-5. Optional `/projects/[slug]` writeups.
+5. `/projects/[slug]` writeups.
 6. `resume.pdf`, OG image, sitemap/robots, JSON-LD, Vercel deploy.
 
 ---
@@ -384,4 +508,5 @@ module. This is why there are fewer `.module.css` files than components.
 - Full keyboard traversal of `/` and `/projects`; visible focus rings; skip-link works.
 - `prefers-reduced-motion` disables the entrance (verify in devtools).
 - 375px and 1440px both correct; no horizontal scroll.
-- Every `TODO` (github, linkedin, repo links, which email) resolved before launch.
+- Every `TODO` resolved before launch — `grep -rn TODO content lib`. Repo links are done;
+  `profile.headline` is still the placeholder, and it renders under the name on every page.

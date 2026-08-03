@@ -8,8 +8,6 @@ export const site = {
   url: "https://aryanahlawat.dev",
   description:
     "Aryan Ahlawat — CS student at Queen's building and shipping machine-learning systems.",
-  // Source of this site — the footer's "src ↗" link.
-  repo: "https://github.com/cursingparrot4/arna-site",
 } as const;
 
 export type Site = typeof site;

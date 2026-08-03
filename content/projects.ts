@@ -26,7 +26,8 @@ export const projects: Project[] = [
       "LangChain agents over a hybrid retrieval pipeline (BM25 sparse + bi-encoder dense), fused with reciprocal rank fusion and a Hugging Face cross-encoder re-ranker for precision on multi-hop QA. (QMIND design-team work.)",
     stack: ["LangChain", "BM25", "cross-encoder", "Python"],
     year: 2026,
-    links: {}, // TODO: repo — confirm shareable (QMIND client work)
+    // gitfront serves a read-only mirror so the GitHub repo can stay private.
+    links: { repo: "https://gitfront.io/r/cursingparrot4/b8mnnxDNjLC2/Cognitive-rag/" },
     featured: true,
   },
   {
@@ -49,7 +50,7 @@ export const projects: Project[] = [
       "End-to-end classification pipeline (logistic regression + random-forest ensembles) segmenting 7,000+ users by churn probability.",
     stack: ["Python", "scikit-learn", "seaborn"],
     year: 2025,
-    links: {}, // TODO: repo URL
+    links: { repo: "https://github.com/cursingparrot4/Churn-engine/" },
     // not featured — shows on /projects only
   },
   {
