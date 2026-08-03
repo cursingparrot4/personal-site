@@ -19,7 +19,8 @@ export type Experience = {
    *  `period` stays separate so its wording is free to differ from the data. */
   start: string;
   end: string;
-  note?: string;
+  /** short, scannable points — each one a distinct piece of the role */
+  note?: string[];
 };
 
 export type Profile = {

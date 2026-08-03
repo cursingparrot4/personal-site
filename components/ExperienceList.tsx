@@ -8,7 +8,7 @@ import styles from "./ExperienceList.module.css";
 function ExperienceItem({ exp }: { exp: Experience }) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
-  const hasNote = Boolean(exp.note);
+  const hasNote = Boolean(exp.note?.length);
   // Lights this role's bar in the timeline above, and picks the highlight back
   // up when the bar itself is hovered.
   const { handlers, peeked } = useTimelineSignal(expKey(exp.org, exp.role), open);
@@ -40,7 +40,11 @@ function ExperienceItem({ exp }: { exp: Experience }) {
       {hasNote ? (
         <div id={panelId} className={styles.panel} role="region" inert={!open}>
           <div className={styles.panelInner}>
-            <p className={styles.note}>{exp.note}</p>
+            <ul className={styles.note}>
+              {exp.note!.map((point, i) => (
+                <li key={i}>{point}</li>
+              ))}
+            </ul>
           </div>
         </div>
       ) : null}
