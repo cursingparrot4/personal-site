@@ -182,6 +182,14 @@
   animation: statusPulse 2.8s var(--ease) infinite;
 }
 
+/* Unreachable (offline or busy): the same mark, drained of accent and of motion.
+   `--border` would be truer to "inert glyph" but is near-invisible at 6px on
+   `--bg`, so the grey is `--muted` — the point of a state is that you can see it. */
+.dotOffline {
+  background: var(--muted);
+  animation: none;
+}
+
 /* A ring that expands and fades — the accent never fills area, per spec §4. */
 @keyframes statusPulse {
   0%,
@@ -203,17 +211,23 @@
    a competing state, and this line's liveness is already the thing that makes it
    appear at all. Kept off the accent per spec §4 — the dot above owns that. */
 .presence {
-  padding-left: calc(6px + var(--space-3));
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
   max-width: 100%;
+  min-width: 0;
   /* Stated rather than inherited from .status — the muted verb against the
      `--text` subject is the whole point of splitting the line, and it shouldn't
      depend on which block this ends up in. */
   color: var(--muted);
+}
+
+.presenceText {
   /* A Spotify track with three credited artists otherwise wraps to three lines
      and shoves the contact block off the bottom of the rail. `min-width` is what
-     actually lets the ellipsis engage: below 900px this is a flex item, and a
-     flex item won't shrink under its content width without it — a long title
-     pushed the page 5px wider than the viewport at 375px instead of truncating. */
+     actually lets the ellipsis engage: a flex item won't shrink under its content
+     width without it — a long title pushed the page 5px wider than the viewport
+     at 375px instead of truncating. */
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -279,12 +293,11 @@
     align-items: baseline;
     gap: var(--space-2) var(--space-4);
   }
-  .location,
-  .presence {
+  .location {
     padding-left: 0;
   }
-  .location::before,
-  .presence::before {
+  /* Only the location earns a separator — the presence line carries its own dot. */
+  .location::before {
     content: "· ";
     color: var(--border);
   }
@@ -293,7 +306,7 @@
      header has no such ceiling. It also has to go: the rail is a grid item at
      `min-width: auto`, so one unbreakable line sets the *rail's* min-content width
      and the whole page scrolls sideways — 633px of it, at a 375px viewport. */
-  .presence {
+  .presenceText {
     white-space: normal;
     overflow: visible;
     text-overflow: clip;

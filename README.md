@@ -218,10 +218,14 @@ Three steps:
    your name → **Copy User ID**. It's an 18–19 digit number.
 3. Paste it into `discordId` in `content/profile.ts`.
 
-The line then appears under your location in the rail: `playing Geometry Dash`, `listening
-to <song> — <artist>`, or a plain `online` / `away` / `busy`. When you're offline it renders
-nothing at all, and so does an empty `discordId`, a Lanyard outage, or a blocked WebSocket.
-Delete the field to remove the feature.
+The line then leads the availability block, above "Open to winter 2027 internships":
+`Playing Geometry Dash`, `Listening to <song> — <artist>`, or a plain `Online` / `Away` /
+`Busy` / `Offline`. It carries the same dot as the availability line below it — accent and
+pulsing when you're reachable, grey and still when you're `busy` (do-not-disturb) or offline.
+
+Nothing renders at all when the state is _unknown_ rather than offline: an empty `discordId`,
+a Lanyard outage, or a blocked WebSocket. That's deliberate — a grey "offline" would be
+claiming something the site was never told. Delete the field to remove the feature.
 
 Two things to know before you turn it on: the id is in the public JS bundle (it's a public
 identifier — it isn't a token, and it can't be used to act on your account), and anyone on
@@ -274,7 +278,7 @@ export default function Writing() {
 | `Shell`           | two-column page frame: sticky rail + content. Collapses to one column under 900px. |
 | `Rail`            | the left sidebar — identity, nav, availability, contact. Stacked header on mobile. |
 | `RailNav`         | the rail's nav tree; on the home page it scroll-spies the section you're reading.  |
-| `Presence`        | the live "playing …" line under the rail's location. Renders nothing when quiet.   |
+| `Presence`        | the live "playing …" line atop the rail's availability block, with its own dot.    |
 | `Section`         | `001 — label` eyebrow + title + content. Owns the vertical rhythm.                 |
 | `PageHeader`      | eyebrow + big title. Used by `/projects` and the 404 page.                         |
 | `ProjectRow`      | one expandable project row. Shared by the home page and `/projects`.               |
@@ -307,8 +311,8 @@ The `SITE STILL A WIP.` headline is gone — `content/profile.ts` now carries a 
 OG card deliberately does not use `headline`, so it needs no regeneration for that; see
 `docs/opengraph-image.source.html` if you change the card itself.
 
-`profile.discordId` is empty, so the rail's presence line never renders. Filling it in is
-optional — see below.
+`profile.discordId` is set and the rail's presence line is live. Clearing the field turns the
+feature off; see "…turn on the live 'playing …' line?" above for what it needs.
 
 ## docs/
 

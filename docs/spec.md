@@ -140,9 +140,9 @@ Two families, self-hosted via `next/font`:
     **900px**, where the rail becomes a stacked header.
 - The rail (`components/Rail.tsx`) holds a mono prompt row (`~/aryan-ahlawat` … `cs · systems`,
   hairline underneath, toggled by `showPrompt`), then name, headline, a **`now` list**,
-  navigation, an availability block (`profile.status` + `profile.location` + the live presence
-  line, §6a) and a contact block holding resume ↗, github ↗, email ↗ and linkedin ↗. It
-  replaces a top nav bar.
+  navigation, an availability block (the live presence line §6a, then `profile.status` and
+  `profile.location`) and a contact block holding resume ↗, github ↗, email ↗ and linkedin ↗.
+  It replaces a top nav bar.
 - **The `now` list is labelled; the old focus list wasn't.** It used to be four domains
   (`machine learning`, `retrieval / RAG`, …), which announced themselves as a taxonomy on
   sight. Two lines of current work do not — `— API integrations at Co-operators` with nothing
@@ -180,27 +180,41 @@ Two families, self-hosted via `next/font`:
 
 ## 6a. The presence line
 
-The last line of the availability block is live: `playing Geometry Dash`, `listening to
-<song> — <artist>`, or a bare `online` / `away` / `busy`. It comes from
+The availability block **leads** with a live line: `Playing Geometry Dash`, `Listening to
+<song> — <artist>`, or a bare `Online` / `Away` / `Busy` / `Offline`. Sentence case, matching
+the two fixed lines under it; only the verb is capitalised, since the subject is a game or
+track title that carries its own casing. It goes first because
+it is the only line in the rail that changes — putting the two fixed lines above it made the
+one moving thing the easiest to miss. It comes from
 **[Lanyard](https://github.com/Phineas/lanyard)** over `wss://api.lanyard.rest/socket` —
 subscribe with op 2 (`subscribe_to_id`, which returns the presence object _bare_, not keyed by
 id), heartbeat with op 3 on the interval op 1 hands you, read op 0 `INIT_STATE` /
 `PRESENCE_UPDATE`. It requires the Discord account to have joined `discord.gg/lanyard`, and
 `profile.discordId` ships in the client bundle — both are inherent to the service.
 
-**Silence is the failure mode.** No id, no socket, too many reconnects, or an offline account
-all render _nothing_. The two lines above it — availability and location — are the ones that
-always have to be there, so a third-party outage costs the rail a line it can spare rather
-than leaving a broken or stale row. Reconnects back off (2s, 4s, 8s…) and stop after five
-consecutive failures; any presence message resets the count.
+**Silence means "we don't know", not "he's offline".** No id, no socket, or too many reconnects
+render _nothing at all_; a reported `offline` is a fact Lanyard told us and gets a real line
+with a grey dot. The distinction matters because the two lines below — availability and
+location — are the ones that always have to be there, so an outage costs the rail a line it can
+spare rather than asserting something it was never told. Reconnects back off (2s, 4s, 8s…) and
+stop after five consecutive failures; any presence message resets the count.
 
-**It does not get the accent, and it does not get a dot.** Discord's own green/amber/red would
-put three new colours in a palette that allows one (§4), and a second marker beside the pulsing
-availability dot reads as a competing state. The line's liveness is already carried by the fact
-that it appears at all. Within the line, the verb is `--muted` and the subject is `--text`: the
-game or the track is the information. A long track title truncates with an ellipsis and keeps
-the full string in `title` — wrapping to three lines would push the contact block off the
-bottom of a `100dvh` rail.
+**It carries the same dot as the availability line.** Accent and pulsing while he is
+reachable, `--muted` and still once he isn't — one mark with two states, so colour does the
+work rather than a second visual idiom. `dnd` counts as unreachable and takes the grey dot
+whatever is playing underneath it, so `busy` reads exactly like `offline`; the dot answers
+"can you reach him", not "is the client open". Discord's own green/amber/red stays out of it: three
+new colours in a palette that allows one (§4). The grey is `--muted` rather than the `--border`
+that §4 reserves for inert glyphs, because `--border` at 6px on `--bg` is effectively
+invisible, and a state you cannot see is not a state.
+
+Within the line, the verb is `--muted` and the subject is `--text`: the game or the track is
+the information. A long track title truncates with an ellipsis and keeps the full string in
+`title` — wrapping to three lines would push the contact block off the bottom of a `100dvh`
+rail. Below 900px it wraps instead, since a stacked header has no such ceiling. That is
+load-bearing rather than cosmetic: the rail is a grid item at `min-width: auto`, so one
+unbreakable line sets the whole rail's min-content width and scrolls the page sideways —
+633px of it, at a 375px viewport.
 
 **Only activity type 0 (playing) and Spotify are surfaced.** A custom status is text the user
 wrote rather than something they're doing, and rich-presence `details` ("Editing README.md")
@@ -215,9 +229,12 @@ is more than a sidebar should leak.
   row's title via `aria-labelledby`, and `inert` when closed). Height animates via the
   `grid-template-rows: 0fr → 1fr` trick, 400ms; the chevron rotates 180°. Collapsed shows
   the summary; expanded reveals the full description + links (projects) or the detail note
-  (experience). An experience row without a note renders its header as a plain div, not a
-  disabled button — a disabled button would leave the tab order anyway and would also
-  swallow the hover that lights the row's bar in the timeline (§7a).
+  (experience) — panel text is `--text` in both, since the panel is what you opened the row
+  to read. Open state moves one colour in the header, the same in both: the date/period and
+  the chevron go `--accent` while the title holds `--text`, so the accent marks the row
+  rather than restating its name. An experience row without a note renders its header as a
+  plain div, not a disabled button — a disabled button would leave the tab order anyway and
+  would also swallow the hover that lights the row's bar in the timeline (§7a).
 - **Scroll-spy rail nav** (`RailNav`, home only): the active section is the last one whose
   top has crossed a line 35% down the viewport — the active item's tick grows and turns
   `--accent`. Derived from scroll position (rAF-throttled `scroll`/`resize`, plus a
@@ -363,10 +380,10 @@ public/resume.pdf linked from the rail's contact block
 │   │ ──  contact     │      YOLOv8 · PyTorch · Stable Diffusion   │
 │ ──  all projects    │  All projects →                            │
 │                     │                                            │
-│ ● open to winter    │  004 — contact                             │
-│   2027 internships  │  Contact                                   │
-│   Toronto, ON       │  one line · mailto on "reach out"          │
-│   playing geo dash  │                                            │  ← live (§6a)
+│ ● Playing geo dash  │  004 — contact                             │  ← live (§6a)
+│ ● Open to winter    │  Contact                                   │
+│   2027 internships  │  one line · mailto on "reach out"          │
+│   Toronto, ON       │                                            │
 │ ─────────────────── │                                            │
 │ resume ↗  (this     │                                            │
 │ github ↗   half     │                                            │
@@ -380,7 +397,7 @@ Below 900px the rail stacks on top as a header (name, tagline, the `now` list, h
 nav, availability + contact). The nav tree flattens to the pages you aren't on: the section
 list is hidden (you just scroll) and so is the entry for the current page, which on the
 home page leaves a lone "all projects". The availability block turns into one inline meta
-row, and the presence line joins it behind the same `·` separator as the location.
+row; the presence line keeps its dot there and so takes no `·` separator, unlike the location.
 
 **Contact carries no link list.** Resume/GitHub/email/LinkedIn are in the rail on every
 page; repeating them below only splits the target. The section is one sentence with the
@@ -468,9 +485,10 @@ components/
                    ("home" | "projects") — which nav entry is current.
   Rail.tsx         sticky identity rail: name (→ /), headline, "now" list, nav,
                    availability, contact.
-  Presence.tsx     (client) the live Discord presence line (§6a). Props: { userId? }.
-                   Owns the Lanyard socket, the heartbeat and the backoff; renders
-                   null whenever there is nothing to say. Styles live in
+  Presence.tsx     (client) the live Discord presence line (§6a), first row of the
+                   status block. Props: { userId? }. Owns the Lanyard socket, the
+                   heartbeat and the backoff; renders null when the state is unknown,
+                   a grey-dotted line when he's offline or busy. Styles live in
                    Rail.module.css — it renders inside the rail's status block.
   RailNav.tsx      (client) the nav tree (§6); scroll-spy + click lock on the home page.
                    Section list lives in lib/nav.ts, shared with app/page.tsx.
@@ -483,7 +501,7 @@ components/
                    Reports open/hover to the timeline (§7a).
   ExperienceList.tsx (client) <ol> of expandable role/org rows; expand reveals the note.
                    Period is inline at the end of the header row, not in a gutter.
-                   Open state = accent role/period/chevron. Also reports to the timeline.
+                   Open state = accent period/chevron. Also reports to the timeline.
   Timeline.tsx     (client) role bars + project dots on one month axis (§7a). Pure mirror
                    of the two lists — props in, no state of its own.
   TimelineContext.tsx  (client) the open/peek channel between the rows and the timeline,
@@ -577,7 +595,5 @@ component's own module. This is why there are fewer `.module.css` files than com
 - Full keyboard traversal of `/` and `/projects`; visible focus rings; skip-link works.
 - `prefers-reduced-motion` disables the entrance (verify in devtools).
 - 375px and 1440px both correct; no horizontal scroll.
-- Every `TODO` resolved before launch — `grep -rn TODO content lib`. Repo links and
-  `profile.headline` are done. `profile.discordId` is the one field still empty: until it's
-  filled in, the presence line (§6a) simply never renders, which is a valid shipping state
-  rather than a blocker.
+- Every `TODO` resolved before launch — `grep -rn TODO content lib`. Repo links,
+  `profile.headline` and `profile.discordId` are all filled in; nothing is outstanding.

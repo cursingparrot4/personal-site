@@ -14,14 +14,14 @@ type Lanyard = {
 };
 
 /** A verb the line leads with, plus the thing it applies to. Split so the subject
- *  can carry `--text` against a muted verb without the accent being spent here. */
-type Line = { verb: string; subject?: string };
+ *  can carry `--text` against a muted verb without the accent being spent here.
+ *  `live` drives the dot: accent while he's reachable, grey once he isn't. */
+type Line = { verb: string; subject?: string; live: boolean };
 
 const SOCKET = "wss://api.lanyard.rest/socket";
 
 /** Fallback wording when nothing is playing. Idle means the machine has gone
- *  untouched, so "online" would overstate it; offline is handled by rendering
- *  nothing at all rather than by a word. */
+ *  untouched, so "online" would overstate it. */
 const STATUS_WORD: Record<string, string> = {
   online: "online",
   idle: "away",
@@ -32,8 +32,21 @@ const STATUS_WORD: Record<string, string> = {
  *  an unbounded reconnect loop. Reset by any presence message that arrives. */
 const MAX_RETRIES = 5;
 
+/** Sentence case for the verb only — the subject is a game or track title and
+ *  keeps whatever casing it ships with. Done here rather than in CSS because
+ *  `::first-letter` doesn't reach into an inline span, and `capitalize` would
+ *  hit every word in the subject. */
+const sentence = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 /**
  * What to say about a presence, or `null` for "say nothing".
+ *
+ * A reported "offline" is a fact and gets a line with a grey dot. `null` is for
+ * *not knowing* — no id, no socket, an unrecognised status — where claiming
+ * "offline" would be asserting something we haven't been told.
+ *
+ * "dnd" reads as unavailable, so it takes offline's grey dot whatever is playing
+ * underneath it — the dot answers "can you reach him", not "is the client open".
  *
  * Discord activity types: 0 playing, 1 streaming, 2 listening, 3 watching,
  * 4 custom status, 5 competing. Only 0 and Spotify are surfaced — a custom status
@@ -41,10 +54,12 @@ const MAX_RETRIES = 5;
  * ("Editing README.md") is more than a sidebar line should leak.
  */
 function describe(p: Lanyard): Line | null {
-  if (p.discord_status === "offline") return null;
+  if (p.discord_status === "offline") return { verb: "offline", live: false };
+
+  const live = p.discord_status !== "dnd";
 
   const game = p.activities?.find((a) => a.type === 0 && a.name);
-  if (game?.name) return { verb: "playing", subject: game.name };
+  if (game?.name) return { verb: "playing", subject: game.name, live };
 
   if (p.listening_to_spotify && p.spotify?.song) {
     // Lanyard joins multiple artists with "; ".
@@ -56,11 +71,12 @@ function describe(p: Lanyard): Line | null {
     return {
       verb: "listening to",
       subject: artist ? `${p.spotify.song} — ${artist}` : p.spotify.song,
+      live,
     };
   }
 
   const word = STATUS_WORD[p.discord_status];
-  return word ? { verb: word } : null;
+  return word ? { verb: word, live } : null;
 }
 
 /**
@@ -141,12 +157,20 @@ export function Presence({ userId }: { userId?: string }) {
 
   if (!line) return null;
 
-  const full = line.subject ? `${line.verb} ${line.subject}` : line.verb;
+  const verb = sentence(line.verb);
+  const full = line.subject ? `${verb} ${line.subject}` : verb;
   return (
-    // Truncated by CSS when a track title is long — `title` keeps the whole string.
-    <p className={styles.presence} title={full}>
-      {line.verb}
-      {line.subject ? <span className={styles.presenceSubject}> {line.subject}</span> : null}
+    <p className={styles.presence}>
+      {/* Same mark as the availability dot above; grey and still once presence drops. */}
+      <span
+        className={line.live ? styles.dot : `${styles.dot} ${styles.dotOffline}`}
+        aria-hidden="true"
+      />
+      {/* Truncated by CSS when a track title is long — `title` keeps the whole string. */}
+      <span className={styles.presenceText} title={full}>
+        {verb}
+        {line.subject ? <span className={styles.presenceSubject}> {line.subject}</span> : null}
+      </span>
     </p>
   );
 }

@@ -53,13 +53,11 @@
   outline-offset: -2px;
 }
 
+/* Holds `--text` through open and hover: the period is the row's one moving
+   colour, matching the project rows. */
 .role {
   font-size: var(--fs-h3);
   font-weight: 500;
-  transition: color var(--dur-fast) var(--ease);
-}
-.item[data-open="true"] .role {
-  color: var(--accent);
 }
 
 .org {
@@ -127,10 +125,12 @@
   gap: var(--space-2);
   max-width: 58ch;
 }
+/* `--text`, like a project's description — the panel is the thing you opened the
+   row to read, so it isn't secondary to the header that revealed it. */
 .note li {
   position: relative;
   padding-left: 1.25em;
-  color: var(--muted);
+  color: var(--text);
   line-height: var(--lh-body);
 }
 .note li::before {

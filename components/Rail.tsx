@@ -56,6 +56,10 @@ export function Rail({ page, showPrompt = true }: Props) {
       {/* Availability — sits above the pinned contact block, so the rail's lower
           half reads as one unit instead of leaving a void under the nav. */}
       <div className={`${styles.status} mono rise rise-2`}>
+        {/* Leads the block: it's the only line here that changes, so it's the one
+            worth looking at first. Absent entirely when there's no id or no socket —
+            the two lines below it are the ones that always have to be there. */}
+        <Presence userId={profile.discordId} />
         {profile.status ? (
           <p className={styles.statusLine}>
             <span className={styles.dot} aria-hidden="true" />
@@ -63,9 +67,6 @@ export function Rail({ page, showPrompt = true }: Props) {
           </p>
         ) : null}
         <p className={styles.location}>{profile.location}</p>
-        {/* Live, and absent whenever there's nothing live to say — the two lines
-            above it are the ones that always have to be there. */}
-        <Presence userId={profile.discordId} />
       </div>
 
       <div className={`${styles.contact} mono rise rise-3`}>
