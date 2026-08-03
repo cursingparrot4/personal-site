@@ -9,9 +9,10 @@ export const projects: Project[] = [
   {
     slug: "cardiq",
     name: "CardIQ",
-    tagline: "Integer programming for multi-card spend allocation.",
+    tagline:
+      "A multi-card payment router built with integer programming and a fine-tuned language model.",
     description:
-      "A deterministic multi-card payment router built on integer-cent arithmetic: a month of spend is formulated as an integer program (PuLP/CBC) under hard credit-limit, utilization-ceiling and sign-up-bonus constraints, with a greedy solver as a verified fallback. A small language model, fine-tuned on synthetically generated data, parses natural-language financial goals into a validated weight-and-constraint schema — with the solver acting as a downstream verifier to score decision-match accuracy against a prompted large model.",
+      "CardIQ solves the multi-card allocation problem by formulating monthly spending as a strict integer program. Using PuLP and a CBC backend, the engine handles constraints like utilization ceilings and sign-up bonuses using precise integer-cent arithmetic to avoid floating-point drift. Instead of building a rigid UI for goal setting, I trained a small language model on synthetic data to parse natural language requests into the exact mathematical weights the solver needs to compute the optimal route.",
     stack: ["Python", "FastAPI", "PuLP/CBC", "Pydantic", "Streamlit"],
     year: 2026,
     award: "Hack the 6ix",
@@ -21,9 +22,10 @@ export const projects: Project[] = [
   {
     slug: "cognitive-rag",
     name: "Cognitive RAG",
-    tagline: "Hybrid retrieval for multi-hop question answering.",
+    tagline:
+      "A document retrieval pipeline built with persistent conversation memory and hybrid search routing.",
     description:
-      "LangChain agents over a hybrid retrieval pipeline (BM25 sparse + bi-encoder dense), fused with reciprocal rank fusion and a Hugging Face cross-encoder re-ranker for precision on multi-hop QA. (QMIND design-team work.)",
+      "As part of the QMIND design team, I architected the vector storage and conversational memory infrastructure for the CognitiveRAG system. To maximize retrieval accuracy, I engineered a Pinecone database layer that executes reciprocal rank fusion, combining dense semantic embeddings with sparse keyword vectors before running a secondary cross-encoder pass. To overcome the context limitations of stateless models, I built an episodic memory module that embeds past interactions into a dedicated namespace. This pipeline evaluates the quality of each generated response and filters out semantically identical records to prevent database bloat. Relevant historical context is then dynamically scored and injected into the active prompt without polluting the final user citations.",
     stack: ["LangChain", "BM25", "cross-encoder", "Python"],
     year: 2026,
     // gitfront serves a read-only mirror so the GitHub repo can stay private.
@@ -33,9 +35,10 @@ export const projects: Project[] = [
   {
     slug: "visualizeit",
     name: "VisualizeIt",
-    tagline: "Real-time computer vision + diffusion inpainting.",
+    tagline:
+      "A real-time augmented reality pipeline built with YOLOv8 object detection, pose tracking, and Stable Diffusion texture generation.",
     description:
-      "YOLOv8 (Nano) for millisecond-latency object detection, serving as the initialization anchor for robust OpenCV CSRT tracking, with Stable Diffusion inpainting generating context-aware texture overlays that map stylized graphics onto detected regions with high geometric consistency.",
+      "VisualizeIt is a real-time augmented reality tool that dynamically warps and blends generated designs onto live video feeds. I engineered a dual-model computer vision pipeline that uses YOLOv8 for rapid target localization and Mask R-CNN for precise instance segmentation. To handle continuous motion, the system routes tracking through two separate algorithms: MediaPipe Holistic to compute 3D rigid transforms for human poses, and ORB feature matching to calculate 2D homographies for rigid objects. Finally, the pipeline uses Stable Diffusion to generate custom textures, which are perspective-warped and alpha-blended directly onto the detected masks using OpenCV.",
     stack: ["YOLOv8", "PyTorch", "Stable Diffusion", "OpenCV"],
     year: 2025,
     award: "QHacks winner · Mayor's Innovation Award",
@@ -45,9 +48,10 @@ export const projects: Project[] = [
   {
     slug: "churn-classification-engine",
     name: "Churn Classification Engine",
-    tagline: "0.82 F1 across 7,000+ users.",
+    tagline:
+      "A classification pipeline achieving a 0.82 F1 score across 7,000+ users.",
     description:
-      "End-to-end classification pipeline (logistic regression + random-forest ensembles) segmenting 7,000+ users by churn probability.",
+      "An end-to-end classification pipeline built in Python to predict telecommunications customer churn. Using a dataset of over 7,000 users, the workflow handles missing values and applies one-hot and ordinal encoding before training a Random Forest ensemble. The project includes a standalone grid search for hyperparameter tuning and uses seaborn to visualize feature importance and F1 scores.",
     stack: ["Python", "scikit-learn", "seaborn"],
     year: 2025,
     links: { repo: "https://github.com/cursingparrot4/Churn-engine/" },
@@ -56,9 +60,10 @@ export const projects: Project[] = [
   {
     slug: "stubook",
     name: "Stubook",
-    tagline: "Offline-first Flutter app for daily study planning.",
+    tagline:
+      "A cross-platform, offline student productivity app built with Flutter and Dart.",
     description:
-      "A cross-platform study-planning app built with Flutter, shipped to the iOS App Store. Hive provides an offline-first local NoSQL store for tasks and schedules, with a table-calendar view for planning study sessions and swipeable list actions for quick task management. Built as core developer.",
+      "A cross-platform student productivity app I built using Flutter and Dart. It runs entirely on device without a backend server, relying on Hive as an embedded local database. This setup allows users to calculate weighted course grades, track calendar events, and manage swipeable to-do lists without needing a network connection.",
     stack: ["Flutter", "Dart", "Hive"],
     year: 2024,
     links: { repo: "https://github.com/joeyhlu/stubook_master" },
