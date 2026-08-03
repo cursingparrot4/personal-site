@@ -114,7 +114,7 @@ automatically gets a row on `/projects`, a dot on the timeline, and an anchor at
   stack: ["PyTorch", "FastAPI"],  // rendered as tags, in this order
   year: 2026,
   award: "Some Award",            // optional, shows in the accent colour
-  links: { repo: "https://…", demo: "https://…", writeup: "https://…" },  // all optional
+  links: { repo: "https://…", demo: "https://…", devpost: "https://…" },  // all optional
   featured: true,                 // optional — also show it on the home page
 }
 ```

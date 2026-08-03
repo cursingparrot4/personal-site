@@ -348,9 +348,9 @@ Header: `Projects`. Rows expand in place; each carries `id={slug}`, so `/project
 lands on a row already open — which is where the timeline dots point.
 
 **No per-project detail pages.** A `/projects/[slug]` route was built and then removed: its
-page was the expanded row again — tagline, stack, description, the same repo/demo/writeup
-links — one navigation further away, and there is no second tier of writeup coming to fill
-it. The index plus an anchor says everything the route said.
+page was the expanded row again — tagline, stack, description, the same repo/demo/devpost
+links — one navigation further away, and there is no second tier of writeup content coming
+to fill it. The index plus an anchor says everything the route said.
 
 ---
 
@@ -381,7 +381,7 @@ export type Project = {
   stack: string[]; // ["PyTorch", "LangChain"]
   year: number;
   award?: string; // e.g. "Mayor's Innovation Award"
-  links: { repo?: string; demo?: string; writeup?: string };
+  links: { repo?: string; demo?: string; devpost?: string };
   featured?: boolean; // shown on home
 };
 
@@ -428,7 +428,7 @@ components/
                    + Space Grotesk title + rhythm; id doubles as the scroll-spy anchor.
   ProjectRow.tsx   (client) expandable row, id={slug}. Collapsed: index |
                    name/tagline/stack | year | chevron. Expanded: description +
-                   repo/demo/writeup links. Opens itself when the hash names it.
+                   repo/demo/devpost links. Opens itself when the hash names it.
                    Reports open/hover to the timeline (§7a).
   ExperienceList.tsx (client) <ol> of expandable role/org rows; expand reveals the note.
                    Period is inline at the end of the header row, not in a gutter.

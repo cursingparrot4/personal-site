@@ -16,7 +16,7 @@ export const projects: Project[] = [
     stack: ["Python", "FastAPI", "PuLP/CBC", "Pydantic", "Streamlit"],
     year: 2026,
     award: "Hack the 6ix",
-    links: { writeup: "https://devpost.com/software/cardiq" },
+    links: { devpost: "https://devpost.com/software/cardiq" },
     featured: true,
   },
   {
@@ -42,7 +42,7 @@ export const projects: Project[] = [
     stack: ["YOLOv8", "PyTorch", "Stable Diffusion", "OpenCV"],
     year: 2025,
     award: "QHacks winner · Mayor's Innovation Award",
-    links: { writeup: "https://devpost.com/software/visualizeit" },
+    links: { devpost: "https://devpost.com/software/visualizeit" },
     featured: true,
   },
   {

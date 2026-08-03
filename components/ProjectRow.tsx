@@ -15,14 +15,14 @@ type Props = {
 
 /**
  * Expandable project row. Collapsed: index, name, tagline, stack, year.
- * Click to reveal the full description + repo/demo/writeup links in place.
+ * Click to reveal the full description + repo/demo/devpost links in place.
  */
 export function ProjectRow({ project, index }: Props) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const num = String(index).padStart(2, "0");
   const { name, tagline, description, stack, year, award, links, slug } = project;
-  const hasLinks = Boolean(links.repo || links.demo || links.writeup);
+  const hasLinks = Boolean(links.repo || links.demo || links.devpost);
   // Lights this project's dot in the timeline. A no-op on /projects, which has
   // no timeline and so no provider.
   const { handlers, peeked } = useTimelineSignal(projKey(slug), open);
@@ -93,9 +93,9 @@ export function ProjectRow({ project, index }: Props) {
                   Demo
                 </ExternalLink>
               ) : null}
-              {links.writeup ? (
-                <ExternalLink href={links.writeup} className="link-muted link-underline">
-                  Writeup
+              {links.devpost ? (
+                <ExternalLink href={links.devpost} className="link-muted link-underline">
+                  Devpost
                 </ExternalLink>
               ) : null}
             </p>

@@ -7,7 +7,7 @@ export type Project = {
   stack: string[]; // ["PyTorch", "LangChain"]
   year: number;
   award?: string; // e.g. "Mayor's Innovation Award"
-  links: { repo?: string; demo?: string; writeup?: string };
+  links: { repo?: string; demo?: string; devpost?: string };
   featured?: boolean; // shown on home
 };
 
