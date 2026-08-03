@@ -6,10 +6,10 @@ export const profile: Profile = {
   promptMeta: "CS · Data Science",
   focus: ["Machine learning", "Retrieval / RAG", "Computer vision", "Low-level systems"],
   bio:
-    "CS student at Queen's on the AI stream, minoring in economics. I work across applied " +
-    "ML — RAG pipelines at QMIND, computer vision on VisualizeIt, regression models at " +
-    "Acetech — and enjoy the low-level end too, from PID drive-control in C to API development. " +
-    "Currently a software developer co-op at Co-operators.",
+    "I'm a CS student at Queen's University on the AI stream, minoring in Economics. I enjoy " +
+    "working across the software stack, building everything from RAG pipelines to predictive " +
+    "machine learning models. Currently, I'm developing API integrations as a Software " +
+    "Developer Co-op at Co-operators.",
   location: "Toronto, ON",
   status: "Open to winter 2027 internships",
   links: {
@@ -24,7 +24,7 @@ export const profile: Profile = {
       period: "May–Aug 2026",
       start: "2026-05",
       end: "2026-08",
-      note: "RESTful Prefill API integrations that auto-populate insurance quoting forms in real time, orchestrating retrieval across internal services and third-party endpoints. Spec-driven docs generated straight from OpenAPI, so published references stay in sync with the contracts.",
+      note: "Developed RESTful API integrations to enable real-time auto-population of insurance quoting forms. This involved orchestrating data retrieval across multiple internal services and third-party endpoints to eliminate manual entry. I also built automation that generates reference documentation directly from OpenAPI specifications, ensuring service contracts stay in sync without manual upkeep.",
     },
     {
       role: "Design Team Engineer",
@@ -32,7 +32,7 @@ export const profile: Profile = {
       period: "Sep 2025–Apr 2026",
       start: "2025-09",
       end: "2026-04",
-      note: "Cognitive RAG system — LangChain agents, hybrid BM25 + dense retrieval, RRF + cross-encoder re-ranking.",
+      note: "Architected the vector storage and conversational memory infrastructure for an agentic RAG pipeline. I engineered a hybrid retrieval system using Pinecone to maximize context recall, and implemented a multi-hop failsafe mechanism that automatically breaks down complex queries when the initial retrieved evidence is weak.",
     },
     {
       role: "Machine Learning Co-op",
@@ -40,7 +40,7 @@ export const profile: Profile = {
       period: "May–Aug 2025",
       start: "2025-05",
       end: "2025-08",
-      note: "PyTorch MLP regression for lab-test durations — 12% MSE reduction over baseline; automated data-cleaning pipelines.",
+      note: "Developed PyTorch regression models to predict lab test durations, tuning hyperparameters to achieve a 12% error reduction against the previous baseline. Alongside model training, I built automated data cleaning pipelines using Pandas and NumPy to process SQL datasets, impute missing values, and detect outliers.",
     },
     {
       role: "Drive Control Developer",
@@ -48,7 +48,7 @@ export const profile: Profile = {
       period: "Oct 2024–Mar 2025",
       start: "2024-10",
       end: "2025-03",
-      note: "Low-level drive-control in C/FreeRTOS, PID controllers; motion algorithms cut path deviation ~20%.",
+      note: "Programmed low-level robotic drive-control systems in C, implementing PID controllers to ensure smooth acceleration and precise velocity control. I also developed motion algorithms that improved autonomous navigation efficiency, reducing path deviations for competition tasks by almost 20%.",
     },
     {
       role: "Research Assistant",
@@ -56,7 +56,7 @@ export const profile: Profile = {
       period: "Jun 2023–Feb 2024",
       start: "2023-06",
       end: "2024-02",
-      note: "Agent-based economic simulations (COBWEB) modeling cooperative vs. competitive behavior.",
+      note: "Developed multi-agent economic simulations for the COBWEB project to model market behavior and survival strategies. I built out the agents by giving them specific OCEAN personality traits, historical memory, and risk tolerances. By forcing these agents into small markets using Prisoner's Dilemma rules, the simulation showed how self-interested groups naturally develop adaptive strategies like cooperation and migration over time.",
     },
   ],
 };
