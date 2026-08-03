@@ -48,8 +48,7 @@ export const projects: Project[] = [
   {
     slug: "churn-classification-engine",
     name: "Churn Classification Engine",
-    tagline:
-      "A classification pipeline achieving a 0.82 F1 score across 7,000+ users.",
+    tagline: "A classification pipeline achieving a 0.82 F1 score across 7,000+ users.",
     description:
       "An end-to-end classification pipeline built in Python to predict telecommunications customer churn. Using a dataset of over 7,000 users, the workflow handles missing values and applies one-hot and ordinal encoding before training a Random Forest ensemble. The project includes a standalone grid search for hyperparameter tuning and uses seaborn to visualize feature importance and F1 scores.",
     stack: ["Python", "scikit-learn", "seaborn"],
@@ -60,8 +59,7 @@ export const projects: Project[] = [
   {
     slug: "stubook",
     name: "Stubook",
-    tagline:
-      "A cross-platform, offline student productivity app built with Flutter and Dart.",
+    tagline: "A cross-platform, offline student productivity app built with Flutter and Dart.",
     description:
       "A cross-platform student productivity app I built using Flutter and Dart. It runs entirely on device without a backend server, relying on Hive as an embedded local database. This setup allows users to calculate weighted course grades, track calendar events, and manage swipeable to-do lists without needing a network connection.",
     stack: ["Flutter", "Dart", "Hive"],
@@ -71,9 +69,5 @@ export const projects: Project[] = [
   },
 ];
 
-/** Helpers so pages don't re-implement filtering. */
+/** Helper so pages don't re-implement filtering. */
 export const featuredProjects = projects.filter((p) => p.featured);
-
-export function getProject(slug: string): Project | undefined {
-  return projects.find((p) => p.slug === slug);
-}

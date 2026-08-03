@@ -166,7 +166,7 @@ svg {
   margin-bottom: var(--space-3);
 }
 
-/* The large page heading on /projects, /projects/[slug] and 404 */
+/* The large page heading on /projects and 404 */
 .page-title {
   font-size: var(--fs-display);
   letter-spacing: -0.02em;

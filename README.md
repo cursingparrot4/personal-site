@@ -102,15 +102,15 @@ the bar is wrong — the timeline is only as honest as those two fields.
 ### …add a project?
 
 `content/projects.ts` → one object in the `projects` array. That's the whole job. It
-automatically gets a row on `/projects`, a detail page at `/projects/<slug>`, and a
-sitemap entry.
+automatically gets a row on `/projects`, a dot on the timeline, and an anchor at
+`/projects#<slug>` that lands on the row already expanded.
 
 ```ts
 {
-  slug: "my-project",           // becomes /projects/my-project — lowercase, hyphens
+  slug: "my-project",           // the row's anchor: /projects#my-project — lowercase, hyphens
   name: "My Project",
   tagline: "One honest line, sentence case.",
-  description: "The longer version — shown when the row expands, and on the detail page.",
+  description: "The longer version — shown when the row expands.",
   stack: ["PyTorch", "FastAPI"],  // rendered as tags, in this order
   year: 2026,
   award: "Some Award",            // optional, shows in the accent colour
@@ -126,7 +126,8 @@ which field is wrong or missing.
 
 `components/Timeline.tsx`. It draws both lists on one month axis: a bar per role, sized by
 `start`/`end`, and below them a dot per project, placed by `year`. It shows **every**
-project, not just the featured ones, and each dot links to that project's detail page.
+project, not just the featured ones, and each dot links to `/projects#<slug>` — the index
+row for that project, opened on arrival.
 
 Projects only have a year, so projects sharing one are spread evenly across it (the two 2026
 entries land in April and August) purely so they don't stack — that horizontal offset is
@@ -176,19 +177,22 @@ It also takes `dither`, `grain` and `beamRgb`. It's purely decorative — `aria-
 
 ### …rename, reorder, or add a home-page section?
 
-`app/page.tsx`. The `sections` array at the top drives the sidebar nav; the `<Section>`
-components below render the content. Keep the two in sync — the `id` is what links them.
-The index (`"001"`) is written by hand, so you control the numbering.
+Two files: `lib/nav.ts` holds the `homeSections` array that drives the sidebar nav, and
+`app/page.tsx` renders the matching `<Section>` components. Keep the two in sync — the
+`id` is what links them. The index (`"001"`) is written by hand, so you control the
+numbering.
 
 ### …change the sidebar?
 
 `components/Rail.tsx` for the structure, `content/profile.ts` for the words (name,
 headline, focus list, prompt row).
 
-The rail has two link groups. The **nav** shows the scroll-spy sections on the home page
-and a single "Home" link everywhere else — it deliberately has no `/projects` link, since
-the home page ends with "All projects →". The **pinned bottom block** holds the off-site
-links: resume, GitHub, email, LinkedIn.
+The rail has two link groups. The **nav** (`RailNav`) is one tree on every page — `Home`
+with the home page's sections indented under it, then `All projects` back at the top
+level. On the home page the sections are live anchors with scroll-spy; elsewhere they
+point at `/#id`. Exactly one entry carries the accent dash: the section you're reading on
+the home page, or the page you're on anywhere else. The **pinned bottom block** holds the
+off-site links: resume, GitHub, email, LinkedIn.
 
 ### …change the page title, description, or social preview?
 
@@ -232,7 +236,7 @@ export default function Writing() {
 | ----------------- | ---------------------------------------------------------------------------------- |
 | `Shell`           | two-column page frame: sticky rail + content. Collapses to one column under 900px. |
 | `Rail`            | the left sidebar — identity, nav, availability, contact. Stacked header on mobile. |
-| `RailNav`         | the scroll-spy nav that highlights the section you're looking at (home only).      |
+| `RailNav`         | the rail's nav tree; on the home page it scroll-spies the section you're reading.  |
 | `Section`         | `001 — label` eyebrow + title + content. Owns the vertical rhythm.                 |
 | `PageHeader`      | eyebrow + big title. Used by `/projects` and the 404 page.                         |
 | `ProjectRow`      | one expandable project row. Shared by the home page and `/projects`.               |

@@ -146,7 +146,7 @@ export function Timeline({ items, projects = [] }: Props) {
               return (
                 <Link
                   key={project.slug}
-                  href={`/projects/${project.slug}`}
+                  href={`/projects#${project.slug}`}
                   className={styles.dot}
                   style={{ left: `${x}%` }}
                   data-lit={open.has(key)}

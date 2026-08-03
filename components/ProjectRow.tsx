@@ -1,7 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
-import Link from "next/link";
+import { useEffect, useId, useState } from "react";
 import type { Project } from "@/lib/types";
 import { ExternalLink } from "./links";
 import { Tag } from "./Tag";
@@ -16,19 +15,31 @@ type Props = {
 
 /**
  * Expandable project row. Collapsed: index, name, tagline, stack, year.
- * Click to reveal the full description + repo/demo/detail links in place.
+ * Click to reveal the full description + repo/demo/writeup links in place.
  */
 export function ProjectRow({ project, index }: Props) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const num = String(index).padStart(2, "0");
   const { name, tagline, description, stack, year, award, links, slug } = project;
+  const hasLinks = Boolean(links.repo || links.demo || links.writeup);
   // Lights this project's dot in the timeline. A no-op on /projects, which has
   // no timeline and so no provider.
   const { handlers, peeked } = useTimelineSignal(projKey(slug), open);
 
+  // Deep link: /projects#<slug> lands on this row already expanded. That's what
+  // the timeline dots point at, since a project has no page of its own.
+  useEffect(() => {
+    const sync = () => {
+      if (decodeURIComponent(window.location.hash.slice(1)) === slug) setOpen(true);
+    };
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, [slug]);
+
   return (
-    <div className={styles.row} data-open={open} data-peek={peeked}>
+    <div id={slug} className={styles.row} data-open={open} data-peek={peeked}>
       <button
         type="button"
         className={styles.header}
@@ -65,27 +76,30 @@ export function ProjectRow({ project, index }: Props) {
 
       <div id={panelId} className={styles.panel} role="region" inert={!open}>
         <div className={styles.panelInner}>
-          {description ? <p className={styles.desc}>{description}</p> : null}
-          <p className={`${styles.links} mono`}>
-            {links.repo ? (
-              <ExternalLink href={links.repo} className="link-muted link-underline">
-                Repo
-              </ExternalLink>
-            ) : null}
-            {links.demo ? (
-              <ExternalLink href={links.demo} className="link-muted link-underline">
-                Demo
-              </ExternalLink>
-            ) : null}
-            {links.writeup ? (
-              <ExternalLink href={links.writeup} className="link-muted link-underline">
-                Writeup
-              </ExternalLink>
-            ) : null}
-            <Link href={`/projects/${slug}`} className="link-muted link-underline">
-              Details <span aria-hidden="true">→</span>
-            </Link>
-          </p>
+          {description ? (
+            <p className={styles.desc} data-last={!hasLinks}>
+              {description}
+            </p>
+          ) : null}
+          {hasLinks ? (
+            <p className={`${styles.links} mono`}>
+              {links.repo ? (
+                <ExternalLink href={links.repo} className="link-muted link-underline">
+                  Repo
+                </ExternalLink>
+              ) : null}
+              {links.demo ? (
+                <ExternalLink href={links.demo} className="link-muted link-underline">
+                  Demo
+                </ExternalLink>
+              ) : null}
+              {links.writeup ? (
+                <ExternalLink href={links.writeup} className="link-muted link-underline">
+                  Writeup
+                </ExternalLink>
+              ) : null}
+            </p>
+          ) : null}
         </div>
       </div>
     </div>

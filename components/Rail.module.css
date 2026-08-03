@@ -73,8 +73,8 @@
   gap: var(--space-6);
 }
 
-.sectionNav,
-.pageNav {
+.navTree,
+.sectionNav {
   list-style: none;
   padding: 0;
   display: flex;
@@ -84,6 +84,17 @@
   font-size: var(--fs-meta);
 }
 
+/* The sections hang off "Home" as a branch: the hairline drops from the middle
+   of that row's dash, and the child dashes meet it. `margin-left` is half a
+   .bullet so the two line up whatever the dash width becomes. */
+.sectionNav {
+  margin-top: var(--space-3);
+  margin-left: 0.625rem;
+  padding-left: var(--space-4);
+  border-left: 0.5px solid var(--border);
+}
+
+.rootLink,
 .sectionLink {
   display: inline-flex;
   align-items: center;
@@ -91,14 +102,17 @@
   color: var(--muted);
   transition: color var(--dur-fast) var(--ease);
 }
+.rootLink:hover,
 .sectionLink:hover {
   color: var(--text);
 }
+.rootLink[data-active="true"],
 .sectionLink[data-active="true"] {
   color: var(--text);
 }
 
 .bullet {
+  flex: none;
   width: 1.25rem;
   height: 1px;
   background: var(--border);
@@ -106,8 +120,14 @@
     width var(--dur-fast) var(--ease),
     background var(--dur-fast) var(--ease);
 }
+.rootLink:hover .bullet,
 .sectionLink:hover .bullet {
   background: var(--muted);
+}
+/* Current page: an accent tick. The dash only *grows* for the section you're
+   actually reading, so the two markers never compete on the home page. */
+.rootLink[data-active="true"] .bullet {
+  background: var(--accent);
 }
 .sectionLink[data-active="true"] .bullet {
   width: 2.25rem;
@@ -186,23 +206,25 @@
   }
   .nav {
     margin-top: var(--space-6);
+  }
+  /* The tree flattens to a plain row of the other pages you can go to: the
+     scroll-spy list is redundant when you just scroll, and so is a link to the
+     page you're already on. */
+  .navTree {
     flex-direction: row;
     flex-wrap: wrap;
     gap: var(--space-4) var(--space-5);
   }
-  /* scroll-spy section list is redundant on mobile (you just scroll) */
   .sectionNav {
     display: none;
   }
-  /* On the home page the nav holds only that hidden list, so it would collapse
-     to an empty box that still contributes its margin. Drop it entirely; on
-     other pages it keeps the "Home" link (.pageNav) and stays. */
-  .nav:not(:has(.pageNav)) {
+  /* Whole branch, not just the link — an emptied <li> would still spend a gap. */
+  .navTree > li:has(> .rootLink[data-active="true"]) {
     display: none;
   }
-  .pageNav {
-    flex-direction: row;
-    gap: var(--space-5);
+  /* The dash reads as a stray hairline once the rows are side by side. */
+  .bullet {
+    display: none;
   }
   /* Stacked header: the status reads as one inline meta line, not a block. */
   .status {

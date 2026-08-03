@@ -10,13 +10,6 @@ import { ExperienceList } from "@/components/ExperienceList";
 import { InlineLink } from "@/components/links";
 import styles from "./page.module.css";
 
-const sections = [
-  { id: "about", label: "About" },
-  { id: "experience", label: "Experience" },
-  { id: "work", label: "Projects" },
-  { id: "contact", label: "Contact" },
-];
-
 // JSON-LD Person schema for richer search results.
 const personJsonLd = {
   "@context": "https://schema.org",
@@ -30,7 +23,7 @@ const personJsonLd = {
 
 export default function Home() {
   return (
-    <Shell sections={sections}>
+    <Shell page="home">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}

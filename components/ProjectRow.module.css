@@ -1,5 +1,7 @@
 .row {
   position: relative;
+  /* Deep links (/projects#<slug>) shouldn't park the row against the very top. */
+  scroll-margin-top: var(--space-6);
 }
 
 /* Hairlines bound every row, matching the experience list above. */
@@ -144,6 +146,10 @@
   max-width: 60ch;
   color: var(--text);
   line-height: var(--lh-body);
+}
+/* No link row under it — the description carries the panel's bottom padding. */
+.desc[data-last="true"] {
+  padding-bottom: var(--space-6);
 }
 
 .links {

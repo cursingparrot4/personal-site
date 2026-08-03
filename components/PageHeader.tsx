@@ -10,11 +10,7 @@ type Props = {
   children?: React.ReactNode;
 };
 
-/**
- * The eyebrow + big-title header shared by /projects and the 404 page.
- * Project detail pages have their own header (title + tagline + meta), so they
- * don't use this.
- */
+/** The eyebrow + big-title header shared by /projects and the 404 page. */
 export function PageHeader({ eyebrow, title, accentEyebrow, children }: Props) {
   return (
     <header className={styles.header}>

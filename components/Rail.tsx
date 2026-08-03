@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { profile } from "@/content/profile";
+import { homeSections } from "@/lib/nav";
 import { ExternalLink } from "./links";
 import { RailNav } from "./RailNav";
 import styles from "./Rail.module.css";
 
 type Props = {
-  /** when present, renders in-page scroll-spy nav (home) instead of a home link */
-  sections?: { id: string; label: string }[];
+  /** which nav entry is the current page; on "home" the section links scroll-spy */
+  page?: "home" | "projects";
   /** terminal prompt row above the name */
   showPrompt?: boolean;
 };
@@ -15,10 +16,10 @@ type Props = {
 const handle = profile.name.toLowerCase().replace(/\s+/g, "-");
 
 /**
- * Sticky identity rail: prompt row, name, tagline, focus areas, navigation, contact.
+ * Sticky identity rail: prompt row, name, tagline, focus areas, nav tree, contact.
  * On desktop it stays pinned; on mobile it stacks above the content as a header.
  */
-export function Rail({ sections, showPrompt = true }: Props) {
+export function Rail({ page, showPrompt = true }: Props) {
   return (
     <aside className={styles.rail}>
       {/* `rise*` are the global entrance utilities — see globals.css. */}
@@ -47,17 +48,7 @@ export function Rail({ sections, showPrompt = true }: Props) {
       </div>
 
       <nav className={`${styles.nav} rise rise-1`} aria-label="Primary">
-        {sections ? (
-          <RailNav sections={sections} />
-        ) : (
-          <ul className={styles.pageNav}>
-            <li>
-              <Link href="/" className="link-muted">
-                Home
-              </Link>
-            </li>
-          </ul>
-        )}
+        <RailNav sections={homeSections} page={page} />
       </nav>
 
       {/* Availability — sits above the pinned contact block, so the rail's lower

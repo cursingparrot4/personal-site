@@ -1,8 +1,9 @@
 export type Project = {
+  /** stable id — the row's anchor (/projects#<slug>) and its timeline key */
   slug: string;
   name: string;
   tagline: string; // one honest line, sentence case
-  description?: string; // detail page
+  description?: string; // shown when the row expands
   stack: string[]; // ["PyTorch", "LangChain"]
   year: number;
   award?: string; // e.g. "Mayor's Innovation Award"

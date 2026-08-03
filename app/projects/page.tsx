@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function ProjectsPage() {
   return (
-    <Shell>
+    <Shell page="projects">
       <PageHeader eyebrow="Index" title="Projects" />
       <div>
         {projects.map((project, i) => (

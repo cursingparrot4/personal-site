@@ -138,9 +138,15 @@ Two families, self-hosted via `next/font`:
 - The rail (`components/Rail.tsx`) holds a mono prompt row (`~/aryan-ahlawat` … `cs · systems`,
   hairline underneath, toggled by `showPrompt`), then name, headline, focus areas, navigation,
   an availability block (`profile.status` + `profile.location`) and a contact block holding
-  resume ↗, github ↗, email ↗ and linkedin ↗. It replaces a top nav bar. The nav itself holds
-  only the scroll-spy sections on the home page, or a single "Home" link elsewhere — there is
-  no rail link to /projects, since the home page's "All projects →" already covers it.
+  resume ↗, github ↗, email ↗ and linkedin ↗. It replaces a top nav bar.
+- **The nav is one tree, identical on every page** (`RailNav`): `Home`, the home page's
+  sections indented under it against a hairline, then `All projects` back at Home's level.
+  A lone "Home" link on /projects read as a leftover next to the home page's section list;
+  giving both rails the same shape fixes that and makes /projects reachable from anywhere,
+  not only from the "All projects →" line at the end of the home page. Section links are
+  in-page anchors with scroll-spy on `/` and `/#id` links elsewhere. Exactly one entry
+  carries `--accent`: the section you're reading on the home page (its tick also grows), or
+  the current page's top-level entry anywhere else.
 - **The rail's lower half is one unit.** `margin-top: auto` goes on the _availability_ block,
   with contact directly beneath it under a hairline. Pinning only the links left a few
   hundred px of dead space between the nav and the bottom of the rail on tall viewports.
@@ -150,7 +156,7 @@ Two families, self-hosted via `next/font`:
   copy of the identity block wearing a horizontal rule. Nothing needs a site-wide bottom
   edge. `lib/site.ts` lost its `repo` field with it.
 - Content column caps prose at ~62ch; `--container: 46rem` remains available for narrow
-  article layouts (project detail).
+  article layouts.
 - **Spacing scale** (4px base), as CSS vars `--space-1…9`:
   `4, 8, 12, 16, 24, 32, 48, 64, 96`.
 - **Vertical rhythm between sections:** `clamp(4rem, 10vw, 6rem)` — generous whitespace is
@@ -174,6 +180,12 @@ Two families, self-hosted via `next/font`:
   `ResizeObserver` for accordion reflow) rather than raw `IntersectionObserver` callbacks,
   so it stays correct when sections straddle the line, when a section is shorter than the
   band, and when the page bottoms out before the last section reaches the line.
+- **A click beats the inference.** Clicking a nav link lights that section immediately and
+  suspends the spy until you scroll again yourself. Geometry alone can't honour the click:
+  a section shorter than the 35% band leaves the _next_ one already past the line once the
+  anchor lands, so the wrong entry lit until you nudged the page back up. The lock records
+  where the smooth scroll came to rest (the last `scroll` event plus 140ms of quiet) and
+  releases as soon as the page moves off it.
 - **Entrance:** one staggered reveal on load — opacity 0 → 1 with an 8px rise, 400ms, the
   rail's four blocks at 0/60/120/160ms and the content column at 60ms. Never scroll-driven
   (§2 rules that out) and never re-run. Lives in `globals.css` as the `rise` / `rise-1..3`
@@ -239,7 +251,7 @@ Nothing lights up by default; there is no "most recent" bar that stays on.
 **Accessibility.** The role lanes are one `role="img"` with a summary label: every bar
 restates a period the list spells out in text directly below, so exposing the lanes
 individually would only duplicate it. The project dots sit outside that group, because they
-are real links to `/projects/[slug]` and each carries its own accessible name.
+are real links to `/projects#<slug>` and each carries its own accessible name.
 
 ---
 
@@ -278,8 +290,7 @@ are real links to `/projects/[slug]` and each carries its own accessible name.
 
 ```
 /                 home — about → experience → selected work → contact
-/projects         full data-driven project index
-/projects/[slug]  optional per-project writeup (screenshots, decisions, metrics)
+/projects         full data-driven project index; #<slug> opens a row
 public/resume.pdf linked from the rail's contact block
 ```
 
@@ -301,12 +312,12 @@ public/resume.pdf linked from the rail's contact block
 │                     │  Software Dev Co-op  Co-operators  May–Aug⌄│  ← accordion
 │                     │  ────────────────────────────────────────  │
 │                     │  003 — projects                            │
-│ ──  about           │  Selected work                             │
-│ ▬▬▬ experience      │  ────────────────────────────────────────  │  ← scroll-spy
-│ ──  projects        │  01  VisualizeIt   [award]          2025 ⌄ │     active tick
-│ ──  contact         │      real-time CV + diffusion inpainting   │
-│                     │      YOLOv8 · PyTorch · Stable Diffusion   │
-│                     │  All projects →                            │
+│ ▬▬  home            │  Selected work                             │  ← current page
+│   │ ──  about       │  ────────────────────────────────────────  │
+│   │ ▬▬▬ experience  │  01  VisualizeIt   [award]          2025 ⌄ │  ← scroll-spy
+│   │ ──  projects    │      real-time CV + diffusion inpainting   │     active tick
+│   │ ──  contact     │      YOLOv8 · PyTorch · Stable Diffusion   │
+│ ──  all projects    │  All projects →                            │
 │                     │                                            │
 │ ● open to winter    │  004 — contact                             │
 │   2027 internships  │  Contact                                   │
@@ -321,7 +332,9 @@ public/resume.pdf linked from the rail's contact block
 ```
 
 Below 900px the rail stacks on top as a header (name, tagline, focus, horizontal nav,
-availability + contact); the scroll-spy list is hidden.
+availability + contact). The nav tree flattens to the pages you aren't on: the section
+list is hidden (you just scroll) and so is the entry for the current page, which on the
+home page leaves a lone "all projects".
 
 **Contact carries no link list.** Resume/GitHub/email/LinkedIn are in the rail on every
 page; repeating them below only splits the target. The section is one sentence with the
@@ -331,13 +344,13 @@ the rail.
 ### `/projects` — full index
 
 Same `ProjectRow` component, all projects (no `featured` filter), optionally grouped by year.
-Header: `Projects`. Rows link to `/projects/[slug]` when a writeup exists, else to the repo.
+Header: `Projects`. Rows expand in place; each carries `id={slug}`, so `/projects#<slug>`
+lands on a row already open — which is where the timeline dots point.
 
-### `/projects/[slug]` — detail (optional, ship writeups incrementally)
-
-`← projects` back-link · project name (h1) · year + stack (mono) · links (repo/demo) ·
-2–4 short paragraphs: what it does, key decisions, what the numbers mean · screenshots with
-real alt text. No comment sections, no share buttons.
+**No per-project detail pages.** A `/projects/[slug]` route was built and then removed: its
+page was the expanded row again — tagline, stack, description, the same repo/demo/writeup
+links — one navigation further away, and there is no second tier of writeup coming to fill
+it. The index plus an anchor says everything the route said.
 
 ---
 
@@ -361,10 +374,10 @@ the actual files; they are short and commented.
 
 ```ts
 export type Project = {
-  slug: string;
+  slug: string; // the row's anchor (/projects#<slug>) and its timeline key
   name: string;
   tagline: string; // one honest line, sentence case
-  description?: string; // detail page
+  description?: string; // shown when the row expands
   stack: string[]; // ["PyTorch", "LangChain"]
   year: number;
   award?: string; // e.g. "Mayor's Innovation Award"
@@ -404,15 +417,18 @@ renders in array order.
 
 ```
 components/
-  Shell.tsx        two-column layout: <Rail> + scrolling content. Optional `sections` prop.
+  Shell.tsx        two-column layout: <Rail> + scrolling content. Optional `page` prop
+                   ("home" | "projects") — which nav entry is current.
   Rail.tsx         sticky identity rail: name (→ /), headline, focus list, nav,
                    availability, contact.
-  RailNav.tsx      (client) in-page scroll-spy nav for the home sections.
+  RailNav.tsx      (client) the nav tree (§6); scroll-spy + click lock on the home page.
+                   Section list lives in lib/nav.ts, shared with app/page.tsx.
   PageHeader.tsx   eyebrow + big title, shared by /projects and 404.
   Section.tsx      props: { id; index; label; title; children }. Mono "NNN — label" eyebrow
                    + Space Grotesk title + rhythm; id doubles as the scroll-spy anchor.
-  ProjectRow.tsx   (client) expandable row. Collapsed: index | name/tagline/stack | year |
-                   chevron. Expanded: description + repo/demo/writeup/details links.
+  ProjectRow.tsx   (client) expandable row, id={slug}. Collapsed: index |
+                   name/tagline/stack | year | chevron. Expanded: description +
+                   repo/demo/writeup links. Opens itself when the hash names it.
                    Reports open/hover to the timeline (§7a).
   ExperienceList.tsx (client) <ol> of expandable role/org rows; expand reveals the note.
                    Period is inline at the end of the header row, not in a gutter.
@@ -465,7 +481,6 @@ app/
   sitemap.ts robots.ts
   projects/
     page.tsx            full index
-    [slug]/page.tsx     detail (one per project, pre-rendered)
 components/             see §13. A component has a .module.css only when it needs styles
                         that aren't already a utility — several have none.
 content/
@@ -474,6 +489,7 @@ content/
 lib/
   types.ts              Project, Profile, Experience
   site.ts               name, domain, description
+  nav.ts                homeSections — the rail's section list, in document order
 public/
   resume.pdf            served at /resume.pdf; the rail links to it
 docs/
@@ -496,8 +512,7 @@ component's own module. This is why there are fewer `.module.css` files than com
 3. Home: about → experience (`Timeline` + `ExperienceList`) → featured `ProjectRow` list
    from `content/projects.ts` → contact.
 4. `/projects` full index reusing `ProjectRow`.
-5. `/projects/[slug]` writeups.
-6. `resume.pdf`, OG image, sitemap/robots, JSON-LD, Vercel deploy.
+5. `resume.pdf`, OG image, sitemap/robots, JSON-LD, Vercel deploy.
 
 ---
 
