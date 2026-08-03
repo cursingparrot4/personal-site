@@ -6,7 +6,7 @@ import "./globals.css";
 
 const sans = Space_Grotesk({
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  weight: ["400", "500"],
   variable: "--font-sans",
   display: "swap",
 });

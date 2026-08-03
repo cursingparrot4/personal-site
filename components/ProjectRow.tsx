@@ -20,6 +20,7 @@ type Props = {
 export function ProjectRow({ project, index }: Props) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
+  const nameId = useId();
   const num = String(index).padStart(2, "0");
   const { name, tagline, description, stack, year, award, links, slug } = project;
   const hasLinks = Boolean(links.repo || links.demo || links.devpost);
@@ -31,7 +32,13 @@ export function ProjectRow({ project, index }: Props) {
   // the timeline dots point at, since a project has no page of its own.
   useEffect(() => {
     const sync = () => {
-      if (decodeURIComponent(window.location.hash.slice(1)) === slug) setOpen(true);
+      let hash = window.location.hash.slice(1);
+      try {
+        hash = decodeURIComponent(hash);
+      } catch {
+        // a malformed escape ("#%") is nobody's slug — compare it raw
+      }
+      if (hash === slug) setOpen(true);
     };
     sync();
     window.addEventListener("hashchange", sync);
@@ -54,7 +61,9 @@ export function ProjectRow({ project, index }: Props) {
 
         <span className={styles.main}>
           <span className={styles.heading}>
-            <span className={styles.name}>{name}</span>
+            <span id={nameId} className={styles.name}>
+              {name}
+            </span>
             {award ? <span className={`${styles.award} mono`}>{award}</span> : null}
           </span>
           <span className={styles.tagline}>{tagline}</span>
@@ -74,7 +83,13 @@ export function ProjectRow({ project, index }: Props) {
         </span>
       </button>
 
-      <div id={panelId} className={styles.panel} role="region" inert={!open}>
+      <div
+        id={panelId}
+        className={styles.panel}
+        role="region"
+        aria-labelledby={nameId}
+        inert={!open}
+      >
         <div className={styles.panelInner}>
           {description ? (
             <p className={styles.desc} data-last={!hasLinks}>

@@ -48,10 +48,19 @@
   font-size: var(--fs-meta);
   color: var(--muted);
   max-width: 24ch;
+  /* A headline a shade over the measure otherwise leaves one orphaned word. */
+  text-wrap: balance;
 }
 
-.focus {
+/* ---- the "now" list ----
+   Two items with no heading read as an unlabelled fragment, where the old focus
+   list read as domains on sight. The label carries the block's top margin;
+   `.eyebrow` supplies the rest and already owns the gap beneath itself. */
+.nowLabel {
   margin-top: var(--space-5);
+}
+
+.now {
   list-style: none;
   padding: 0;
   display: flex;
@@ -60,7 +69,14 @@
   font-size: var(--fs-label);
   color: var(--muted);
 }
-.focus li::before {
+/* Hanging indent: current work runs long where the old focus domains never did,
+   and a second line starting under the dash rather than under the text reads as
+   a new item. The 2ch matches the "— " prefix exactly, in a mono face. */
+.now li {
+  padding-left: 2ch;
+  text-indent: -2ch;
+}
+.now li::before {
   content: "— ";
   color: var(--border);
 }
@@ -181,6 +197,34 @@
   padding-left: calc(6px + var(--space-3));
 }
 
+/* ---- live Discord presence (components/Presence.tsx) ----
+   Indented into the same column as the location, under the availability dot.
+   It gets no dot of its own: a second marker beside the pulsing one would read as
+   a competing state, and this line's liveness is already the thing that makes it
+   appear at all. Kept off the accent per spec §4 — the dot above owns that. */
+.presence {
+  padding-left: calc(6px + var(--space-3));
+  max-width: 100%;
+  /* Stated rather than inherited from .status — the muted verb against the
+     `--text` subject is the whole point of splitting the line, and it shouldn't
+     depend on which block this ends up in. */
+  color: var(--muted);
+  /* A Spotify track with three credited artists otherwise wraps to three lines
+     and shoves the contact block off the bottom of the rail. `min-width` is what
+     actually lets the ellipsis engage: below 900px this is a flex item, and a
+     flex item won't shrink under its content width without it — a long title
+     pushed the page 5px wider than the viewport at 375px instead of truncating. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Muted verb, full-strength subject — the game or track is the information. */
+.presenceSubject {
+  color: var(--text);
+}
+
 .contact {
   margin-top: var(--space-5);
   padding-top: var(--space-5);
@@ -235,12 +279,24 @@
     align-items: baseline;
     gap: var(--space-2) var(--space-4);
   }
-  .location {
+  .location,
+  .presence {
     padding-left: 0;
   }
-  .location::before {
+  .location::before,
+  .presence::before {
     content: "· ";
     color: var(--border);
+  }
+  /* Let it wrap here instead of truncating. `nowrap` exists on desktop to keep a
+     long track from pushing the contact block off a 100dvh sticky rail; a stacked
+     header has no such ceiling. It also has to go: the rail is a grid item at
+     `min-width: auto`, so one unbreakable line sets the *rail's* min-content width
+     and the whole page scrolls sideways — 633px of it, at a 375px viewport. */
+  .presence {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
   }
   .contact {
     margin-top: var(--space-5);

@@ -45,7 +45,9 @@ specific content.
 
 ## 3. Tech stack
 
-- **Next.js (App Router) + TypeScript**, statically rendered (no server data needs).
+- **Next.js (App Router) + TypeScript**, statically rendered (no server data needs). The one
+  live value on the site — the rail's Discord presence line (§6a) — is subscribed to from the
+  browser, so every route stays static and there is still no backend.
 - **CSS Modules + a `globals.css`** token layer. No Tailwind, no CSS-in-JS runtime.
 - **`next/font`** self-hosting Space Grotesk + JetBrains Mono (both on Google Fonts) — no
   layout shift, no external font requests.
@@ -104,7 +106,8 @@ under `prefers-reduced-motion`; the layers stay.
 
 Two families, self-hosted via `next/font`:
 
-- **Space Grotesk** — name, headings, section titles, body prose. Weights 400/500/700.
+- **Space Grotesk** — name, headings, section titles, body prose. Weights 400/500.
+  (700 was loaded for a while but nothing ever used it — every heading is 500.)
 - **JetBrains Mono** — metadata, nav, labels, index numbers (`01`), tags, years, timeline
   labels. Weight 400/500.
 
@@ -136,9 +139,17 @@ Two families, self-hosted via `next/font`:
     `--page-pad: clamp(1.25rem, 5vw, 2rem)` gutters. Collapses to a single column below
     **900px**, where the rail becomes a stacked header.
 - The rail (`components/Rail.tsx`) holds a mono prompt row (`~/aryan-ahlawat` … `cs · systems`,
-  hairline underneath, toggled by `showPrompt`), then name, headline, focus areas, navigation,
-  an availability block (`profile.status` + `profile.location`) and a contact block holding
-  resume ↗, github ↗, email ↗ and linkedin ↗. It replaces a top nav bar.
+  hairline underneath, toggled by `showPrompt`), then name, headline, a **`now` list**,
+  navigation, an availability block (`profile.status` + `profile.location` + the live presence
+  line, §6a) and a contact block holding resume ↗, github ↗, email ↗ and linkedin ↗. It
+  replaces a top nav bar.
+- **The `now` list is labelled; the old focus list wasn't.** It used to be four domains
+  (`machine learning`, `retrieval / RAG`, …), which announced themselves as a taxonomy on
+  sight. Two lines of current work do not — `— API integrations at Co-operators` with nothing
+  above it reads as an orphaned fragment — so a mono `currently working on` eyebrow sits over
+  it. (The field is `profile.now`; the eyebrow is a literal in `Rail.tsx`, so the label can be
+  reworded without touching the data.) The list is meant to go stale and be edited; that is
+  what makes it worth reading.
 - **The nav is one tree, identical on every page** (`RailNav`): `Home`, the home page's
   sections indented under it against a hairline, then `All projects` back at Home's level.
   A lone "Home" link on /projects read as a leftover next to the home page's section list;
@@ -167,13 +178,46 @@ Two families, self-hosted via `next/font`:
 
 ---
 
+## 6a. The presence line
+
+The last line of the availability block is live: `playing Geometry Dash`, `listening to
+<song> — <artist>`, or a bare `online` / `away` / `busy`. It comes from
+**[Lanyard](https://github.com/Phineas/lanyard)** over `wss://api.lanyard.rest/socket` —
+subscribe with op 2 (`subscribe_to_id`, which returns the presence object _bare_, not keyed by
+id), heartbeat with op 3 on the interval op 1 hands you, read op 0 `INIT_STATE` /
+`PRESENCE_UPDATE`. It requires the Discord account to have joined `discord.gg/lanyard`, and
+`profile.discordId` ships in the client bundle — both are inherent to the service.
+
+**Silence is the failure mode.** No id, no socket, too many reconnects, or an offline account
+all render _nothing_. The two lines above it — availability and location — are the ones that
+always have to be there, so a third-party outage costs the rail a line it can spare rather
+than leaving a broken or stale row. Reconnects back off (2s, 4s, 8s…) and stop after five
+consecutive failures; any presence message resets the count.
+
+**It does not get the accent, and it does not get a dot.** Discord's own green/amber/red would
+put three new colours in a palette that allows one (§4), and a second marker beside the pulsing
+availability dot reads as a competing state. The line's liveness is already carried by the fact
+that it appears at all. Within the line, the verb is `--muted` and the subject is `--text`: the
+game or the track is the information. A long track title truncates with an ellipsis and keeps
+the full string in `title` — wrapping to three lines would push the contact block off the
+bottom of a `100dvh` rail.
+
+**Only activity type 0 (playing) and Spotify are surfaced.** A custom status is text the user
+wrote rather than something they're doing, and rich-presence `details` ("Editing README.md")
+is more than a sidebar should leak.
+
+---
+
 ## 7. Motion & interaction (restrained, purposeful)
 
 - **Expand-in-place:** project rows and experience rows are click-to-expand accordions
-  (buttons with `aria-expanded`/`aria-controls`; panels `role="region"` + `inert` when
-  closed). Height animates via the `grid-template-rows: 0fr → 1fr` trick, 400ms; the chevron
-  rotates 180°. Collapsed shows the summary; expanded reveals the full description + links
-  (projects) or the detail note (experience).
+  (buttons with `aria-expanded`/`aria-controls`; panels `role="region"`, labelled by the
+  row's title via `aria-labelledby`, and `inert` when closed). Height animates via the
+  `grid-template-rows: 0fr → 1fr` trick, 400ms; the chevron rotates 180°. Collapsed shows
+  the summary; expanded reveals the full description + links (projects) or the detail note
+  (experience). An experience row without a note renders its header as a plain div, not a
+  disabled button — a disabled button would leave the tab order anyway and would also
+  swallow the hover that lights the row's bar in the timeline (§7a).
 - **Scroll-spy rail nav** (`RailNav`, home only): the active section is the last one whose
   top has crossed a line 35% down the viewport — the active item's tick grows and turns
   `--accent`. Derived from scroll position (rAF-throttled `scroll`/`resize`, plus a
@@ -302,14 +346,14 @@ public/resume.pdf linked from the rail's contact block
 │         cs · systems│  About                                     │
 │ ─────────────────── │  [bio, capped ~62ch]                       │
 │ Aryan Ahlawat       │                                            │
-│ i build and ship    │  002 — experience                          │
-│ machine-learning …  │  Experience                                │
+│ cs at queen's, ai   │  002 — experience                          │
+│ stream.             │  Experience                                │
 │                     │  Co-operators │           ▬▬▬              │  ← timeline
-│ — machine learning  │  QMIND        │      ▬▬▬▬▬▬                │
-│ — retrieval / RAG   │  Acetech      │   ▬▬▬                      │
-│ — computer vision   │  Projects     │    ●    ●  ●     ●   ●     │
-│ — low-level systems │  ────────────────────────────────────────  │
-│                     │  Software Dev Co-op  Co-operators  May–Aug⌄│  ← accordion
+│ currently working on│  QMIND        │      ▬▬▬▬▬▬                │
+│ — api integrations  │  Acetech      │   ▬▬▬                      │
+│   at co-operators   │  Projects     │    ●    ●  ●     ●   ●     │
+│ — rl agent that     │  ────────────────────────────────────────  │
+│   plays geo dash    │  Software Dev Co-op  Co-operators  May–Aug⌄│  ← accordion
 │                     │  ────────────────────────────────────────  │
 │                     │  003 — projects                            │
 │ ▬▬  home            │  Selected work                             │  ← current page
@@ -322,6 +366,7 @@ public/resume.pdf linked from the rail's contact block
 │ ● open to winter    │  004 — contact                             │
 │   2027 internships  │  Contact                                   │
 │   Toronto, ON       │  one line · mailto on "reach out"          │
+│   playing geo dash  │                                            │  ← live (§6a)
 │ ─────────────────── │                                            │
 │ resume ↗  (this     │                                            │
 │ github ↗   half     │                                            │
@@ -331,10 +376,11 @@ public/resume.pdf linked from the rail's contact block
    sticky (100dvh)        scrolls · no footer; the page ends with the content
 ```
 
-Below 900px the rail stacks on top as a header (name, tagline, focus, horizontal nav,
-availability + contact). The nav tree flattens to the pages you aren't on: the section
+Below 900px the rail stacks on top as a header (name, tagline, the `now` list, horizontal
+nav, availability + contact). The nav tree flattens to the pages you aren't on: the section
 list is hidden (you just scroll) and so is the entry for the current page, which on the
-home page leaves a lone "all projects".
+home page leaves a lone "all projects". The availability block turns into one inline meta
+row, and the presence line joins it behind the same `·` separator as the location.
 
 **Contact carries no link list.** Resume/GitHub/email/LinkedIn are in the rail on every
 page; repeating them below only splits the target. The section is one sentence with the
@@ -391,17 +437,18 @@ export type Experience = {
   period: string; // display string, e.g. "May–Aug 2026" — word it however you like
   start: string; // "YYYY-MM", inclusive. Places and sizes the timeline bar (§7a)
   end: string; // "YYYY-MM", inclusive
-  note?: string; // omit and the row simply isn't expandable
+  note?: string[]; // one string per bullet; omit and the row simply isn't expandable
 };
 
 export type Profile = {
   name: string;
   headline: string; // one line, what you do
   promptMeta: string; // right side of the rail's prompt row, e.g. "cs · systems"
-  focus: string[]; // ["machine learning", ...]
+  now: string[]; // the rail's "now" list — 2–3 items, meant to be edited (§6)
   bio: string;
   location: string; // rail availability block + footer
   status?: string; // availability line; omit to hide the block entirely
+  discordId?: string; // Discord snowflake for the presence line (§6a); omit to hide it
   links: { github: string; email: string; linkedin?: string };
   experience: Experience[];
 };
@@ -419,8 +466,12 @@ renders in array order.
 components/
   Shell.tsx        two-column layout: <Rail> + scrolling content. Optional `page` prop
                    ("home" | "projects") — which nav entry is current.
-  Rail.tsx         sticky identity rail: name (→ /), headline, focus list, nav,
+  Rail.tsx         sticky identity rail: name (→ /), headline, "now" list, nav,
                    availability, contact.
+  Presence.tsx     (client) the live Discord presence line (§6a). Props: { userId? }.
+                   Owns the Lanyard socket, the heartbeat and the backoff; renders
+                   null whenever there is nothing to say. Styles live in
+                   Rail.module.css — it renders inside the rail's status block.
   RailNav.tsx      (client) the nav tree (§6); scroll-spy + click lock on the home page.
                    Section list lives in lib/nav.ts, shared with app/page.tsx.
   PageHeader.tsx   eyebrow + big title, shared by /projects and 404.
@@ -444,16 +495,19 @@ components/
   NullscapeFilter.tsx  decorative overlay, mounted once in the root layout.
 ```
 
-Server components by default; `RailNav`, `ProjectRow`, `ExperienceList`, `Timeline` and
-`TimelineProvider` are client components (local expand state, scroll position, shared
-highlight state).
+Server components by default; `RailNav`, `ProjectRow`, `ExperienceList`, `Timeline`,
+`TimelineProvider` and `Presence` are client components (local expand state, scroll position,
+shared highlight state, a live socket).
 
 ---
 
 ## 14. SEO & metadata
 
 - Next Metadata API in `app/layout.tsx`: title template `"%s — Aryan Ahlawat"`, description,
-  canonical, Open Graph + Twitter card.
+  canonical, Open Graph + Twitter card. **Canonical is per route:** metadata merges
+  shallowly, so a page that doesn't set `alternates.canonical` inherits the root layout's
+  `"/"` and declares itself a duplicate of the home page (this shipped for a while on
+  `/projects`). Every new page must set its own.
 - **Static OG image** — `app/opengraph-image.png`, committed, with its alt text in
   `app/opengraph-image.alt.txt`. Name + a one-line summary on `--bg`, Space Grotesk, no
   stock art. Rendered from `docs/opengraph-image.source.html` by screenshotting it at
@@ -523,5 +577,7 @@ component's own module. This is why there are fewer `.module.css` files than com
 - Full keyboard traversal of `/` and `/projects`; visible focus rings; skip-link works.
 - `prefers-reduced-motion` disables the entrance (verify in devtools).
 - 375px and 1440px both correct; no horizontal scroll.
-- Every `TODO` resolved before launch — `grep -rn TODO content lib`. Repo links are done;
-  `profile.headline` is still the placeholder, and it renders under the name on every page.
+- Every `TODO` resolved before launch — `grep -rn TODO content lib`. Repo links and
+  `profile.headline` are done. `profile.discordId` is the one field still empty: until it's
+  filled in, the presence line (§6a) simply never renders, which is a valid shipping state
+  rather than a blocker.

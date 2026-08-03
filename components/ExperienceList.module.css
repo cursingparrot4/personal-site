@@ -39,11 +39,13 @@
 }
 /* `data-peek` is the same highlight arriving from the other direction — the
    pointer is on this role's bar in the timeline rather than on the row. */
-.header:hover:not(:disabled),
-.item[data-peek="true"] .header:not(:disabled) {
+.header:hover,
+.item[data-peek="true"] .header {
   background: var(--surface);
 }
-.header:disabled {
+/* A row with no note renders a plain div, not a button — it still mirrors the
+   timeline highlight, it just has nothing to expand. */
+.headerStatic {
   cursor: default;
 }
 .header:focus-visible {
@@ -74,7 +76,7 @@
   white-space: nowrap;
   transition: color var(--dur-fast) var(--ease);
 }
-.item:not([data-open="true"]) .header:hover:not(:disabled) .period {
+.item:not([data-open="true"]) .header:hover .period {
   color: var(--text);
 }
 .item[data-open="true"] .period {

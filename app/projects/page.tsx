@@ -7,6 +7,9 @@ import { projects } from "@/content/projects";
 export const metadata: Metadata = {
   title: "Projects",
   description: "Full index of things Aryan Ahlawat has built.",
+  // Without this the page inherits the root layout's canonical ("/") and
+  // declares itself a duplicate of the home page to search engines.
+  alternates: { canonical: "/projects" },
 };
 
 export default function ProjectsPage() {

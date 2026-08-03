@@ -65,9 +65,10 @@ Two rules explain where any given style lives:
    it can't leak. `Shell.module.css` holds only the grid that is genuinely the shell's
    own.
 
-The upshot: **components outnumber stylesheets.** `Tag.tsx`, `links.tsx` and `RailNav.tsx`
-have no stylesheet at all — the first two are built from utilities, and `RailNav` borrows
-`Rail.module.css` because it renders inside the rail. That's intentional, not an oversight.
+The upshot: **components outnumber stylesheets.** `Tag.tsx`, `links.tsx`, `RailNav.tsx` and
+`Presence.tsx` have no stylesheet at all — the first two are built from utilities, and the
+last two borrow `Rail.module.css` because they render inside the rail. That's intentional,
+not an oversight.
 
 ---
 
@@ -91,7 +92,10 @@ array order. `note` is optional; a row without one simply isn't expandable.
   period: "May–Aug 2026",   // the string shown in the list — word it however you like
   start: "2026-05",         // YYYY-MM, drives the duration chart's axis
   end: "2026-08",
-  note: "What you actually did. One line.",   // optional
+  note: [                   // optional — one string per bullet point
+    "What you actually did. One line per point.",
+    "A second, distinct piece of the role.",
+  ],
 }
 ```
 
@@ -185,7 +189,16 @@ numbering.
 ### …change the sidebar?
 
 `components/Rail.tsx` for the structure, `content/profile.ts` for the words (name,
-headline, focus list, prompt row).
+headline, `now` list, prompt row).
+
+`now` is the short list under your headline — what you're working on at the moment, two or
+three items. It replaced a fixed list of four focus areas (`Machine learning`,
+`Retrieval / RAG`, …). It is supposed to go stale; edit it when the answer changes.
+
+The heading above that list reads **currently working on**. That text is a literal in
+`components/Rail.tsx`, not a field — reword it there. The data key stays `now` because it's
+part of the `Profile` type in `lib/types.ts`; renaming the key means renaming it in both
+files, and it can't contain spaces.
 
 The rail has two link groups. The **nav** (`RailNav`) is one tree on every page — `Home`
 with the home page's sections indented under it, then `All projects` back at the top
@@ -194,10 +207,34 @@ point at `/#id`. Exactly one entry carries the accent dash: the section you're r
 the home page, or the page you're on anywhere else. The **pinned bottom block** holds the
 off-site links: resume, GitHub, email, LinkedIn.
 
+### …turn on the live "playing …" line?
+
+Three steps:
+
+1. Join **[discord.gg/lanyard](https://discord.gg/lanyard)** with the Discord account you
+   want read. Lanyard is a bot that can only see presence for users in that server — there's
+   nothing to configure once you're in, and you can leave any time to switch it off.
+2. Copy your user id: Discord → Settings → Advanced → **Developer Mode** on, then right-click
+   your name → **Copy User ID**. It's an 18–19 digit number.
+3. Paste it into `discordId` in `content/profile.ts`.
+
+The line then appears under your location in the rail: `playing Geometry Dash`, `listening
+to <song> — <artist>`, or a plain `online` / `away` / `busy`. When you're offline it renders
+nothing at all, and so does an empty `discordId`, a Lanyard outage, or a blocked WebSocket.
+Delete the field to remove the feature.
+
+Two things to know before you turn it on: the id is in the public JS bundle (it's a public
+identifier — it isn't a token, and it can't be used to act on your account), and anyone on
+the site can see what you're playing. `components/Presence.tsx` deliberately does **not**
+surface your custom status or rich-presence details like `Editing README.md`; if you want
+those, that's the file.
+
 ### …change the page title, description, or social preview?
 
 `app/layout.tsx` → `metadata`, which reads from `lib/site.ts`. Per-page overrides live in
-each page's own exported `metadata` (see `app/projects/page.tsx`).
+each page's own exported `metadata` (see `app/projects/page.tsx`). One trap: a page that
+doesn't set `alternates.canonical` inherits the root layout's `"/"` and tells search
+engines it's a duplicate of the home page — every new page needs its own.
 
 ### …change the domain?
 
@@ -237,6 +274,7 @@ export default function Writing() {
 | `Shell`           | two-column page frame: sticky rail + content. Collapses to one column under 900px. |
 | `Rail`            | the left sidebar — identity, nav, availability, contact. Stacked header on mobile. |
 | `RailNav`         | the rail's nav tree; on the home page it scroll-spies the section you're reading.  |
+| `Presence`        | the live "playing …" line under the rail's location. Renders nothing when quiet.   |
 | `Section`         | `001 — label` eyebrow + title + content. Owns the vertical rhythm.                 |
 | `PageHeader`      | eyebrow + big title. Used by `/projects` and the 404 page.                         |
 | `ProjectRow`      | one expandable project row. Shared by the home page and `/projects`.               |
@@ -248,8 +286,8 @@ export default function Writing() {
 
 Most components are server components. `"use client"` appears only where there's real
 browser state — `ProjectRow`, `ExperienceList` (expand/collapse), `RailNav` (scroll
-position), and `Timeline` + `TimelineContext` (the shared highlight). Add it only when you
-need `useState` or an event handler.
+position), `Timeline` + `TimelineContext` (the shared highlight), and `Presence` (a live
+socket). Add it only when you need `useState` or an event handler.
 
 **Every link goes through `components/links.tsx`.** `ExternalLink` is the only place
 `target="_blank" rel="noopener noreferrer"` is written, so a new off-site link can't
@@ -265,9 +303,12 @@ Every project now has links (`grep -rn TODO content lib` comes back empty). One 
 stays private. A project with an empty `links: {}` just renders without link buttons, so
 adding one without a URL breaks nothing.
 
-The headline in `content/profile.ts` is still the `SITE STILL A WIP.` placeholder. It shows
-under your name on every page. The OG card deliberately does not use it — see
-`docs/opengraph-image.source.html` — so update both when you write the real one.
+The `SITE STILL A WIP.` headline is gone — `content/profile.ts` now carries a real one. The
+OG card deliberately does not use `headline`, so it needs no regeneration for that; see
+`docs/opengraph-image.source.html` if you change the card itself.
+
+`profile.discordId` is empty, so the rail's presence line never renders. Filling it in is
+optional — see below.
 
 ## docs/
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { profile } from "@/content/profile";
 import { homeSections } from "@/lib/nav";
 import { ExternalLink } from "./links";
+import { Presence } from "./Presence";
 import { RailNav } from "./RailNav";
 import styles from "./Rail.module.css";
 
@@ -40,9 +41,10 @@ export function Rail({ page, showPrompt = true }: Props) {
           {profile.name}
         </Link>
         <p className={`${styles.tagline} mono`}>{profile.headline}</p>
-        <ul className={`${styles.focus} mono`}>
-          {profile.focus.map((f) => (
-            <li key={f}>{f}</li>
+        <p className={`eyebrow mono ${styles.nowLabel}`}>Currently working on</p>
+        <ul className={`${styles.now} mono`}>
+          {profile.now.map((n) => (
+            <li key={n}>{n}</li>
           ))}
         </ul>
       </div>
@@ -61,6 +63,9 @@ export function Rail({ page, showPrompt = true }: Props) {
           </p>
         ) : null}
         <p className={styles.location}>{profile.location}</p>
+        {/* Live, and absent whenever there's nothing live to say — the two lines
+            above it are the ones that always have to be there. */}
+        <Presence userId={profile.discordId} />
       </div>
 
       <div className={`${styles.contact} mono rise rise-3`}>
