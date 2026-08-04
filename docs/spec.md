@@ -180,30 +180,32 @@ Two families, self-hosted via `next/font`:
 
 ## 6a. The presence line
 
-The availability block **leads** with a live line: `Playing Geometry Dash`, `Listening to
-<song> — <artist>`, or a bare `Online` / `Away` / `Busy` / `Offline`. Sentence case, matching
-the two fixed lines under it; only the verb is capitalised, since the subject is a game or
-track title that carries its own casing. It goes first because
-it is the only line in the rail that changes — putting the two fixed lines above it made the
-one moving thing the easiest to miss. It comes from
+The availability block **leads** with a live line, when there is one: `Playing Geometry Dash`
+or `Listening to <song> — <artist>`. Sentence case, matching the two fixed lines under it;
+only the verb is capitalised, since the subject is a game or track title that carries its own
+casing. It goes first because it is the only line in the rail that changes — putting the two
+fixed lines above it made the one moving thing the easiest to miss. It comes from
 **[Lanyard](https://github.com/Phineas/lanyard)** over `wss://api.lanyard.rest/socket` —
 subscribe with op 2 (`subscribe_to_id`, which returns the presence object _bare_, not keyed by
 id), heartbeat with op 3 on the interval op 1 hands you, read op 0 `INIT_STATE` /
 `PRESENCE_UPDATE`. It requires the Discord account to have joined `discord.gg/lanyard`, and
 `profile.discordId` ships in the client bundle — both are inherent to the service.
 
-**Silence means "we don't know", not "he's offline".** No id, no socket, or too many reconnects
-render _nothing at all_; a reported `offline` is a fact Lanyard told us and gets a real line
-with a grey dot. The distinction matters because the two lines below — availability and
-location — are the ones that always have to be there, so an outage costs the rail a line it can
-spare rather than asserting something it was never told. Reconnects back off (2s, 4s, 8s…) and
-stop after five consecutive failures; any presence message resets the count.
+**Only an activity earns the line.** A bare status — `online`, `idle`, `dnd`, `offline` —
+renders _nothing at all_, and so do no id, no socket, and too many reconnects. "He has Discord
+open" is not news, and the availability line directly below already states whether he's
+reachable; what he's *doing* is the only part that justifies a row. Collapsing the empty and
+the unknown cases into the same blank also means an outage is indistinguishable from a quiet
+evening — the two lines below (availability and location) are the ones that always have to be
+there, so a failure costs the rail a line it can spare rather than showing a broken one.
+Reconnects back off (2s, 4s, 8s…) and stop after five consecutive failures; any presence
+message resets the count.
 
 **It carries the same dot as the availability line.** Accent and pulsing while he is
 reachable, `--muted` and still once he isn't — one mark with two states, so colour does the
-work rather than a second visual idiom. `dnd` counts as unreachable and takes the grey dot
-whatever is playing underneath it, so `busy` reads exactly like `offline`; the dot answers
-"can you reach him", not "is the client open". Discord's own green/amber/red stays out of it: three
+work rather than a second visual idiom. `dnd` counts as unreachable, so an activity reported
+while busy keeps the line but takes the grey dot: the dot answers "can you reach him", not "is
+the client open". Discord's own green/amber/red stays out of it: three
 new colours in a palette that allows one (§4). The grey is `--muted` rather than the `--border`
 that §4 reserves for inert glyphs, because `--border` at 6px on `--bg` is effectively
 invisible, and a state you cannot see is not a state.
@@ -216,9 +218,9 @@ load-bearing rather than cosmetic: the rail is a grid item at `min-width: auto`,
 unbreakable line sets the whole rail's min-content width and scrolls the page sideways —
 633px of it, at a 375px viewport.
 
-**Only activity type 0 (playing) and Spotify are surfaced.** A custom status is text the user
-wrote rather than something they're doing, and rich-presence `details` ("Editing README.md")
-is more than a sidebar should leak.
+**Only activity type 0 (playing) and Spotify are surfaced** — which is to say, the two that
+are genuinely activities. A custom status is text the user wrote rather than something they're
+doing, and rich-presence `details` ("Editing README.md") is more than a sidebar should leak.
 
 ---
 
@@ -380,9 +382,9 @@ public/resume.pdf linked from the rail's contact block
 │   │ ──  contact     │      YOLOv8 · PyTorch · Stable Diffusion   │
 │ ──  all projects    │  All projects →                            │
 │                     │                                            │
-│ ● Playing geo dash  │  004 — contact                             │  ← live (§6a)
-│ ● Open to winter    │  Contact                                   │
-│   2027 internships  │  one line · mailto on "reach out"          │
+│ ● Playing geo dash  │  004 — contact                             │  ← live (§6a); the row
+│ ● Open to winter    │  Contact                                   │    is gone when he's
+│   2027 internships  │  one line · mailto on "reach out"          │    playing nothing
 │   Toronto, ON       │                                            │
 │ ─────────────────── │                                            │
 │ resume ↗  (this     │                                            │
@@ -487,8 +489,9 @@ components/
                    availability, contact.
   Presence.tsx     (client) the live Discord presence line (§6a), first row of the
                    status block. Props: { userId? }. Owns the Lanyard socket, the
-                   heartbeat and the backoff; renders null when the state is unknown,
-                   a grey-dotted line when he's offline or busy. Styles live in
+                   heartbeat and the backoff; renders null unless there's an activity
+                   to name, and a grey-dotted line when that activity is reported
+                   while he's on do-not-disturb. Styles live in
                    Rail.module.css — it renders inside the rail's status block.
   RailNav.tsx      (client) the nav tree (§6); scroll-spy + click lock on the home page.
                    Section list lives in lib/nav.ts, shared with app/page.tsx.

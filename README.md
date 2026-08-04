@@ -219,13 +219,15 @@ Three steps:
 3. Paste it into `discordId` in `content/profile.ts`.
 
 The line then leads the availability block, above "Open to winter 2027 internships":
-`Playing Geometry Dash`, `Listening to <song> — <artist>`, or a plain `Online` / `Away` /
-`Busy` / `Offline`. It carries the same dot as the availability line below it — accent and
-pulsing when you're reachable, grey and still when you're `busy` (do-not-disturb) or offline.
+`Playing Geometry Dash` or `Listening to <song> — <artist>`. It carries the same dot as the
+availability line below it — accent and pulsing when you're reachable, grey and still when
+you're on do-not-disturb.
 
-Nothing renders at all when the state is _unknown_ rather than offline: an empty `discordId`,
-a Lanyard outage, or a blocked WebSocket. That's deliberate — a grey "offline" would be
-claiming something the site was never told. Delete the field to remove the feature.
+**It only ever names an activity.** Being merely online, away, busy, or offline renders
+nothing at all — the row simply isn't there. Neither is it there when the state is unknown: an
+empty `discordId`, a Lanyard outage, or a blocked WebSocket. Both cases collapse to the same
+blank, so an outage looks like an evening off rather than a broken row, and the two lines
+below it always stand on their own. Delete the field to remove the feature entirely.
 
 Two things to know before you turn it on: the id is in the public JS bundle (it's a public
 identifier — it isn't a token, and it can't be used to act on your account), and anyone on
@@ -278,7 +280,7 @@ export default function Writing() {
 | `Shell`           | two-column page frame: sticky rail + content. Collapses to one column under 900px. |
 | `Rail`            | the left sidebar — identity, nav, availability, contact. Stacked header on mobile. |
 | `RailNav`         | the rail's nav tree; on the home page it scroll-spies the section you're reading.  |
-| `Presence`        | the live "playing …" line atop the rail's availability block, with its own dot.    |
+| `Presence`        | the live "playing …" line atop the availability block; gone with no activity.      |
 | `Section`         | `001 — label` eyebrow + title + content. Owns the vertical rhythm.                 |
 | `PageHeader`      | eyebrow + big title. Used by `/projects` and the 404 page.                         |
 | `ProjectRow`      | one expandable project row. Shared by the home page and `/projects`.               |
@@ -311,8 +313,10 @@ The `SITE STILL A WIP.` headline is gone — `content/profile.ts` now carries a 
 OG card deliberately does not use `headline`, so it needs no regeneration for that; see
 `docs/opengraph-image.source.html` if you change the card itself.
 
-`profile.discordId` is set and the rail's presence line is live. Clearing the field turns the
-feature off; see "…turn on the live 'playing …' line?" above for what it needs.
+`profile.discordId` is set and the rail's presence line is live — so it appears whenever
+you're playing something or on Spotify, and the rail is a line shorter the rest of the time.
+Clearing the field turns the feature off; see "…turn on the live 'playing …' line?" above for
+what it needs.
 
 ## docs/
 

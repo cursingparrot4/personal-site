@@ -4,7 +4,7 @@ export const profile: Profile = {
   name: "Aryan Ahlawat",
   headline: "CS at Queens, AI stream.", // tune to taste, keep it one honest line
   promptMeta: "CS · Economics",
-  now: ["API integrations at Co-operators", "RL agent that plays Geometry Dash"],
+  now: ["API integrations at Co-operators", "RL agent that plays Geometry Dash", "This site!"],
   // Discord snowflake. The presence line stays hidden until this is filled in and
   // the account has joined discord.gg/lanyard.
   discordId: "364856465271422979",

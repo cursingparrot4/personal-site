@@ -15,18 +15,11 @@ type Lanyard = {
 
 /** A verb the line leads with, plus the thing it applies to. Split so the subject
  *  can carry `--text` against a muted verb without the accent being spent here.
+ *  Both are always present: an activity is the only thing this line reports.
  *  `live` drives the dot: accent while he's reachable, grey once he isn't. */
-type Line = { verb: string; subject?: string; live: boolean };
+type Line = { verb: string; subject: string; live: boolean };
 
 const SOCKET = "wss://api.lanyard.rest/socket";
-
-/** Fallback wording when nothing is playing. Idle means the machine has gone
- *  untouched, so "online" would overstate it. */
-const STATUS_WORD: Record<string, string> = {
-  online: "online",
-  idle: "away",
-  dnd: "busy",
-};
 
 /** Give up after this many consecutive failures so a dead service can't turn into
  *  an unbounded reconnect loop. Reset by any presence message that arrives. */
@@ -41,12 +34,13 @@ const sentence = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 /**
  * What to say about a presence, or `null` for "say nothing".
  *
- * A reported "offline" is a fact and gets a line with a grey dot. `null` is for
- * *not knowing* — no id, no socket, an unrecognised status — where claiming
- * "offline" would be asserting something we haven't been told.
+ * **Only an actual activity earns the line.** A bare status — online, away, busy,
+ * offline — returns `null` and the row disappears: "he has Discord open" isn't
+ * news, and the availability line below already says whether he's reachable. What
+ * he's *doing* is the only part worth a row in the rail.
  *
- * "dnd" reads as unavailable, so it takes offline's grey dot whatever is playing
- * underneath it — the dot answers "can you reach him", not "is the client open".
+ * "dnd" still reads as unavailable, so an activity reported while busy takes the
+ * grey dot — the dot answers "can you reach him", not "is the client open".
  *
  * Discord activity types: 0 playing, 1 streaming, 2 listening, 3 watching,
  * 4 custom status, 5 competing. Only 0 and Spotify are surfaced — a custom status
@@ -54,7 +48,8 @@ const sentence = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
  * ("Editing README.md") is more than a sidebar line should leak.
  */
 function describe(p: Lanyard): Line | null {
-  if (p.discord_status === "offline") return { verb: "offline", live: false };
+  // Offline can still carry stale activities; nothing it says is worth reporting.
+  if (p.discord_status === "offline") return null;
 
   const live = p.discord_status !== "dnd";
 
@@ -75,16 +70,15 @@ function describe(p: Lanyard): Line | null {
     };
   }
 
-  const word = STATUS_WORD[p.discord_status];
-  return word ? { verb: word, live } : null;
+  return null;
 }
 
 /**
  * Live Discord presence for the rail's availability block, over Lanyard's
- * WebSocket (https://github.com/Phineas/lanyard). Renders nothing at all when
- * there's no id, when the socket never connects, or when the account is offline —
- * the block above it already stands on its own, so a failure is invisible rather
- * than a broken row.
+ * WebSocket (https://github.com/Phineas/lanyard). Renders nothing at all unless
+ * there's an activity to name — no id, no socket, or simply nothing being played
+ * all collapse to the same empty row. The block below it stands on its own, so
+ * both a quiet day and an outage are invisible rather than a broken line.
  *
  * Client-only by nature; the site stays statically rendered (spec §3) because
  * this never runs on the server.
@@ -158,10 +152,10 @@ export function Presence({ userId }: { userId?: string }) {
   if (!line) return null;
 
   const verb = sentence(line.verb);
-  const full = line.subject ? `${verb} ${line.subject}` : verb;
+  const full = `${verb} ${line.subject}`;
   return (
     <p className={styles.presence}>
-      {/* Same mark as the availability dot above; grey and still once presence drops. */}
+      {/* Same mark as the availability dot above; grey and still while he's busy. */}
       <span
         className={line.live ? styles.dot : `${styles.dot} ${styles.dotOffline}`}
         aria-hidden="true"
@@ -169,7 +163,7 @@ export function Presence({ userId }: { userId?: string }) {
       {/* Truncated by CSS when a track title is long — `title` keeps the whole string. */}
       <span className={styles.presenceText} title={full}>
         {verb}
-        {line.subject ? <span className={styles.presenceSubject}> {line.subject}</span> : null}
+        <span className={styles.presenceSubject}> {line.subject}</span>
       </span>
     </p>
   );
