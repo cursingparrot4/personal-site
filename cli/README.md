@@ -25,14 +25,18 @@ alternate screen means quitting leaves your scrollback exactly as it was.
 The same content is served as plain text over HTTP:
 
 ```bash
-curl aryanahlawat.dev
-curl aryanahlawat.dev/projects
-curl 'aryanahlawat.dev/?plain'      # no colour, safe to pipe
-curl 'aryanahlawat.dev/?w=120'      # set the width
+curl -L aryanahlawat.dev
+curl -L aryanahlawat.dev/projects
+curl -L 'aryanahlawat.dev/?plain'      # no colour, safe to pipe
+curl -L 'aryanahlawat.dev/?w=120'      # set the width
 ```
 
-On Windows PowerShell use `curl.exe` or `irm` — bare `curl` there is an alias for
-`Invoke-WebRequest`, which returns an object rather than the page.
+`-L` matters: a bare hostname means `http://`, which is force-upgraded to https with a 308,
+and curl won't follow that on its own.
+
+On Windows PowerShell, use `irm https://aryanahlawat.dev`. Bare `curl` there is an alias for
+`Invoke-WebRequest`, which returns an object rather than the page — and PowerShell 5.1
+refuses to follow a 308, so the scheme has to be spelled out.
 
 ## How it stays current
 

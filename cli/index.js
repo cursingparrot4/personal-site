@@ -107,7 +107,7 @@ async function main() {
       "aryanahlawat — Aryan Ahlawat's portfolio in your terminal\n\n" +
         "  npx aryanahlawat            interactive\n" +
         "  npx aryanahlawat | cat      plain, non-interactive\n" +
-        "  curl aryanahlawat.dev       the same content, nothing to install\n\n" +
+        "  curl -L aryanahlawat.dev    the same content, nothing to install\n\n" +
         "keys: up/down move · enter expand · left/right or tab section · 1-4 jump · q quit\n",
     );
     return;
