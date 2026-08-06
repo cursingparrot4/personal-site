@@ -720,7 +720,8 @@ app/
     page.tsx            full index
   txt/                  the terminal view (§14a) — route.ts and projects/route.ts
   api/content/          the JSON the npx app reads (§14b)
-middleware.ts           serves app/txt/ to CLI user agents asking for a page (§14a)
+proxy.ts                serves app/txt/ to CLI user agents asking for a page (§14a).
+                        Was middleware.ts; Next 16 renamed the convention.
 cli/                    the `npx aryanahlawat` app (§14b). Its own npm package —
                         no dependencies, no build step, publishes as-is.
 components/             see §13. A component has a .module.css only when it needs styles

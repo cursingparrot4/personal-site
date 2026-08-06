@@ -32,7 +32,7 @@ export function serveText(request: Request, render: (options: RenderOptions) => 
       // Without this a browser hitting /txt tries to parse the escapes as HTML.
       "Content-Type": "text/plain; charset=utf-8",
       "Cache-Control": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
-      // Required. middleware.ts serves this body at "/" for CLI agents, so a
+      // Required. proxy.ts serves this body at "/" for CLI agents, so a
       // shared cache that ignored the UA could hand the ANSI to a browser —
       // or the HTML to curl.
       Vary: "User-Agent",

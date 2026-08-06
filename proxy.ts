@@ -8,6 +8,10 @@ import { NextResponse, type NextRequest } from "next/server";
  * It rewrites rather than redirects: the URL the user typed is the URL they
  * keep. Everything else — every browser, and every crawler — falls through to
  * the real HTML untouched.
+ *
+ * This was `middleware.ts` until Next 16, which renamed the convention to
+ * `proxy.ts` and the export to `proxy`. Same file, same position in the
+ * request path, same `config.matcher` — only the names moved.
  */
 
 /**
@@ -32,7 +36,7 @@ const TEXT_ROUTE: Record<string, string> = {
   "/projects": "/txt/projects",
 };
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const ua = request.headers.get("user-agent") ?? "";
   if (!ua || BOTS.test(ua) || !CLI.test(ua)) return NextResponse.next();
 
@@ -63,7 +67,7 @@ export function middleware(request: NextRequest) {
 }
 
 /**
- * Only the two paths that have a text twin. Nothing else wakes the middleware —
- * no asset, no /_next request — which keeps Edge invocations near zero.
+ * Only the two paths that have a text twin. Nothing else wakes this file — no
+ * asset, no /_next request — which keeps Edge invocations near zero.
  */
 export const config = { matcher: ["/", "/projects"] };

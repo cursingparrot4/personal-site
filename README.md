@@ -44,7 +44,7 @@ content/       ← the stuff you'll actually edit. Words, jobs, projects.
 lib/           site constants + the TypeScript shapes content must match
 app/           one folder = one URL. Pages, plus the global stylesheet.
 components/    reusable UI
-middleware.ts  hands CLI clients the text version of a page
+proxy.ts       hands CLI clients the text version of a page
 cli/           the `npx aryanahlawat` app — its own npm package
 docs/          the design spec. Reading only.
 public/        static files served as-is (resume.pdf lives here)
@@ -300,7 +300,7 @@ sit beside the bio on desktop and move _above_ the section's eyebrow under 760px
 under the prose instead, it landed at the foot of About against the next section's eyebrow
 and read as a stray block.
 
-`middleware.ts` looks at the user agent. A terminal (`curl`, `wget`, `httpie`, `xh`,
+`proxy.ts` looks at the user agent. A terminal (`curl`, `wget`, `httpie`, `xh`,
 PowerShell) gets rewritten to the matching route under `app/txt/`; **everything else falls
 through to the real HTML.** It rewrites rather than redirects, so the URL doesn't change.
 
@@ -321,7 +321,7 @@ data — education is prose inside `profile.bio`, skills are only implied by eac
 `stack`. Inventing them for the terminal alone would create the one thing that can go stale.
 Add them to `lib/types.ts` first and both versions get them.
 
-Two things to be careful of if you touch `middleware.ts`:
+Two things to be careful of if you touch `proxy.ts`:
 
 - **The crawler check runs first, and must stay first.** Googlebot needs the HTML to index
   the site; Discord, Slack and Twitter need it to unfurl a link, since the OG card is only
