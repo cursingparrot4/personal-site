@@ -64,7 +64,7 @@ const CLIENTS: Client[] = [
     path: "aryanahlawat",
     command: "npx aryanahlawat",
     returns: "interactive · resizable",
-    hint: "arrow keys, ⏎ expands. bold of you.",
+    hint: "arrow keys, ⏎ expands. WIP",
   },
 ];
 
