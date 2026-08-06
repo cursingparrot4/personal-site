@@ -27,12 +27,13 @@ Run `npm run build` before you push — it fails on type errors that `dev` lets 
 ## Where everything lives
 
 ```
-content/     ← the stuff you'll actually edit. Words, jobs, projects.
-lib/         site constants + the TypeScript shapes content must match
-app/         one folder = one URL. Pages, plus the global stylesheet.
-components/  reusable UI
-docs/        the design spec. Reading only.
-public/      static files served as-is (resume.pdf lives here)
+content/       ← the stuff you'll actually edit. Words, jobs, projects.
+lib/           site constants + the TypeScript shapes content must match
+app/           one folder = one URL. Pages, plus the global stylesheet.
+components/    reusable UI
+middleware.ts  hands CLI clients the text version of a page
+docs/          the design spec. Reading only.
+public/        static files served as-is (resume.pdf lives here)
 ```
 
 Two rules explain where any given style lives:
@@ -133,6 +134,10 @@ which field is wrong or missing.
 project, not just the featured ones, and each dot links to `/projects#<slug>` — the index
 row for that project, opened on arrival.
 
+The month arithmetic behind it lives in `lib/timeline.ts`, not in the component, because the
+terminal version draws the same chart in ASCII. Both import it, so the two can't disagree
+about where a bar starts.
+
 Projects only have a year, so projects sharing one are spread evenly across it (the two 2026
 entries land in April and August) purely so they don't stack — that horizontal offset is
 spacing, not data. A dot shows its name only while it's lit, since five names along one lane
@@ -164,6 +169,12 @@ reads from these variables, so changing `--accent` once recolours the whole site
 --text: #e2e8ec; /* body copy */
 --muted: #8b979e; /* secondary text, nav, meta */
 ```
+
+**One catch.** The terminal version (below) needs these as TypeScript, and CSS custom
+properties can't be imported into TS — so `lib/ansi.ts` holds a copy of four of them. It's
+the only place in the repo a design token is written twice. Change a colour here and change
+it there in the same commit; nothing will fail loudly if you don't, `curl` will just quietly
+be the old colour.
 
 Fonts are loaded in `app/layout.tsx` via `next/font` (Space Grotesk + JetBrains Mono) and
 exposed as `--font-sans` / `--font-mono`.
@@ -234,6 +245,45 @@ identifier — it isn't a token, and it can't be used to act on your account), a
 the site can see what you're playing. `components/Presence.tsx` deliberately does **not**
 surface your custom status or rich-presence details like `Editing README.md`; if you want
 those, that's the file.
+
+### …read the site in a terminal?
+
+```bash
+curl aryanahlawat.dev              # the home page, in colour
+curl aryanahlawat.dev/projects     # the full index, descriptions included
+curl aryanahlawat.dev/txt          # the same thing by name, from any client
+```
+
+`middleware.ts` looks at the user agent. A terminal (`curl`, `wget`, `httpie`, `xh`,
+PowerShell) gets rewritten to the matching route under `app/txt/`; **everything else falls
+through to the real HTML.** It rewrites rather than redirects, so the URL doesn't change.
+
+Two query options, and they work on the bare domain too (`curl 'aryanahlawat.dev/?plain'`):
+
+|          |                                                                     |
+| -------- | ------------------------------------------------------------------- |
+| `?plain` | no colour and no escapes at all — for piping into a file or a pager |
+| `?w=100` | render to 100 columns instead of 80 (clamped to 40–200)             |
+
+**You don't have to maintain it.** `lib/render-terminal.ts` imports `content/profile.ts` and
+`content/projects.ts` — the same files the pages read. Add a job or a project and it appears
+in both, or in neither. The only things written twice are two lines of chrome (the "currently
+working on" heading and the contact sentence), and both carry a comment saying so.
+
+What it deliberately leaves out: education and a skills list. Neither exists as structured
+data — education is prose inside `profile.bio`, skills are only implied by each project's
+`stack`. Inventing them for the terminal alone would create the one thing that can go stale.
+Add them to `lib/types.ts` first and both versions get them.
+
+Two things to be careful of if you touch `middleware.ts`:
+
+- **The crawler check runs first, and must stay first.** Googlebot needs the HTML to index
+  the site; Discord, Slack and Twitter need it to unfurl a link, since the OG card is only
+  discoverable through the `<head>`. A crawler served plain text costs you the search
+  listing and the previews.
+- **`Vary: User-Agent` on the response is load-bearing** (`lib/txt-response.ts`). The same
+  URL now has two representations; without that header a shared cache can hand the escape
+  codes to a browser, or the markup to `curl`.
 
 ### …change the page title, description, or social preview?
 

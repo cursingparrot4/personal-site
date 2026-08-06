@@ -4,7 +4,12 @@ export const profile: Profile = {
   name: "Aryan Ahlawat",
   headline: "CS at Queens, AI stream.", // tune to taste, keep it one honest line
   promptMeta: "CS · Economics",
-  now: ["API integrations at Co-operators", "RL agent that plays Geometry Dash", "Kaggle competitions (kaggriculture)", "This site!"],
+  now: [
+    "API integrations at Co-operators",
+    "RL agent that plays Geometry Dash",
+    "Kaggle competitions (kaggriculture)",
+    "This site!",
+  ],
   // Discord snowflake. The presence line stays hidden until this is filled in and
   // the account has joined discord.gg/lanyard.
   discordId: "364856465271422979",
@@ -81,3 +86,9 @@ export const profile: Profile = {
     },
   ],
 };
+
+/**
+ * "Aryan Ahlawat" → "aryan-ahlawat", the `~/` prompt row in the rail and in the
+ * terminal view's header. Derived here so the two can't drift apart.
+ */
+export const profileHandle = profile.name.toLowerCase().replace(/\s+/g, "-");

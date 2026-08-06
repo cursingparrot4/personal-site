@@ -2,48 +2,11 @@
 
 import Link from "next/link";
 import type { Experience, Project } from "@/lib/types";
+// The month maths is shared with the ASCII chart in lib/render-terminal.ts —
+// see lib/timeline.ts for why it doesn't live in this file any more.
+import { placeProjects, spell, toMonths } from "@/lib/timeline";
 import { expKey, projKey, useTimeline } from "./TimelineContext";
 import styles from "./Timeline.module.css";
-
-/** "2025-09" → absolute month index, so the axis is plain arithmetic. */
-function toMonths(ym: string): number {
-  const [y, m] = ym.split("-").map(Number);
-  return y * 12 + (m - 1);
-}
-
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-function spell(ym: string): string {
-  const [y, m] = ym.split("-").map(Number);
-  return `${MONTHS[m - 1]} ${y}`;
-}
-
-/**
- * Projects carry a year, not a month. Spread the ones sharing a year evenly
- * across it: two 2026 projects land in April and August rather than on top of
- * each other. That horizontal offset is spacing, not data — the axis is only
- * honest to the year, which is why each dot names its project and its year to
- * assistive tech rather than leaving position to do the talking.
- */
-function placeProjects(projects: Project[]): { project: Project; month: number }[] {
-  const byYear = new Map<number, Project[]>();
-  for (const p of projects) {
-    const bucket = byYear.get(p.year);
-    if (bucket) bucket.push(p);
-    else byYear.set(p.year, [p]);
-  }
-
-  const placed: { project: Project; month: number }[] = [];
-  for (const [year, bucket] of byYear) {
-    const n = bucket.length;
-    bucket.forEach((project, j) => {
-      // The array is newest-first, so the first of a year sits latest in it.
-      placed.push({ project, month: year * 12 + ((n - j) / (n + 1)) * 12 });
-    });
-  }
-  // Left-to-right DOM order, so tab order follows the axis.
-  return placed.sort((a, b) => a.month - b.month);
-}
 
 type Props = {
   items: Experience[];

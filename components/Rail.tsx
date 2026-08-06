@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { profile } from "@/content/profile";
+import { profile, profileHandle } from "@/content/profile";
 import { homeSections } from "@/lib/nav";
 import { ExternalLink } from "./links";
 import { Presence } from "./Presence";
@@ -12,9 +12,6 @@ type Props = {
   /** terminal prompt row above the name */
   showPrompt?: boolean;
 };
-
-/** "Aryan Ahlawat" → "aryan-ahlawat" for the prompt row. */
-const handle = profile.name.toLowerCase().replace(/\s+/g, "-");
 
 /**
  * Sticky identity rail: prompt row, name, tagline, focus areas, nav tree, contact.
@@ -31,7 +28,7 @@ export function Rail({ page, showPrompt = true }: Props) {
               <span className={styles.promptPath} aria-hidden="true">
                 ~/
               </span>
-              {handle}
+              {profileHandle}
             </span>
             <span className={styles.promptMeta}>{profile.promptMeta}</span>
           </p>

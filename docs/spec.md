@@ -551,6 +551,45 @@ shared highlight state, a live socket).
 
 ---
 
+## 14a. The terminal view
+
+The site's whole aesthetic is a terminal — `~/.profile` section labels, a monospace rail, a
+`~/` prompt row. So a request from an actual terminal should get an actual terminal page.
+`curl aryanahlawat.dev` prints the site as coloured text; a browser is untouched.
+
+**It is a rendering of the site, not a second site.** It reads the same `content/` modules
+the pages do, mirrors their section numbers and labels, and adds nothing of its own. This is
+the property the whole thing is for: there is no copy to update, so there is nothing to
+forget. Adding a project gives it a row in both places or neither.
+
+Consequently it **declines to invent content the HTML site doesn't have.** No education
+block, no skills list — neither exists as structured data, and a terminal-only version of
+either would be the one thing here that can drift. If they're wanted, they get added to the
+`Profile` type first and both surfaces render them.
+
+**Colour is the same four tokens (§4) and no others.** Accent for the things accent already
+owns — section numbers, awards, tags, links, timeline bars — muted for meta, border for
+rules. One flourish: the name fades accent → text across its characters.
+
+Body prose is the single deliberate departure from the stylesheet: it is left **uncoloured**,
+taking the terminal's own foreground. The site is dark-only because it controls its own
+background; a terminal doesn't, and `--text` on a light profile would be white on white.
+Accent, muted and border stay because all three are legible on either.
+
+**Who gets it.** Crawlers are checked first and always get the HTML — Googlebot needs it to
+index the site and Discord/Slack/Twitter need it to unfurl, and the OG card (§14) is only
+reachable through the `<head>`. Only user agents that are unambiguously a terminal are
+diverted; anything vaguer is as likely to be a scraper that wants markup. `/txt` is always
+reachable by name, so nothing depends on the sniff being clever.
+
+Requests are **rewritten, not redirected**: the URL you typed is the URL you keep.
+
+Width can't be detected over HTTP, so it renders to 80 columns and takes `?w=` to change it.
+Nothing but a long URL is ever allowed past the margin — breaking one would cost the reader
+both the click and the copy-paste.
+
+---
+
 ## 15. File structure
 
 ```
@@ -564,6 +603,8 @@ app/
   sitemap.ts robots.ts
   projects/
     page.tsx            full index
+  txt/                  the terminal view (§14a) — route.ts and projects/route.ts
+middleware.ts           serves app/txt/ to CLI user agents asking for a page (§14a)
 components/             see §13. A component has a .module.css only when it needs styles
                         that aren't already a utility — several have none.
 content/
@@ -573,6 +614,10 @@ lib/
   types.ts              Project, Profile, Experience
   site.ts               name, domain, description
   nav.ts                homeSections — the rail's section list, in document order
+  timeline.ts           the month maths, shared by both timelines (§7a, §14a)
+  ansi.ts fmt.ts        terminal colour primitives + the ?plain switch (§14a)
+  render-terminal.ts    the text rendering itself
+  txt-response.ts       its query options and response headers
 public/
   resume.pdf            served at /resume.pdf; the rail links to it
 docs/
@@ -608,3 +653,6 @@ component's own module. This is why there are fewer `.module.css` files than com
 - 375px and 1440px both correct; no horizontal scroll.
 - Every `TODO` resolved before launch — `grep -rn TODO content lib`. Repo links,
   `profile.headline` and `profile.discordId` are all filled in; nothing is outstanding.
+- Terminal view (§14a): `curl` on `/` gets text, a browser gets HTML, and Googlebot,
+  Discordbot, Slackbot and Twitterbot all still get HTML. `?plain` emits no escape at all.
+  Nothing but a long URL exceeds the column width at 40, 80 or 120.
