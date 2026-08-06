@@ -32,6 +32,7 @@ lib/           site constants + the TypeScript shapes content must match
 app/           one folder = one URL. Pages, plus the global stylesheet.
 components/    reusable UI
 middleware.ts  hands CLI clients the text version of a page
+cli/           the `npx aryanahlawat` app — its own npm package
 docs/          the design spec. Reading only.
 public/        static files served as-is (resume.pdf lives here)
 ```
@@ -248,11 +249,21 @@ those, that's the file.
 
 ### …read the site in a terminal?
 
+Two ways in. The static one, which needs nothing installed:
+
 ```bash
 curl aryanahlawat.dev              # the home page, in colour
 curl aryanahlawat.dev/projects     # the full index, descriptions included
 curl aryanahlawat.dev/txt          # the same thing by name, from any client
 ```
+
+**On Windows PowerShell, use `curl.exe` or `irm` instead.** Bare `curl` there is an alias
+for `Invoke-WebRequest`, which returns a response _object_ rather than the page — in PS 5.1
+it can fail outright on the Internet Explorer parsing path. `curl.exe aryanahlawat.dev` and
+`irm aryanahlawat.dev` both work. (Note `irm` also won't follow the `www` → apex 308, so
+give it the bare domain.)
+
+And the interactive one — see "…the `npx` app?" below.
 
 `middleware.ts` looks at the user agent. A terminal (`curl`, `wget`, `httpie`, `xh`,
 PowerShell) gets rewritten to the matching route under `app/txt/`; **everything else falls
@@ -284,6 +295,51 @@ Two things to be careful of if you touch `middleware.ts`:
 - **`Vary: User-Agent` on the response is load-bearing** (`lib/txt-response.ts`). The same
   URL now has two representations; without that header a shared cache can hand the escape
   codes to a browser, or the markup to `curl`.
+
+### …work on the `npx` app?
+
+`cli/` is a separate npm package, published as **`aryanahlawat`**, so `npx aryanahlawat`
+opens the portfolio as a real terminal app: arrow keys to move, ⏎ to expand a job or
+project, ←/→ or `1`–`4` for sections, and it reflows when you resize the window.
+
+```
+cli/
+  index.js       fetch, TTY setup, the input loop — all the I/O
+  lib/view.js    every frame, as pure functions of (content, state, width)
+  lib/keys.js    keystroke → state change, as a pure reducer
+  lib/ansi.js    colour and text primitives
+```
+
+It has **no dependencies and no build step** — what's in the folder is what gets published.
+Publish with:
+
+```bash
+cd cli && npm publish
+```
+
+**It carries no content.** Every run it fetches the words and the palette from
+`/api/content` (`app/api/content/route.ts`), which is built from `content/profile.ts` and
+`content/projects.ts` — the same files everything else reads. So editing a job updates the
+website, `curl`, and everyone's already-installed CLI at once, with no republish. You only
+need to publish again when the app's _behaviour_ changes.
+
+Two consequences worth knowing:
+
+- **It needs a network connection**, by design. There's no bundled snapshot to fall back on,
+  because a snapshot is exactly the stale copy this arrangement exists to avoid.
+- `lib/ansi.js` restates the wrapping and measuring helpers from `lib/ansi.ts`. That's the
+  price of having no build step. It's deliberately limited to _mechanism_, which doesn't
+  change; anything that can actually go stale comes down the wire.
+
+To point it at a local build while you work on it:
+
+```bash
+ARNA_SITE=http://localhost:3000 node cli/index.js
+```
+
+Piped or redirected, it skips the interface and prints everything expanded — so
+`npx aryanahlawat | cat` behaves like `curl` rather than hanging on a terminal that isn't
+there.
 
 ### …change the page title, description, or social preview?
 

@@ -590,6 +590,38 @@ both the click and the copy-paste.
 
 ---
 
+## 14b. The terminal app (`npx aryanahlawat`)
+
+The `curl` view is a document: one response, printed, done. It cannot answer a keypress or
+notice the window changing, because by then nothing of ours is still running. Interaction
+needs code on the reader's machine, which is what `cli/` is — a dependency-free Node package
+that draws the same portfolio as a real application.
+
+**What it adds over the text view, and nothing more:** rows that expand in place, section
+navigation, and a layout that refits when the window does. These are precisely the three
+things the website already does that a static response can't. It is not a second design.
+
+**It ships no content.** Every run it fetches the words *and* the palette from
+`/api/content`, generated from the same `content/` modules as everything else. A published
+version can therefore never go stale, and editing a job updates the site, `curl`, and every
+installed copy at once. The tradeoff is accepted deliberately: it needs a connection, and
+there is no bundled snapshot, because a snapshot is the stale copy this arrangement exists
+to prevent.
+
+**Constraints that shape it.** The alternate screen is non-negotiable — the app must leave
+scrollback exactly as it found it. A frame is always exactly the window: `frame()` clips
+every line itself rather than trusting its caller, because one line too wide wraps, pushes
+the rest down, and a full-screen redraw then reads as tearing. Below ~22 rows the header
+gives up its optional lines; the body is what the reader came for.
+
+Contact details and project links are the one thing never clipped — they wrap onto a second
+line instead. Losing the tail of a sentence costs nothing; half a URL is unusable.
+
+Piped or redirected it prints everything at once, fully expanded, and exits. A program that
+blocks waiting for a terminal that isn't there is a bug.
+
+---
+
 ## 15. File structure
 
 ```
@@ -604,7 +636,10 @@ app/
   projects/
     page.tsx            full index
   txt/                  the terminal view (§14a) — route.ts and projects/route.ts
+  api/content/          the JSON the npx app reads (§14b)
 middleware.ts           serves app/txt/ to CLI user agents asking for a page (§14a)
+cli/                    the `npx aryanahlawat` app (§14b). Its own npm package —
+                        no dependencies, no build step, publishes as-is.
 components/             see §13. A component has a .module.css only when it needs styles
                         that aren't already a utility — several have none.
 content/
@@ -656,3 +691,6 @@ component's own module. This is why there are fewer `.module.css` files than com
 - Terminal view (§14a): `curl` on `/` gets text, a browser gets HTML, and Googlebot,
   Discordbot, Slackbot and Twitterbot all still get HTML. `?plain` emits no escape at all.
   Nothing but a long URL exceeds the column width at 40, 80 or 120.
+- Terminal app (§14b): a frame is exactly the window at every size tried, focusing any row
+  scrolls it into view, `q` restores the screen and the cursor, and a resize repaints at the
+  new size. Piped, it prints and exits rather than waiting.

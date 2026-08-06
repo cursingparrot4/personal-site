@@ -1,0 +1,31 @@
+{
+  "name": "aryanahlawat",
+  "version": "1.0.0",
+  "description": "Aryan Ahlawat's portfolio as an interactive terminal app. npx aryanahlawat",
+  "bin": {
+    "aryanahlawat": "index.js"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "index.js",
+    "lib",
+    "README.md"
+  ],
+  "keywords": [
+    "portfolio",
+    "resume",
+    "cli",
+    "tui"
+  ],
+  "author": "Aryan Ahlawat",
+  "license": "MIT",
+  "homepage": "https://aryanahlawat.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cursingparrot4/arna-site.git",
+    "directory": "cli"
+  }
+}
