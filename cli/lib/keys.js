@@ -7,12 +7,16 @@
  * the key. Give it a keystroke and a state object and it tells you what to do.
  */
 
+import { LINK } from "./view.js";
+
 const ESC = String.fromCharCode(27);
 const CTRL_C = String.fromCharCode(3);
 
 /** What index.js should do next. */
 export const QUIT = "quit";
 export const REDRAW = "redraw";
+/** Open the focused target's URL. The reducer can't do it — it's I/O. */
+export const OPEN = "open";
 export const IGNORED = null;
 
 /**
@@ -26,12 +30,13 @@ function normalize(raw) {
 
 /**
  * Applies `raw` to `state` in place. `ctx` supplies what the reducer can't know
- * on its own: how many focusable rows the current section has, how many
- * sections exist, and how far a page-scroll should travel.
+ * on its own: the focusable things in the current section (see view.targets),
+ * how many sections exist, and how far a page-scroll should travel.
  */
 export function handleKey(raw, state, ctx) {
   const key = normalize(raw);
-  const { sectionCount, rowCount, pageSize, rowPrefix } = ctx;
+  const { sectionCount, targets, pageSize } = ctx;
+  const rowCount = targets.length;
 
   const setSection = (next) => {
     state.section = (next + sectionCount) % sectionCount;
@@ -68,13 +73,16 @@ export function handleKey(raw, state, ctx) {
       setSection(state.section - 1);
       break;
 
+    // One key, whatever is under it: expand a row, open a link. The two never
+    // compete for it because a link is only focusable once its row is open.
     case "\r":
     case "\n":
     case " ": {
-      if (rowCount === 0) break;
-      const id = `${rowPrefix}:${state.focus}`;
-      if (state.expanded.has(id)) state.expanded.delete(id);
-      else state.expanded.add(id);
+      const target = targets[state.focus];
+      if (!target) break;
+      if (target.kind === LINK) return OPEN;
+      if (state.expanded.has(target.id)) state.expanded.delete(target.id);
+      else state.expanded.add(target.id);
       break;
     }
 

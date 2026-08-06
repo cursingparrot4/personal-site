@@ -10,12 +10,17 @@ No install, no dependencies, ~20 KB. Works anywhere Node 18+ runs — Windows Te
 PowerShell, macOS, Linux, WSL.
 
 ```
-↑ ↓      move between rows
-⏎ / space expand or collapse the focused row
-← → tab  change section
-1 – 4    jump straight to a section
-q        quit
+↑ ↓       move between rows and links
+⏎ / space expand the focused row — or open the focused link in your browser
+← → tab   change section
+1 – 4     jump straight to a section
+q         quit
 ```
+
+Expanding a project puts its repo / demo / devpost links directly under it, in the same
+list the arrows are already walking, so ⏎ twice gets you from a project to its source. The
+Contact section is links the whole way down; `email` opens a `mailto:`. Nothing is clicked
+and nothing is copied out — the footer tells you what ⏎ will do to whatever is selected.
 
 The window is the app's real layout constraint, so it reflows as you resize it, and the
 alternate screen means quitting leaves your scrollback exactly as it was.

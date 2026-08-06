@@ -9,12 +9,15 @@ import {
   HOME,
   clip,
 } from "./lib/ansi.js";
-import { QUIT, REDRAW, handleKey } from "./lib/keys.js";
-import { SECTIONS, body, frame, header, theme } from "./lib/view.js";
+import { OPEN, QUIT, REDRAW, handleKey } from "./lib/keys.js";
+import { openUrl } from "./lib/open.js";
+import { ROW, SECTIONS, body, frame, header, targets, theme } from "./lib/view.js";
 
 const SITE = process.env.ARNA_SITE ?? "https://aryanahlawat.dev";
 const MIN_WIDTH = 40;
 const MAX_WIDTH = 200;
+/** How long the footer holds the result of opening a link. */
+const NOTICE_MS = 2500;
 
 /* ----------------------------------------------------------------- content */
 
@@ -35,18 +38,7 @@ async function fetchContent() {
 
 /* ------------------------------------------------------------------- state */
 
-const state = { section: 0, focus: 0, scroll: 0, expanded: new Set() };
-
-/** Row keys are per-section, so expanding job 2 doesn't expand project 2. */
-function rowPrefix(section) {
-  return SECTIONS[section].id === "work" ? "proj" : "exp";
-}
-
-function rowCount(data, section) {
-  if (SECTIONS[section].id === "experience") return data.profile.experience.length;
-  if (SECTIONS[section].id === "work") return data.projects.length;
-  return 0;
-}
+const state = { section: 0, focus: 0, scroll: 0, expanded: new Set(), notice: null };
 
 /* ------------------------------------------------------------------ render */
 
@@ -67,16 +59,44 @@ function draw(data, t) {
 
 /* ------------------------------------------------------------------- input */
 
+let noticeTimer;
+
+/**
+ * A line in the footer for a moment. Opening a link usually announces itself by
+ * raising a browser window, but not always — over SSH, or with no opener
+ * installed, this line is the only thing that happens.
+ */
+function notify(data, t, text) {
+  state.notice = text;
+  clearTimeout(noticeTimer);
+  noticeTimer = setTimeout(() => {
+    state.notice = null;
+    draw(data, t);
+  }, NOTICE_MS);
+  // A pending notice must not be the thing keeping the process alive.
+  noticeTimer.unref?.();
+  draw(data, t);
+}
+
+function open(target, data, t) {
+  openUrl(target.url).then(
+    () => notify(data, t, `opened ${target.text}`),
+    (err) => notify(data, t, `couldn't open it — ${err.message}`),
+  );
+}
+
 function onKey(raw, data, t, quit) {
   const { height } = dimensions();
+  // Recomputed per keystroke: expanding a project adds its links to the list.
+  const list = targets(data, state);
   const result = handleKey(raw, state, {
     sectionCount: SECTIONS.length,
-    rowCount: rowCount(data, state.section),
-    rowPrefix: rowPrefix(state.section),
+    targets: list,
     pageSize: Math.max(1, height - 10),
   });
 
   if (result === QUIT) return quit();
+  if (result === OPEN) return open(list[state.focus], data, t);
   if (result === REDRAW) draw(data, t);
 }
 
@@ -88,11 +108,14 @@ function printStatic(data, t) {
   const out = [...header(data, t, width, false), ""];
 
   SECTIONS.forEach((section, i) => {
-    // Nothing can be clicked open in a pipe, so everything arrives open.
-    const expanded = new Set();
-    for (let r = 0; r < rowCount(data, i); r++) expanded.add(`${rowPrefix(i)}:${r}`);
+    // No keys to press in a pipe, so everything arrives open and nothing is
+    // focused. focus: -1 matches no target, which is what draws no caret.
+    const view = { section: i, focus: -1, scroll: 0, expanded: new Set() };
+    for (const target of targets(data, view)) {
+      if (target.kind === ROW) view.expanded.add(target.id);
+    }
 
-    const { lines } = body(data, t, { section: i, focus: -1, scroll: 0, expanded }, width);
+    const { lines } = body(data, t, view, width);
     out.push(t.accent(section.index) + t.muted(` ── ${section.label}`), t.bold(section.title), "");
     out.push(...lines, "");
   });
@@ -108,7 +131,8 @@ async function main() {
         "  npx aryanahlawat            interactive\n" +
         "  npx aryanahlawat | cat      plain, non-interactive\n" +
         "  curl -L aryanahlawat.dev    the same content, nothing to install\n\n" +
-        "keys: up/down move · enter expand · left/right or tab section · 1-4 jump · q quit\n",
+        "keys: up/down move · enter expand a row, open a focused link\n" +
+        "      left/right or tab section · 1-4 jump · q quit\n",
     );
     return;
   }

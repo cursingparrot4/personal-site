@@ -8,6 +8,7 @@ import {
   gradient,
   padEnd,
   rule,
+  truncate,
   visibleWidth,
   wrap,
 } from "./ansi.js";
@@ -25,6 +26,73 @@ export const SECTIONS = [
   { id: "work", index: "003", label: "~/bin/builds", title: "Work" },
   { id: "contact", index: "004", label: "~/.forward", title: "Contact" },
 ];
+
+/** What the arrows are moving between. A row expands; a link opens. */
+export const ROW = "row";
+export const LINK = "link";
+
+/** The links a project reveals when it opens, in the order they're drawn. */
+function projectLinks(project) {
+  return [
+    ["repo", project.links.repo],
+    ["demo", project.links.demo],
+    ["devpost", project.links.devpost],
+  ]
+    .filter(([, url]) => url)
+    .map(([label, url]) => ({ kind: LINK, label, text: url, url }));
+}
+
+/**
+ * `text` is what's printed, `url` is what opens — they differ for the email,
+ * which reads as an address and opens as a mailto.
+ */
+function contactLinks(data) {
+  const { profile, site } = data;
+  const resume = `${site.url}/resume.pdf`;
+  const links = [
+    { kind: LINK, label: "email", text: profile.links.email, url: `mailto:${profile.links.email}` },
+    { kind: LINK, label: "resume", text: resume, url: resume },
+    { kind: LINK, label: "github", text: profile.links.github, url: profile.links.github },
+  ];
+  if (profile.links.linkedin) {
+    links.push({
+      kind: LINK,
+      label: "linkedin",
+      text: profile.links.linkedin,
+      url: profile.links.linkedin,
+    });
+  }
+  return links;
+}
+
+/**
+ * Everything the arrows can land on in the current section, in visual order.
+ *
+ * This is the single enumeration of focusable things: `body()` draws straight
+ * from it, so what's on screen and what a keypress acts on can't drift apart.
+ * A project's links sit immediately after it and only while it's open, which is
+ * what makes ⏎-to-expand and then ⏎-to-open one continuous gesture rather than
+ * two modes.
+ */
+export function targets(data, state) {
+  const section = SECTIONS[state.section].id;
+
+  if (section === "experience") {
+    return data.profile.experience.map((item, i) => ({ kind: ROW, id: `exp:${i}`, item }));
+  }
+
+  if (section === "work") {
+    return data.projects.flatMap((item, i) => {
+      const id = `proj:${i}`;
+      const row = { kind: ROW, id, item, number: i + 1 };
+      return state.expanded.has(id) ? [row, ...projectLinks(item)] : [row];
+    });
+  }
+
+  if (section === "contact") return contactLinks(data);
+
+  return [];
+}
 
 /** Colour helpers bound to the palette the site handed us. */
 export function theme(palette) {
@@ -51,13 +119,20 @@ function twoCol(left, right, width) {
  * whole. Everywhere else a clipped line just loses some prose; here it would
  * hand the reader half an address, which is worse than making them read two
  * lines for it.
+ *
+ * The focus marker is written *into* the indent rather than added in front of
+ * it, so the label sits in the same column whether or not it's the one selected
+ * — a list that shifts sideways as you arrow down it is unreadable.
  */
-function labelled(t, indent, label, labelW, value, width) {
-  const head = `${indent}${t.muted(padEnd(label, labelW))}`;
-  if (visibleWidth(head) + visibleWidth(value) <= width) return [head + t.accent(value)];
+function labelled(t, indent, label, labelW, value, width, focused) {
+  const gutter = (focused ? `${t.accent("❯")} ` : "  ") + indent.slice(2);
+  const head = `${gutter}${t.muted(padEnd(label, labelW))}`;
+  const shown = focused ? t.accent(BOLD + value + RESET) : t.accent(value);
+
+  if (visibleWidth(head) + visibleWidth(value) <= width) return [head + shown];
   return [
-    `${indent}${t.muted(label)}`,
-    ...block(value, width, `${indent}  `).map((l) => t.accent(l)),
+    `${gutter}${t.muted(label)}`,
+    ...block(value, width, `${indent}  `).map((l) => (focused ? t.accent(bold(l)) : t.accent(l))),
   ];
 }
 
@@ -118,19 +193,29 @@ function scrollRule(t, width, { up, down }) {
   return t.border(rule(Math.max(0, width - marks.length - 1))) + " " + t.muted(marks);
 }
 
-export function footer(t, width, section, scroll = { up: false, down: false }) {
-  const keys =
-    SECTIONS[section].id === "experience" || SECTIONS[section].id === "work"
-      ? [
-          ["↑↓", "move"],
-          ["⏎", "expand"],
-          ["←→", "section"],
-          ["q", "quit"],
-        ]
-      : [
-          ["←→", "section"],
-          ["q", "quit"],
-        ];
+/**
+ * The key hints, and what ⏎ does is read off whatever is focused rather than
+ * off the section: in Work the same key expands a project and then opens the
+ * links it just revealed, and the footer is the only thing that can say so.
+ *
+ * `notice` takes the line over when there is one — the result of opening a link
+ * is the one message this app has to deliver, and it belongs where the reader
+ * is already looking for what the keys do.
+ */
+export function footer(t, width, focused, scroll = { up: false, down: false }, notice = null) {
+  if (notice) return [scrollRule(t, width, scroll), t.muted(truncate(notice, width))];
+
+  const keys = focused
+    ? [
+        ["↑↓", "move"],
+        ["⏎", focused.kind === LINK ? "open" : "expand"],
+        ["←→", "section"],
+        ["q", "quit"],
+      ]
+    : [
+        ["←→", "section"],
+        ["q", "quit"],
+      ];
 
   const full = keys.map(([k, v]) => `${t.accent(k)} ${t.muted(v)}`).join(t.border("   ·   "));
   const line =
@@ -150,11 +235,13 @@ export function body(data, t, state, width) {
   const lines = [];
   const rows = [];
   const push = (...ls) => lines.push(...ls);
-  const startRow = () => lines.length;
-  const endRow = (start) => rows.push({ start, height: lines.length - start });
 
   const section = SECTIONS[state.section].id;
-  const { profile, projects, site } = data;
+  const { profile } = data;
+
+  /** The expand/collapse chevron plus the focus caret, as one fixed-width gutter. */
+  const marker = (open, focused) =>
+    `${focused ? t.accent("❯") : " "} ${t.accent(open ? "▾" : "▸")} `;
 
   if (section === "about") {
     push(...block(profile.bio, width));
@@ -167,15 +254,40 @@ export function body(data, t, state, width) {
     }
   }
 
-  if (section === "experience") {
-    profile.experience.forEach((exp, i) => {
-      const start = startRow();
-      const open = state.expanded.has(`exp:${i}`);
-      const focused = state.focus === i;
-      const marker = `${focused ? t.accent("❯") : " "} ${t.accent(open ? "▾" : "▸")} `;
+  if (section === "contact") {
+    push(...block("Open to internships and interesting problems — reach out.", width), "");
+  }
+
+  // Rows and links are drawn from the one target list, in its order, so a row's
+  // position on screen and its position under the arrows are the same fact.
+  targets(data, state).forEach((target, n) => {
+    const focused = state.focus === n;
+
+    // Blank line between entries, not after them: a project's links belong to
+    // the project above them, so the gap goes before the next one starts.
+    if (target.kind === ROW && lines.length > 0) push("");
+    const start = lines.length;
+
+    if (target.kind === LINK) {
+      const inProject = section === "work";
+      push(
+        ...labelled(
+          t,
+          inProject ? "    " : "  ",
+          target.label,
+          inProject ? 9 : 10,
+          target.text,
+          width,
+          focused,
+        ),
+      );
+    } else if (section === "experience") {
+      const exp = target.item;
+      const open = state.expanded.has(target.id);
+      const gutter = marker(open, focused);
       const title = focused ? t.accent(BOLD + exp.role + RESET) : bold(exp.role);
 
-      push(twoCol(marker + title, t.muted(exp.period), width) ?? marker + title);
+      push(twoCol(gutter + title, t.muted(exp.period), width) ?? gutter + title);
       push(...block(exp.org, width, "    ").map((l) => t.muted(l)));
 
       if (open) {
@@ -184,21 +296,13 @@ export function body(data, t, state, width) {
           push(`      ${t.accent("-")} ${w[0]}`, ...w.slice(1));
         }
       }
-      push("");
-      endRow(start);
-    });
-  }
-
-  if (section === "work") {
-    projects.forEach((p, i) => {
-      const start = startRow();
-      const open = state.expanded.has(`proj:${i}`);
-      const focused = state.focus === i;
-      const marker = `${focused ? t.accent("❯") : " "} ${t.accent(open ? "▾" : "▸")} `;
-      const num = t.accent(String(i + 1).padStart(2, "0"));
+    } else {
+      const p = target.item;
+      const open = state.expanded.has(target.id);
+      const num = t.accent(String(target.number).padStart(2, "0"));
       const name = focused ? t.accent(BOLD + p.name + RESET) : bold(p.name);
 
-      const head = `${marker}${num}  ${name}`;
+      const head = `${marker(open, focused)}${num}  ${name}`;
       push(twoCol(head, t.muted(String(p.year)), width) ?? head);
       push(...block(p.tagline, width, "    "));
       if (p.award) push(...block(`★ ${p.award}`, width, "    ").map((l) => t.accent(l)));
@@ -211,31 +315,11 @@ export function body(data, t, state, width) {
             ...block(p.stack.map((s) => `[${s}]`).join(" "), width, "    ").map((l) => t.accent(l)),
           );
         }
-        for (const [label, url] of [
-          ["repo", p.links.repo],
-          ["demo", p.links.demo],
-          ["devpost", p.links.devpost],
-        ]) {
-          if (url) push(...labelled(t, "    ", label, 9, url, width));
-        }
       }
-      push("");
-      endRow(start);
-    });
-  }
-
-  if (section === "contact") {
-    push(...block("Open to internships and interesting problems — reach out.", width), "");
-    const links = [
-      ["email", profile.links.email],
-      ["resume", `${site.url}/resume.pdf`],
-      ["github", profile.links.github],
-    ];
-    if (profile.links.linkedin) links.push(["linkedin", profile.links.linkedin]);
-    for (const [label, value] of links) {
-      push(...labelled(t, "  ", label, 10, value, width));
     }
-  }
+
+    rows.push({ ...target, start, height: lines.length - start });
+  });
 
   return { lines, rows };
 }
@@ -287,10 +371,13 @@ export function frame(data, t, state, width, height) {
   const visible = lines.slice(state.scroll, state.scroll + viewport);
   while (visible.length < viewport) visible.push("");
 
-  const foot = footer(t, width, state.section, {
-    up: state.scroll > 0,
-    down: state.scroll + viewport < lines.length,
-  });
+  const foot = footer(
+    t,
+    width,
+    rows[state.focus],
+    { up: state.scroll > 0, down: state.scroll + viewport < lines.length },
+    state.notice,
+  );
 
   return [...head, "", ...navLines, ...visible, ...foot].map((l) => clip(l, width));
 }

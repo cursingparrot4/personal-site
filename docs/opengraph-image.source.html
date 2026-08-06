@@ -3,21 +3,27 @@
   Source for app/opengraph-image.png (spec §14).
 
   Rendered rather than generated: next/og's build step fails on Windows, and
-  screenshotting the real page gets us the actual Space Grotesk / JetBrains Mono
-  instead of its fallback font. To regenerate after editing this file, serve it
-  and shoot the viewport at exactly 1200x630, e.g.
+  screenshotting this gets us the actual Space Grotesk / JetBrains Mono instead
+  of a fallback font. To regenerate after editing, shoot it at exactly 1200x630
+  with whichever Chromium is already on the machine — no dev server, no
+  Playwright, no repo dependency, since the file opens fine over file://:
 
-    cp docs/opengraph-image.source.html public/__og.html
-    npm run dev
-    playwright-cli run-code "async page => {
-      await page.setViewportSize({ width: 1200, height: 630 });
-      await page.goto('http://localhost:3000/__og.html', { waitUntil: 'networkidle' });
-      await page.evaluate(() => document.fonts.ready);
-      await page.screenshot({ path: 'app/opengraph-image.png' });
-    }"
-    rm public/__og.html
+    "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" \
+      --headless=new --disable-gpu --hide-scrollbars \
+      --force-device-scale-factor=1 --window-size=1200,630 \
+      --virtual-time-budget=8000 \
+      --screenshot="<absolute path>\app\opengraph-image.png" \
+      "file:///<absolute path>/docs/opengraph-image.source.html"
 
-  Keep the headline here in sync with content/profile.ts by hand.
+  Both paths must be absolute — headless Chromium resolves --screenshot against
+  its own working directory, not the shell's. --virtual-time-budget is what
+  waits for the webfonts: without it the shot fires on the fallback face, which
+  is the one thing this file exists to avoid. On macOS/Linux substitute the
+  Chrome or Chromium binary; the flags are the same.
+
+  Two strings here are hand-copied from content/profile.ts and drift silently:
+  the prompt meta (`promptMeta`) and the headline under the name. Check both
+  before you shoot.
 -->
 <html>
   <head>
@@ -148,19 +154,19 @@
 
       <div class="prompt mono">
         <span class="path">~/</span><span>aryan-ahlawat</span>
-        <span class="meta">CS · Data Science</span>
+        <span class="meta">CS · Economics</span>
       </div>
 
       <div>
         <div class="name">Aryan Ahlawat</div>
         <div class="headline" id="headline">
-          CS student at Queen's — applied ML, retrieval, and low-level systems.
+          CS at Queen's, AI stream — SWE @ Co-operators, RAG pipelines, and applied ML.
         </div>
         <div class="focus">
           <span class="tag">Machine learning</span>
           <span class="tag">Retrieval / RAG</span>
-          <span class="tag">Computer vision</span>
-          <span class="tag">Low-level systems</span>
+          <span class="tag">Full-stack</span>
+          <span class="tag">Developer tooling</span>
         </div>
       </div>
 

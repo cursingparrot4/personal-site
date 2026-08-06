@@ -330,6 +330,8 @@ are real links to `/projects#<slug>` and each carries its own accessible name.
 
 - Mobile-first. Two breakpoints: **`900px`** (rail → stacked header) and **`640px`**
   (tighter gutters), plus a narrow **`34rem`** step described below.
+- One local step at **`760px`**, in `Section.module.css`: a section with an `aside` goes
+  single-column and the panel moves from column 2 to row 1, above the eyebrow (§13, §14c).
 - `< 640px`: nav is a single inline row of links (no hamburger — there are ≤4 links).
 - Neither list reserves a fixed date gutter any more (§7a). Both push their date to the end
   of the row with `margin-left: auto`, so the two right-align on the same edge at every
@@ -507,8 +509,14 @@ components/
   RailNav.tsx      (client) the nav tree (§6); scroll-spy + click lock on the home page.
                    Section list lives in lib/nav.ts, shared with app/page.tsx.
   PageHeader.tsx   eyebrow + big title, shared by /projects and 404.
-  Section.tsx      props: { id; index; label; title; children }. Mono "NNN — label" eyebrow
-                   + Space Grotesk title + rhythm; id doubles as the scroll-spy anchor.
+  Section.tsx      props: { id; index; label; title; tight?; aside?; children }. Mono
+                   "NNN — label" eyebrow + Space Grotesk title + rhythm; id doubles as the
+                   scroll-spy anchor. `tight` pulls the section up toward a prose-ended one
+                   above. `aside` is a side panel rendered as a *sibling* of the eyebrow /
+                   title / body rows — the section becomes the grid and places all four, so
+                   the panel can sit in column 2 on desktop and take row 1, above the
+                   eyebrow, once the columns collapse. Last in the DOM either way, so the
+                   prose keeps the reading and tab order.
   EndpointCard.tsx (client) the API-reference panel beside the bio (§14c): method + path,
                    a <select> of clients (cURL / PowerShell / npx), the command, and what
                    comes back. Commands derive from lib/site.ts, never a typed-in domain.
@@ -610,8 +618,27 @@ needs code on the reader's machine, which is what `cli/` is — a dependency-fre
 that draws the same portfolio as a real application.
 
 **What it adds over the text view, and nothing more:** rows that expand in place, section
-navigation, and a layout that refits when the window does. These are precisely the three
-things the website already does that a static response can't. It is not a second design.
+navigation, links that open, and a layout that refits when the window does. These are
+precisely the things the website already does that a static response can't. It is not a
+second design.
+
+**Links are reached by the same arrows as everything else.** A printed URL in a terminal is
+either clickable, which depends on the terminal, or it's a thing to select with a mouse —
+and an app you're already driving from the keyboard shouldn't hand you back to the pointer.
+So focus is a single list per section (`view.targets()`): rows, and the links a project
+reveals once it's open, in visual order. ⏎ acts on whatever is under the caret — expand a
+row, open a link — and the footer names which, because one key doing two things is only
+honest if the app says so. The two never compete: a link is focusable only while its row is
+open.
+
+The opener is `cli/lib/open.js`, ~50 lines and no dependency. The URL is passed as one argv
+entry on every platform, so it's never parsed as a command line; Windows therefore goes
+through `rundll32 url.dll,FileProtocolHandler`, not `cmd /c start`, where `&` in a query
+string separates commands before it is a character. `http:`, `https:` and `mailto:` are the
+only schemes opened. Exit codes are ignored — several openers return non-zero having worked
+perfectly — so the failure reported is the one that matters: no opener on this machine, over
+SSH or in a container. That answer lands in the footer for a couple of seconds, since
+otherwise a keypress that raised no window would look like a keypress that did nothing.
 
 **It ships no content.** Every run it fetches the words *and* the palette from
 `/api/content`, generated from the same `content/` modules as everything else. A published
@@ -653,14 +680,25 @@ the one that fails. `irm` is offered directly, which is cheaper than explaining 
 Commands are built from `lib/site.ts`, never typed in. The domain appears once in the repo.
 
 The bio gives up measure for it — ~54ch rather than 62ch — and below 760px the card stops
-pretending to be a sidebar and drops underneath at full width.
+pretending to be a sidebar and goes full width **above the section's eyebrow**, where it
+leads About rather than trailing it. It reaches that position by being the section's `aside`
+(§13) instead of part of its content: dropped underneath the prose it ends up at the foot of
+About, hard against the Experience eyebrow with nothing holding it, which reads as a stray
+block rather than an aside to anything.
 
 **Under the card, one line of shell comment.** `# npx is interactive, if you trust me` on
-the HTTP clients; the keymap once you're on npx. It's the only joke on the site, and it's
-carrying real information — nothing else says the npx build is a program rather than another
-dump of text, and `npx`-ing a stranger's package is a thing people are rightly wary of, so
-the card says so first. A comment is the one register a terminal has for an aside, which is
-why it sits outside the border rather than in the response.
+the HTTP clients; `# yippee!! (still a wip)` once you're on npx. It's the only joke on the
+site, and it's carrying real information — nothing else says the npx build is a program
+rather than another dump of text, and `npx`-ing a stranger's package is a thing people are
+rightly wary of, so the card says so first. A comment is the one register a terminal has for
+an aside, which is why it sits outside the border rather than in the response.
+
+**The npx line is not a keymap**, and briefly was one — it drifted into
+`arrows move, ⏎ expands or opens` while the CLI was gaining the ability to open links.
+Two things are wrong with that. The app names its own keys in its footer, per focused
+target, which a static line here can't do and shouldn't duplicate; and enumerating branches
+is the one register this line doesn't have. What the reader needs before they run it is that
+it's a program with someone behind it, which is a matter of tone, not of documentation.
 
 Each hint is written to fit the column on **one line** (40 characters at the side-by-side
 width). A two-line aside stops being an aside and starts arguing with the card.

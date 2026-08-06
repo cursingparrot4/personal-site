@@ -3,30 +3,18 @@
   font-size: var(--fs-meta);
 }
 
-/* Prose left, endpoint card right. The card is given a fixed-ish column because
-   a command line has a natural width and shouldn't stretch; the paragraph takes
-   whatever is left. */
-.aboutRow {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(15rem, 19rem);
-  gap: var(--space-6) clamp(1.5rem, 4vw, 2.5rem);
-  align-items: start;
-}
-
-/* Narrower than the 62ch it used to run to: the card takes the right of the
-   column, and a measure that long beside it would leave the two fighting. */
+/* Narrower than the 62ch it runs to elsewhere: the endpoint card takes the
+   right of the column, and a measure that long beside it would leave the two
+   fighting. The two-column layout itself belongs to Section — the card is that
+   section's aside, not part of this content. */
 .bio {
   max-width: 54ch;
   color: var(--text);
   line-height: var(--lh-body);
 }
 
-/* Below this the two columns are both too narrow to be worth having. The card
-   drops under the prose and stops trying to be a sidebar. */
+/* Card's gone from beside it by here, so the prose can have its measure back. */
 @media (max-width: 760px) {
-  .aboutRow {
-    grid-template-columns: minmax(0, 1fr);
-  }
   .bio {
     max-width: 62ch;
   }

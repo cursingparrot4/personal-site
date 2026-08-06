@@ -22,6 +22,19 @@ npm run dev        # http://localhost:3000
 
 Run `npm run build` before you push — it fails on type errors that `dev` lets slide.
 
+**Two versions are held back on purpose**, and `npm update` will happily break both:
+
+- **TypeScript stays on 6.x.** TS 7 is the native rewrite; typescript-eslint doesn't support
+  it yet, so `npm run lint` dies with "typescript-eslint does not support TS 7.0" before it
+  lints a single file.
+- **ESLint stays on 9.x.** `eslint-config-next` bundles `eslint-plugin-react`, which peers on
+  `^9.7` and calls `context.getFilename()` — removed in ESLint 10, so every React file
+  throws while loading `react/display-name`.
+
+Lint config is `eslint.config.mjs` (flat config). There is no `.eslintrc.json` any more, and
+no `next lint` — Next 16 removed the command, so `npm run lint` calls the ESLint CLI. It now
+covers `cli/` too, which the old command never looked at.
+
 ---
 
 ## Where everything lives
@@ -47,7 +60,7 @@ Two rules explain where any given style lives:
    | `mono`                     | switch to JetBrains Mono (meta text, labels, nav)                 |
    | `link-muted` / `link-text` | grey or body-coloured link, cyan on hover                         |
    | `link-underline`           | the cyan rule that grows in on hover — combine with either colour |
-   | `arrow`                    | the trailing `↗` on off-site links                               |
+   | `arrow`                    | the trailing `↗` on off-site links                                |
    | `eyebrow`                  | the small mono label above a title                                |
    | `page-title`               | the big display heading                                           |
    | `sep`                      | the inert `·` between meta items                                  |
@@ -282,6 +295,11 @@ The home page advertises both in the card beside the bio (`components/EndpointCa
 Its commands are built from `lib/site.ts`, so changing the domain there changes them too —
 don't type the hostname into that component.
 
+It's passed to About as `<Section aside={…}>` rather than as content, which is what lets it
+sit beside the bio on desktop and move _above_ the section's eyebrow under 760px. Stacked
+under the prose instead, it landed at the foot of About against the next section's eyebrow
+and read as a stray block.
+
 `middleware.ts` looks at the user agent. A terminal (`curl`, `wget`, `httpie`, `xh`,
 PowerShell) gets rewritten to the matching route under `app/txt/`; **everything else falls
 through to the real HTML.** It rewrites rather than redirects, so the URL doesn't change.
@@ -317,15 +335,28 @@ Two things to be careful of if you touch `middleware.ts`:
 
 `cli/` is a separate npm package, published as **`aryanahlawat`**, so `npx aryanahlawat`
 opens the portfolio as a real terminal app: arrow keys to move, ⏎ to expand a job or
-project, ←/→ or `1`–`4` for sections, and it reflows when you resize the window.
+project — or to open the focused link in a browser — ←/→ or `1`–`4` for sections, and it
+reflows when you resize the window.
 
 ```
 cli/
   index.js       fetch, TTY setup, the input loop — all the I/O
   lib/view.js    every frame, as pure functions of (content, state, width)
   lib/keys.js    keystroke → state change, as a pure reducer
+  lib/open.js    hands a URL to the desktop's browser, no shell involved
   lib/ansi.js    colour and text primitives
 ```
+
+**The arrows walk one list, `view.targets()`.** It returns the focusable things in the
+current section in visual order — rows, plus the links a project reveals once it's open —
+and `body()` draws from that same list, so what's on screen and what a keypress acts on
+can't drift apart. Add something focusable by adding it there; the reducer, the scrolling
+and the footer hint all follow from `kind`.
+
+`lib/open.js` takes the URL as a single argv entry on every platform, so it is never parsed
+as a command line — which is why Windows uses `rundll32 url.dll,FileProtocolHandler` rather
+than `cmd /c start`, where the `&` in a query string is a command separator first and a
+character second. Only `http:`, `https:` and `mailto:` are opened at all.
 
 It has **no dependencies and no build step** — what's in the folder is what gets published.
 Publish with:
@@ -405,7 +436,7 @@ export default function Writing() {
 | `RailNav`         | the rail's nav tree; on the home page it scroll-spies the section you're reading.  |
 | `Presence`        | the live "playing …" line atop the availability block; gone with no activity.      |
 | `Section`         | `001 — label` eyebrow + title + content. Owns the vertical rhythm.                 |
-| `EndpointCard`    | the API-reference panel beside the bio — cURL / PowerShell / npx, with copy.       |
+| `EndpointCard`    | the API-reference panel — cURL / PowerShell / npx, with copy. About's `aside`.     |
 | `PageHeader`      | eyebrow + big title. Used by `/projects` and the 404 page.                         |
 | `ProjectRow`      | one expandable project row. Shared by the home page and `/projects`.               |
 | `Timeline`        | the chart above the job list — a bar per role, a dot per project, one axis.        |

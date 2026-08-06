@@ -29,6 +29,8 @@ yarn-error.log*
 /.playwright-cli/
 /test-results/
 /playwright-report/
+
+# local agent config + skills (incl. .claude/skills/playwright-cli)
 .claude/
 
 # Working resume files at the repo root. Only /*.pdf — one level — so the

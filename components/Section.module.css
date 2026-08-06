@@ -23,3 +23,55 @@
   letter-spacing: -0.01em;
   margin-bottom: var(--space-6);
 }
+
+/* ---- optional aside ---- */
+
+/* With an aside the section itself becomes the grid, rather than the content
+   laying out two columns inside its own row. The panel has to be able to leave
+   the content column entirely once the columns collapse — stacked under the
+   prose it lands at the foot of the section, against the next section's
+   eyebrow, reading as a stray block — and it can only outrank the heading if
+   it's a sibling of it.
+
+   Rows are placed explicitly so on desktop the panel starts level with the top
+   of the content: beside the prose, not beside the title. */
+.hasAside {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 19rem);
+  column-gap: clamp(1.5rem, 4vw, 2.5rem);
+  align-items: start;
+}
+
+.hasAside > .eyebrowRow {
+  grid-area: 1 / 1;
+}
+.hasAside > .title {
+  grid-area: 2 / 1;
+}
+.hasAside > .body {
+  grid-area: 3 / 1;
+}
+.hasAside > .aside {
+  grid-area: 3 / 2;
+}
+
+/* Below this both columns are too narrow to be worth having, so the panel goes
+   up top and leads the section instead. */
+@media (max-width: 760px) {
+  .hasAside {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hasAside > .aside {
+    grid-area: 1 / 1;
+    margin-bottom: var(--space-6);
+  }
+  .hasAside > .eyebrowRow {
+    grid-area: 2 / 1;
+  }
+  .hasAside > .title {
+    grid-area: 3 / 1;
+  }
+  .hasAside > .body {
+    grid-area: 4 / 1;
+  }
+}

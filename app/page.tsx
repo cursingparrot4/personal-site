@@ -30,14 +30,12 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
       />
 
-      <Section id="about" index="001" label="~/.profile" title="About">
-        {/* The bio gives up some measure so the endpoint card can sit beside it
-            rather than under it — the one place on the page that says the site
-            is also readable from a terminal. */}
-        <div className={styles.aboutRow}>
-          <p className={styles.bio}>{profile.bio}</p>
-          <EndpointCard />
-        </div>
+      {/* The card rides as the section's aside rather than as content: beside
+          the bio on desktop, above the whole section once that column collapses.
+          It's the one place on the page that says the site is also readable from
+          a terminal, so it shouldn't end up at the tail of About on a phone. */}
+      <Section id="about" index="001" label="~/.profile" title="About" aside={<EndpointCard />}>
+        <p className={styles.bio}>{profile.bio}</p>
       </Section>
 
       {/* Spans both sections: the timeline lives at the top of Experience but

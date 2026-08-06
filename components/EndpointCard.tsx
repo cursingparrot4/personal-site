@@ -16,7 +16,9 @@ type Client = {
   /** the response line under the command — what you actually get back */
   returns: string;
   /** the shell-comment aside under the card: a nudge toward npx from the HTTP
-   *  clients, and the keymap once you're on it */
+   *  clients, and — once you're on it — the only line on the page that sounds
+   *  pleased with itself. Deliberately not a keymap: the app names its own keys
+   *  in its footer, contextually, which a static line here can't do. */
   hint: string;
 };
 
@@ -64,7 +66,7 @@ const CLIENTS: Client[] = [
     path: "aryanahlawat",
     command: "npx aryanahlawat",
     returns: "interactive · resizable",
-    hint: "arrow keys, ⏎ expands. WIP",
+    hint: "yippee!! (still a wip)",
   },
 ];
 
