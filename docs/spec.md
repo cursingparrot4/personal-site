@@ -371,8 +371,11 @@ public/resume.pdf linked from the rail's contact block
 ┌─────────────────────┬────────────────────────────────────────────┐
 │ ~/aryan-ahlawat     │  001 — about                               │
 │         cs · systems│  About                                     │
-│ ─────────────────── │  [bio, capped ~62ch]                       │
-│ Aryan Ahlawat       │                                            │
+│ ─────────────────── │  [bio, ~54ch]      ┌──────────────────┐    │
+│ Aryan Ahlawat       │                    │ GET / cURL⌄    ⧉ │    │  ← §14c
+│                     │                    │ $ curl arya….dev │    │
+│                     │                    │ 200 · text/plain │    │
+│                     │                    └──────────────────┘    │
 │ cs at queen's, ai   │  002 — experience                          │
 │ stream.             │  Experience                                │
 │                     │  Co-operators │           ▬▬▬              │  ← timeline
@@ -506,6 +509,9 @@ components/
   PageHeader.tsx   eyebrow + big title, shared by /projects and 404.
   Section.tsx      props: { id; index; label; title; children }. Mono "NNN — label" eyebrow
                    + Space Grotesk title + rhythm; id doubles as the scroll-spy anchor.
+  EndpointCard.tsx (client) the API-reference panel beside the bio (§14c): method + path,
+                   a <select> of clients (cURL / PowerShell / npx), the command, and what
+                   comes back. Commands derive from lib/site.ts, never a typed-in domain.
   ProjectRow.tsx   (client) expandable row, id={slug}. Collapsed: index |
                    name/tagline/stack | year | chevron. Expanded: description +
                    repo/demo/devpost links. Opens itself when the hash names it.
@@ -525,8 +531,8 @@ components/
 ```
 
 Server components by default; `RailNav`, `ProjectRow`, `ExperienceList`, `Timeline`,
-`TimelineProvider` and `Presence` are client components (local expand state, scroll position,
-shared highlight state, a live socket).
+`TimelineProvider`, `Presence` and `EndpointCard` are client components (local expand state,
+scroll position, shared highlight state, a live socket, a picker + clipboard).
 
 ---
 
@@ -555,7 +561,13 @@ shared highlight state, a live socket).
 
 The site's whole aesthetic is a terminal — `~/.profile` section labels, a monospace rail, a
 `~/` prompt row. So a request from an actual terminal should get an actual terminal page.
-`curl aryanahlawat.dev` prints the site as coloured text; a browser is untouched.
+`curl -L aryanahlawat.dev` prints the site as coloured text; a browser is untouched.
+
+The `-L` is not incidental and every example in the repo carries it. A bare hostname means
+`http://`, which the host force-upgrades to https with a `308`; curl does not follow that
+unless asked, so the command without it returns fourteen bytes reading `Redirecting...`.
+Windows PowerShell has the sharper version of the same edge — 5.1 refuses to follow a 308 at
+all — which is why its listed command spells out `https://` rather than relying on a flag.
 
 **It is a rendering of the site, not a second site.** It reads the same `content/` modules
 the pages do, mirrors their section numbers and labels, and adds nothing of its own. This is
@@ -619,6 +631,39 @@ line instead. Losing the tail of a sentence costs nothing; half a URL is unusabl
 
 Piped or redirected it prints everything at once, fully expanded, and exits. A program that
 blocks waiting for a terminal that isn't there is a bug.
+
+---
+
+## 14c. The endpoint card
+
+§14a and §14b are invisible from the website itself — nobody types `curl` at a page that
+never mentions it. The card beside the bio is the one place that says so, borrowing the
+shape of an API reference panel: method, path, a client picker, the command, and what comes
+back.
+
+**It is the only boxed element on the site.** Everywhere else structure comes from hairline
+rules and whitespace (§2). The border is affordable here because the box is a *quotation* —
+it reads as a docs panel embedded in a page, not as the page growing a card. Inside it,
+nothing new: the same four tokens, JetBrains Mono, `--surface` behind it.
+
+**PowerShell gets a listed client rather than a footnote.** There, `curl` is an alias for
+`Invoke-WebRequest`, which returns an object instead of the page — so the obvious command is
+the one that fails. `irm` is offered directly, which is cheaper than explaining the trap.
+
+Commands are built from `lib/site.ts`, never typed in. The domain appears once in the repo.
+
+The bio gives up measure for it — ~54ch rather than 62ch — and below 760px the card stops
+pretending to be a sidebar and drops underneath at full width.
+
+**Under the card, one line of shell comment.** `# npx is interactive, if you trust me` on
+the HTTP clients; the keymap once you're on npx. It's the only joke on the site, and it's
+carrying real information — nothing else says the npx build is a program rather than another
+dump of text, and `npx`-ing a stranger's package is a thing people are rightly wary of, so
+the card says so first. A comment is the one register a terminal has for an aside, which is
+why it sits outside the border rather than in the response.
+
+Each hint is written to fit the column on **one line** (40 characters at the side-by-side
+width). A two-line aside stops being an aside and starts arguing with the card.
 
 ---
 

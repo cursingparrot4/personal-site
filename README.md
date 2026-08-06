@@ -252,24 +252,41 @@ those, that's the file.
 Two ways in. The static one, which needs nothing installed:
 
 ```bash
-curl aryanahlawat.dev              # the home page, in colour
-curl aryanahlawat.dev/projects     # the full index, descriptions included
-curl aryanahlawat.dev/txt          # the same thing by name, from any client
+curl -L aryanahlawat.dev              # the home page, in colour
+curl -L aryanahlawat.dev/projects     # the full index, descriptions included
+curl -L aryanahlawat.dev/txt          # the same thing by name, from any client
 ```
 
-**On Windows PowerShell, use `curl.exe` or `irm` instead.** Bare `curl` there is an alias
-for `Invoke-WebRequest`, which returns a response _object_ rather than the page — in PS 5.1
-it can fail outright on the Internet Explorer parsing path. `curl.exe aryanahlawat.dev` and
-`irm aryanahlawat.dev` both work. (Note `irm` also won't follow the `www` → apex 308, so
-give it the bare domain.)
+**`-L` is load-bearing.** A bare hostname means `http://`, and Vercel force-upgrades that to
+https with a `308`. Without `-L`, curl doesn't follow it and you get 14 bytes reading
+`Redirecting...` — which looks exactly like the feature being broken. `curl
+https://aryanahlawat.dev` works too, and needs no flag; it's just longer.
 
-And the interactive one — see "…the `npx` app?" below.
+**On Windows PowerShell, spell out the scheme:**
+
+```powershell
+irm https://aryanahlawat.dev          # Invoke-RestMethod — returns a raw string
+curl.exe -L aryanahlawat.dev          # the real curl, which ships with Windows
+```
+
+Two separate traps stack up there. Bare `curl` is an alias for `Invoke-WebRequest`, which
+returns a response _object_ rather than the page and in PS 5.1 can fail outright on the
+Internet Explorer parsing path. And Windows PowerShell 5.1 **does not follow a 308 at all** —
+it raises `The remote server returned an error: (308) Permanent Redirect`, or retries until
+it reports too many redirects. Giving it `https://` means there is no 308 in the chain to
+trip over.
+
+And the interactive one — see "…work on the `npx` app?" below.
+
+The home page advertises both in the card beside the bio (`components/EndpointCard.tsx`).
+Its commands are built from `lib/site.ts`, so changing the domain there changes them too —
+don't type the hostname into that component.
 
 `middleware.ts` looks at the user agent. A terminal (`curl`, `wget`, `httpie`, `xh`,
 PowerShell) gets rewritten to the matching route under `app/txt/`; **everything else falls
 through to the real HTML.** It rewrites rather than redirects, so the URL doesn't change.
 
-Two query options, and they work on the bare domain too (`curl 'aryanahlawat.dev/?plain'`):
+Two query options, and they work on the bare domain too (`curl -L 'aryanahlawat.dev/?plain'`):
 
 |          |                                                                     |
 | -------- | ------------------------------------------------------------------- |
@@ -388,6 +405,7 @@ export default function Writing() {
 | `RailNav`         | the rail's nav tree; on the home page it scroll-spies the section you're reading.  |
 | `Presence`        | the live "playing …" line atop the availability block; gone with no activity.      |
 | `Section`         | `001 — label` eyebrow + title + content. Owns the vertical rhythm.                 |
+| `EndpointCard`    | the API-reference panel beside the bio — cURL / PowerShell / npx, with copy.       |
 | `PageHeader`      | eyebrow + big title. Used by `/projects` and the 404 page.                         |
 | `ProjectRow`      | one expandable project row. Shared by the home page and `/projects`.               |
 | `Timeline`        | the chart above the job list — a bar per role, a dot per project, one axis.        |

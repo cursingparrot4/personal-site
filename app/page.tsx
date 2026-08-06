@@ -7,6 +7,7 @@ import { ProjectRow } from "@/components/ProjectRow";
 import { Timeline } from "@/components/Timeline";
 import { TimelineProvider } from "@/components/TimelineContext";
 import { ExperienceList } from "@/components/ExperienceList";
+import { EndpointCard } from "@/components/EndpointCard";
 import { InlineLink } from "@/components/links";
 import styles from "./page.module.css";
 
@@ -30,7 +31,13 @@ export default function Home() {
       />
 
       <Section id="about" index="001" label="~/.profile" title="About">
-        <p className={styles.bio}>{profile.bio}</p>
+        {/* The bio gives up some measure so the endpoint card can sit beside it
+            rather than under it — the one place on the page that says the site
+            is also readable from a terminal. */}
+        <div className={styles.aboutRow}>
+          <p className={styles.bio}>{profile.bio}</p>
+          <EndpointCard />
+        </div>
       </Section>
 
       {/* Spans both sections: the timeline lives at the top of Experience but

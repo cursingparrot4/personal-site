@@ -44,9 +44,21 @@ export function middleware(request: NextRequest) {
   const target = TEXT_ROUTE[request.nextUrl.pathname];
   if (!target) return NextResponse.next();
 
-  // clone() carries the query string over, so `curl 'site.dev/?plain'` works.
   const url = request.nextUrl.clone();
   url.pathname = target;
+
+  // clone() carries the query string, but a *valueless* parameter does not
+  // survive the rewrite on Vercel — `/?plain` reaches the route handler as no
+  // parameter at all, while `/?w=100` arrives intact. It works locally, so this
+  // is only reproducible against a deployment.
+  //
+  // Giving the bare flags a value puts them on the surviving side of that line.
+  // The route still accepts either spelling, and /txt?plain — which never
+  // touches this file — was always fine.
+  for (const flag of ["plain", "nocolor", "T"]) {
+    if (url.searchParams.has(flag)) url.searchParams.set(flag, "1");
+  }
+
   return NextResponse.rewrite(url);
 }
 

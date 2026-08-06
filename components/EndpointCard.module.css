@@ -1,0 +1,192 @@
+/* The one boxed element on the site. It earns the border by being a quotation
+   of something else — an API reference panel — rather than another slab of the
+   page. Everything inside it is still the same four tokens. */
+.card {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+/* ---- header: method, path, client picker, copy ---- */
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.method {
+  flex: none;
+  padding: 0.15em 0.4em;
+  font-size: var(--fs-label);
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  border: 0.5px solid var(--accent-dim);
+  border-radius: 3px;
+}
+
+/* RUN isn't an HTTP verb, so it doesn't get to look like one. */
+.method[data-method="RUN"] {
+  color: var(--muted);
+  border-color: var(--border);
+}
+
+.path {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--fs-label);
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.picker {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.select {
+  appearance: none;
+  padding: 0.15em 1.1em 0.15em 0.4em;
+  font: inherit;
+  font-size: var(--fs-label);
+  color: var(--muted);
+  background: transparent;
+  border: 0.5px solid var(--border);
+  border-radius: 3px;
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.select:hover {
+  color: var(--text);
+  border-color: var(--accent-dim);
+}
+
+/* The list itself is drawn by the OS, which won't inherit any of the above —
+   name the colours explicitly so it isn't white-on-white in a dark browser. */
+.select option {
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* Same recipe as the row chevrons in ProjectRow/ExperienceList — `⌄` sits low
+   in its own line box, so it needs line-height:1 and a half-height nudge rather
+   than any vertical-align. */
+.chevron {
+  position: absolute;
+  right: 0.35em;
+  top: 50%;
+  /* The extra pixel is optical, not geometric: the box is already centred, but
+     U+2304 draws in the lower half of it. */
+  transform: translateY(calc(-50% - 1px));
+  font-size: 0.9rem;
+  line-height: 1;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.copy {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6em;
+  height: 1.6em;
+  color: var(--muted);
+  background: none;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.copy:hover {
+  color: var(--text);
+}
+
+.copy[data-copied="true"] {
+  color: var(--accent);
+}
+
+/* ---- body: the command ---- */
+
+.body {
+  padding: var(--space-3);
+  overflow-x: auto;
+}
+
+.command {
+  display: flex;
+  gap: 0.6em;
+  font-size: var(--fs-meta);
+  line-height: var(--lh-body);
+  color: var(--text);
+  white-space: pre;
+}
+
+/* --border, the site's colour for inert glyphs, disappears entirely against
+   --surface at this size. The prompt is meant to read as a prompt, so it takes
+   the muted tone instead and gets excluded from copy. */
+.prompt {
+  flex: none;
+  color: var(--muted);
+  user-select: none;
+}
+
+.bin {
+  color: var(--accent);
+}
+
+/* ---- footer: what comes back ---- */
+
+.returns {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-label);
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+
+/* ---- the aside under the card ---- */
+
+/* A shell comment, which is the one register a terminal has for an aside. It
+   sits outside the border because it's a remark *about* the endpoint, not part
+   of the response.
+
+   Whole line at --muted rather than dimming the # to --border: that token is
+   for inert glyphs sitting on prose, and at this size against --bg it just
+   disappears — the same reason the $ prompt inside the card isn't --border. */
+.hint {
+  margin-top: var(--space-2);
+  font-size: var(--fs-label);
+  line-height: var(--lh-body);
+  color: var(--muted);
+  /* The first line holds 40 characters at this column width (measured, not
+     guessed), and every hint is written to fit inside that — a one-line aside
+     reads as an aside; a two-line one starts arguing with the card. `pretty`
+     is the backstop for the stacked layout, where the column changes. */
+  text-wrap: pretty;
+}
+
+.hash {
+  margin-right: 0.5em;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

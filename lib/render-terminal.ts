@@ -284,8 +284,10 @@ function contact(f: Formatter, width: number): string[] {
 }
 
 function footer(f: Formatter, width: number): string[] {
+  // `-L` isn't decoration: a bare hostname means http://, which the host 308s
+  // up to https, and curl won't follow that on its own.
   const hints: [string, string][] = [
-    [`curl ${host}/projects`, "the full index"],
+    [`curl -L ${host}/projects`, "the full index"],
     ["?plain", "no colour, no escapes"],
     ["?w=100", "set the width"],
     [`${host}/resume.pdf`, "the PDF"],
