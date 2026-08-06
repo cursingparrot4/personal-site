@@ -29,6 +29,7 @@ yarn-error.log*
 /.playwright-cli/
 /test-results/
 /playwright-report/
+.claude/
 
 # Working resume files at the repo root. Only /*.pdf — one level — so the
 # deployed copy at public/resume.pdf is still committed. Don't broaden this
