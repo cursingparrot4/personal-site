@@ -37,7 +37,7 @@ export default function Home() {
           mirrors the project rows further down as well. Renders no DOM of its
           own. */}
       <TimelineProvider>
-        <Section id="experience" index="002" label="~/.history" title="Experience">
+        <Section id="experience" index="002" label="~/.history" title="Experience" tight>
           <Timeline items={profile.experience} projects={projects} />
           <ExperienceList items={profile.experience} />
         </Section>

@@ -10,6 +10,10 @@ type Props = {
   title: string;
   /** stable id for aria-labelledby + anchor links */
   id: string;
+  /** Pulls this section closer to the one above — for when the preceding
+   *  section ends in plain prose with no border or list to anchor the eye,
+   *  which reads as a bigger gap than the same margin does elsewhere. */
+  tight?: boolean;
   children: React.ReactNode;
 };
 
@@ -17,10 +21,14 @@ type Props = {
  * A page section: mono "NNN path" eyebrow, Space Grotesk title, then content.
  * Owns the vertical rhythm so every section is spaced identically.
  */
-export function Section({ index, label, title, id, children }: Props) {
+export function Section({ index, label, title, id, tight, children }: Props) {
   const headingId = `${id}-heading`;
   return (
-    <section className={styles.section} id={id} aria-labelledby={headingId}>
+    <section
+      className={`${styles.section} ${tight ? styles.tight : ""}`}
+      id={id}
+      aria-labelledby={headingId}
+    >
       <p className={`eyebrow mono ${styles.eyebrowRow}`}>
         <span className={styles.index}>{index}</span>
         {label}

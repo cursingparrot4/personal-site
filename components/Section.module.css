@@ -3,6 +3,10 @@
   scroll-margin-top: var(--space-6);
 }
 
+.tight {
+  margin-top: calc(var(--section-gap) - var(--space-6));
+}
+
 /* lays out "001 — Label" on one line; the rest comes from the .eyebrow utility */
 .eyebrowRow {
   display: flex;

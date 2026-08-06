@@ -86,12 +86,24 @@ export function RailNav({ sections, page }: Props) {
         return;
       }
 
-      const line = window.innerHeight * ACTIVE_LINE;
+      const rects = ids.map((id) => document.getElementById(id)?.getBoundingClientRect() ?? null);
+
+      // The line rests ACTIVE_LINE down the viewport, but it can't start there:
+      // there is no scroll room above the first section, so a fixed line hands
+      // that section only (its top − the line) pixels of scroll before the
+      // second one crosses — a first section near the top of the document is
+      // barely lit at all. So the line starts on the first section's own top
+      // and slides down with the page until it reaches its resting height,
+      // which gives each section a share of the scroll close to its share of
+      // the page.
+      const first = rects[0];
+      const rest = window.innerHeight * ACTIVE_LINE;
+      const line = first ? Math.min(rest, first.top + 2 * window.scrollY) : rest;
+
       let current = ids[0];
-      for (const id of ids) {
-        const el = document.getElementById(id);
-        if (el && el.getBoundingClientRect().top <= line) current = id;
-      }
+      rects.forEach((rect, i) => {
+        if (rect && rect.top <= line) current = ids[i];
+      });
       setActive(current);
     };
 
