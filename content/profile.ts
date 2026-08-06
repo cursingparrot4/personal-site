@@ -28,8 +28,10 @@ export const profile: Profile = {
       start: "2026-05",
       end: "2026-08",
       note: [
-        "Developed RESTful API integrations to enable real-time auto-population of insurance quoting forms, orchestrating data retrieval across multiple internal services and third-party endpoints to eliminate manual entry.",
-        "Built automation that generates reference documentation directly from OpenAPI specifications, keeping service contracts in sync without manual upkeep.",
+        "Developed RESTful prefill API integrations to enable real-time auto-population of insurance quoting forms, orchestrating data retrieval across multiple internal services and third-party endpoints to eliminate manual entry.",
+        "Built the publishing pipeline behind the public developer portal: a GitHub Actions job that pulls the Postman collection, converts it to OpenAPI, generates every documentation page, and rewrites site navigation, keeping partner-facing docs in sync with the API contract with no hand editing.",
+        "Wrote a static analyzer over 774 low-code modules (41k components, 176k extracted references) that builds a cross-module reference graph and narrows unused component deletion candidates to 2%, behind a safety gate encoding every false-positive class found during calibration.",
+        "Built a Playwright and TypeScript end-to-end suite for the live chatbot widget embedded in customer journeys, driving the full flow through a semantic driver interface so widget DOM changes touch one file; runs in English and French.",
       ],
     },
     {
@@ -39,8 +41,9 @@ export const profile: Profile = {
       start: "2025-09",
       end: "2026-04",
       note: [
-        "Architected the vector storage and conversational memory infrastructure for an agentic RAG pipeline.",
-        "Engineered a hybrid retrieval system using Pinecone to maximize context recall, and implemented a multi-hop failsafe mechanism that automatically breaks down complex queries when the initial retrieved evidence is weak.",
+        "Architected the vector storage and conversational memory infrastructure for an agentic RAG pipeline, engineering an episodic memory layer that deduplicates semantically relevant queries while persisting context across multiple queries.",
+        "Engineered a hybrid retrieval pipeline using Pinecone, merging BM25 sparse search and dense semantic embeddings with reciprocal rank fusion to maximize context recall.",
+        "Implemented a defensive multi-hop failsafe that evaluates context sufficiency, automatically decomposing complex queries and executing secondary retrieval hops when the initial evidence is weak.",
       ],
     },
     {
@@ -50,8 +53,8 @@ export const profile: Profile = {
       start: "2025-05",
       end: "2025-08",
       note: [
-        "Developed PyTorch regression models to predict lab test durations, tuning hyperparameters to achieve a 12% error reduction against the previous baseline.",
-        "Built automated data cleaning pipelines using Pandas and NumPy to process SQL datasets, impute missing values, and detect outliers.",
+        "Developed multi-layer perceptron regression models in PyTorch to predict lab test durations, tuning hyperparameters to achieve a 12% reduction in mean squared error loss against the previous baseline.",
+        "Engineered an end-to-end pipeline from an extensive SQL dataset using Pandas and NumPy, combining cyclical sine/cosine encodings with one-hot encoding to capture the real-time lab state, while filtering statistical outliers and scaling numerical features.",
       ],
     },
     {

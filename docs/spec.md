@@ -243,6 +243,14 @@ doing, and rich-presence `details` ("Editing README.md") is more than a sidebar 
   `ResizeObserver` for accordion reflow) rather than raw `IntersectionObserver` callbacks,
   so it stays correct when sections straddle the line, when a section is shorter than the
   band, and when the page bottoms out before the last section reaches the line.
+- **The line eases in at the top.** There is no scroll room above the first section, so a
+  line fixed at 35% gives that section only (its top − the line) pixels of scroll before the
+  second one crosses: About was lit for 17px of an 1100px page, and on a viewport past
+  ~950px tall it never lit at all. So the line starts on the first section's own top and
+  slides down with the page until it reaches its resting height — each section then gets a
+  share of the scroll close to its share of the page. Below the fold the behaviour is
+  unchanged. Note the consequence at the other end: a short last section at the document
+  edge can't reach the line either, so Contact lights via the bottom-of-page snap alone.
 - **A click beats the inference.** Clicking a nav link lights that section immediately and
   suspends the spy until you scroll again yourself. Geometry alone can't honour the click:
   a section shorter than the 35% band leaves the _next_ one already past the line once the
