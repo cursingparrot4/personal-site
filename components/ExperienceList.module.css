@@ -137,7 +137,7 @@
   content: "—";
   position: absolute;
   left: 0;
-  color: var(--border);
+  color: #33b8d1;
 }
 
 @media (max-width: 34rem) {

@@ -78,7 +78,7 @@
 }
 .now li::before {
   content: "— ";
-  color: var(--border);
+  color: #33b8d1;
 }
 
 /* ---- navigation ---- */

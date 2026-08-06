@@ -4,7 +4,7 @@ export const profile: Profile = {
   name: "Aryan Ahlawat",
   headline: "CS at Queens, AI stream.", // tune to taste, keep it one honest line
   promptMeta: "CS · Economics",
-  now: ["API integrations at Co-operators", "RL agent that plays Geometry Dash", "This site!"],
+  now: ["API integrations at Co-operators", "RL agent that plays Geometry Dash", "Kaggle competitions (kaggriculture)", "This site!"],
   // Discord snowflake. The presence line stays hidden until this is filled in and
   // the account has joined discord.gg/lanyard.
   discordId: "364856465271422979",
@@ -24,7 +24,7 @@ export const profile: Profile = {
     {
       role: "Software Developer Co-op",
       org: "Co-operators",
-      period: "May–Aug 2026",
+      period: "May 2026–Aug 2026",
       start: "2026-05",
       end: "2026-08",
       note: [
@@ -46,7 +46,7 @@ export const profile: Profile = {
     {
       role: "Machine Learning Co-op",
       org: "Acetech",
-      period: "May–Aug 2025",
+      period: "May 2025–Aug 2025",
       start: "2025-05",
       end: "2025-08",
       note: [

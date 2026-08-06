@@ -41,7 +41,7 @@ export function Rail({ page, showPrompt = true }: Props) {
           {profile.name}
         </Link>
         <p className={`${styles.tagline} mono`}>{profile.headline}</p>
-        <p className={`eyebrow mono ${styles.nowLabel}`}>Currently working on</p>
+        <p className={`eyebrow mono ${styles.nowLabel}`}>Currently working on:</p>
         <ul className={`${styles.now} mono`}>
           {profile.now.map((n) => (
             <li key={n}>{n}</li>
