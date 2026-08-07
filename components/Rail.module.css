@@ -47,7 +47,10 @@
   margin-top: var(--space-4);
   font-size: var(--fs-meta);
   color: var(--muted);
-  max-width: 24ch;
+  /* The rail is monospace, so 1ch is one character: this holds the headline on
+     one line up to 26 of them. "CS at Queen's, AI stream." is 25 and wrapped at
+     24, which `text-wrap: balance` then split evenly across the comma. */
+  max-width: 26ch;
   /* A headline a shade over the measure otherwise leaves one orphaned word. */
   text-wrap: balance;
 }

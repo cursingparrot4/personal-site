@@ -10,9 +10,9 @@ export const projects: Project[] = [
     slug: "cardiq",
     name: "CardIQ",
     tagline:
-      "A multi-card payment router built with integer programming and a fine-tuned language model.",
+      "Tells you which credit cards to spend on, and how much on each, to get the most back.",
     description:
-      "CardIQ solves the multi-card allocation problem by formulating monthly spending as a strict integer program. Using PuLP and a CBC backend, the engine handles constraints like utilization ceilings and sign-up bonuses using precise integer-cent arithmetic to avoid floating-point drift. Instead of building a rigid UI for goal setting, I trained a small language model on synthetic data to parse natural language requests into the exact mathematical weights the solver needs to compute the optimal route.",
+      "CardIQ takes a month of spending and works out how to split it across your cards for the best return. Underneath it's a strict integer program solved with PuLP and CBC, handling constraints like utilization ceilings and signup bonuses in integer cents so nothing drifts the way floats do. Rather than build a rigid UI full of sliders for goal setting, I fine tuned a small language model on synthetic data, so you say what you want in plain English and it produces the exact solver weights.",
     stack: ["Python", "FastAPI", "PuLP/CBC", "Pydantic", "Streamlit"],
     year: 2026,
     award: "Hack the 6ix",
@@ -22,10 +22,9 @@ export const projects: Project[] = [
   {
     slug: "cognitive-rag",
     name: "Cognitive RAG",
-    tagline:
-      "A document retrieval pipeline built with persistent conversation memory and hybrid search routing.",
+    tagline: "Document Q&A that remembers what you asked earlier in the conversation.",
     description:
-      "As part of the QMIND design team, I architected the vector storage and conversational memory infrastructure for the CognitiveRAG system. To maximize retrieval accuracy, I engineered a Pinecone database layer that executes reciprocal rank fusion, combining dense semantic embeddings with sparse keyword vectors before running a secondary cross-encoder pass. To overcome the context limitations of stateless models, I built an episodic memory module that embeds past interactions into a dedicated namespace. This pipeline evaluates the quality of each generated response and filters out semantically identical records to prevent database bloat. Relevant historical context is then dynamically scored and injected into the active prompt without polluting the final user citations.",
+      "Most RAG pipelines are stateless, so every question starts cold and you keep repeating context you already gave. On the QMIND design team I built the parts that fix that. Retrieval runs keyword and semantic search together in Pinecone and merges the two rankings with reciprocal rank fusion, then a cross encoder reranks the top results. An episodic memory module embeds past interactions into their own namespace, scores which ones matter to the current question, and injects them into the prompt without polluting the citations the user sees. It also filters out near identical records so the store doesn't fill up with the same thing.",
     stack: ["LangChain", "BM25", "cross-encoder", "Python"],
     year: 2026,
     // gitfront serves a read-only mirror so the GitHub repo can stay private.
@@ -36,9 +35,9 @@ export const projects: Project[] = [
     slug: "visualizeit",
     name: "VisualizeIt",
     tagline:
-      "A real-time augmented reality pipeline built with YOLOv8 object detection, pose tracking, and Stable Diffusion texture generation.",
+      "Point a camera at someone and watch a generated design get painted onto them live, as they move.",
     description:
-      "VisualizeIt is a real-time augmented reality tool that dynamically warps and blends generated designs onto live video feeds. I engineered a dual-model computer vision pipeline that uses YOLOv8 for rapid target localization and Mask R-CNN for precise instance segmentation. To handle continuous motion, the system routes tracking through two separate algorithms: MediaPipe Holistic to compute 3D rigid transforms for human poses, and ORB feature matching to calculate 2D homographies for rigid objects. Finally, the pipeline uses Stable Diffusion to generate custom textures, which are perspective-warped and alpha-blended directly onto the detected masks using OpenCV.",
+      "VisualizeIt generates a texture and blends it onto whatever the camera is looking at, keeping it stuck in place while the subject moves. YOLOv8 finds the target fast and Mask R-CNN cuts out its exact shape. Tracking then splits in two depending on what it found: MediaPipe Holistic computes 3D rigid transforms for people, ORB feature matching computes 2D homographies for solid objects. Stable Diffusion makes the texture, and OpenCV warps it to the right perspective and alpha blends it onto the mask.",
     stack: ["YOLOv8", "PyTorch", "Stable Diffusion", "OpenCV"],
     year: 2025,
     award: "QHacks winner · Mayor's Innovation Award",
@@ -48,9 +47,9 @@ export const projects: Project[] = [
   {
     slug: "churn-classification-engine",
     name: "Churn Classification Engine",
-    tagline: "A classification pipeline achieving a 0.82 F1 score across 7,000+ users.",
+    tagline: "Predicts which telecom customers are about to leave, at 0.82 F1 across 7,000 users.",
     description:
-      "An end-to-end classification pipeline built in Python to predict telecommunications customer churn. Using a dataset of over 7,000 users, the workflow handles missing values and applies one-hot and ordinal encoding before training a Random Forest ensemble. The project includes a standalone grid search for hyperparameter tuning and uses seaborn to visualize feature importance and F1 scores.",
+      "An end to end classification pipeline in Python for predicting telecom customer churn. It cleans missing values, applies one-hot and ordinal encoding, and trains a Random Forest ensemble over a dataset of more than 7,000 users. A standalone grid search handles hyperparameter tuning, and seaborn plots feature importance and F1 so you can see what's actually driving the prediction.",
     stack: ["Python", "scikit-learn", "seaborn"],
     year: 2025,
     links: { repo: "https://github.com/cursingparrot4/Churn-engine/" },
@@ -59,9 +58,9 @@ export const projects: Project[] = [
   {
     slug: "stubook",
     name: "Stubook",
-    tagline: "A cross-platform, offline student productivity app built with Flutter and Dart.",
+    tagline: "Grade calculator, calendar and to do lists for students, working fully offline.",
     description:
-      "A cross-platform student productivity app I built using Flutter and Dart. It runs entirely on device without a backend server, relying on Hive as an embedded local database. This setup allows users to calculate weighted course grades, track calendar events, and manage swipeable to-do lists without needing a network connection.",
+      "A student productivity app in Flutter and Dart that runs on iOS and Android. There's no backend server at all, everything sits in Hive as an embedded local database, so weighted grade calculations, calendar events and swipeable to do lists all keep working with no connection.",
     stack: ["Flutter", "Dart", "Hive"],
     year: 2024,
     links: { repo: "https://github.com/joeyhlu/stubook_master" },
