@@ -1,29 +1,38 @@
 /* The one boxed element on the site. It earns the border by being a quotation
    of something else — an API reference panel — rather than another slab of the
-   page. Everything inside it is still the same four tokens. */
+   page. Three horizontal bands: url bar, snippet, response. */
 .card {
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 5px; /* 1px more than the site's 4px, to hold three stacked bands */
   background: var(--surface);
   overflow: hidden;
 }
 
-/* ---- header: method, path, client picker, copy ---- */
+/* ---- band 1: url bar ---- */
 
-.head {
+/* No bottom border of its own — the snippet's border-top carries the hairline. */
+.urlBar {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  border-bottom: 1px solid var(--border);
+  /* 0.55rem rather than var(--space-2): the filled chip is taller than the
+     outlined one was, and 0.5rem left this bar reading tighter than the
+     response bar below it. The only off-scale value in the file. */
+  padding: 0.55rem var(--space-3);
 }
 
+/* Filled rather than outlined: in an API reference the method is a label on the
+   request, not another piece of mono text in the row. The two fills below are
+   10% versions of --accent and --muted; they exist nowhere else on the site, so
+   they stay here rather than becoming tokens. */
 .method {
   flex: none;
-  padding: 0.15em 0.4em;
+  padding: 0.2em 0.45em;
   font-size: var(--fs-label);
-  letter-spacing: 0.04em;
+  font-weight: 500;
+  letter-spacing: 0.06em;
   color: var(--accent);
+  background: rgba(52, 197, 221, 0.1);
   border: 0.5px solid var(--accent-dim);
   border-radius: 3px;
 }
@@ -31,67 +40,24 @@
 /* RUN isn't an HTTP verb, so it doesn't get to look like one. */
 .method[data-method="RUN"] {
   color: var(--muted);
+  background: rgba(139, 151, 158, 0.1);
   border-color: var(--border);
 }
 
-.path {
+/* The real host, not a bare "/". Base dim, path bright — the docs convention,
+   and it finally gives the row something worth reading. */
+.url {
   flex: 1 1 auto;
   min-width: 0;
   font-size: var(--fs-label);
-  color: var(--muted);
+  color: var(--text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.picker {
-  position: relative;
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-}
-
-.select {
-  appearance: none;
-  padding: 0.15em 1.1em 0.15em 0.4em;
-  font: inherit;
-  font-size: var(--fs-label);
+.urlBase {
   color: var(--muted);
-  background: transparent;
-  border: 0.5px solid var(--border);
-  border-radius: 3px;
-  cursor: pointer;
-  transition:
-    color var(--dur-fast) var(--ease),
-    border-color var(--dur-fast) var(--ease);
-}
-
-.select:hover {
-  color: var(--text);
-  border-color: var(--accent-dim);
-}
-
-/* The list itself is drawn by the OS, which won't inherit any of the above —
-   name the colours explicitly so it isn't white-on-white in a dark browser. */
-.select option {
-  color: var(--text);
-  background: var(--bg);
-}
-
-/* Same recipe as the row chevrons in ProjectRow/ExperienceList — `⌄` sits low
-   in its own line box, so it needs line-height:1 and a half-height nudge rather
-   than any vertical-align. */
-.chevron {
-  position: absolute;
-  right: 0.35em;
-  top: 50%;
-  /* The extra pixel is optical, not geometric: the box is already centred, but
-     U+2304 draws in the lower half of it. */
-  transform: translateY(calc(-50% - 1px));
-  font-size: 0.9rem;
-  line-height: 1;
-  color: var(--muted);
-  pointer-events: none;
 }
 
 .copy {
@@ -99,25 +65,72 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.6em;
-  height: 1.6em;
+  width: 1.75rem;
+  height: 1.75rem;
   color: var(--muted);
   background: none;
   border: none;
   border-radius: 3px;
   cursor: pointer;
-  transition: color var(--dur-fast) var(--ease);
+  transition:
+    color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
 }
 
 .copy:hover {
   color: var(--text);
+  background: var(--surface-hi);
 }
 
 .copy[data-copied="true"] {
   color: var(--accent);
 }
 
-/* ---- body: the command ---- */
+/* ---- band 2: the snippet ----
+   Inverted to --bg against the --surface chrome. That inversion is the point of
+   the band: it's what makes the command read as output rather than as one more
+   row of the panel. */
+
+.snippet {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.clients {
+  display: flex;
+  align-items: stretch;
+  gap: 0.9rem;
+  padding: 0 var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Tabs, not a <select>: three ways in is the card's whole point, and a closed
+   dropdown hides two of them. The bottom padding gives back the 1px the
+   underline takes, so selecting a tab doesn't shift the row. */
+.client {
+  padding: var(--space-2) 0 calc(var(--space-2) - 1px);
+  font: inherit;
+  font-size: var(--fs-label);
+  color: var(--muted);
+  background: none;
+  border: none;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.client:hover {
+  color: var(--text);
+}
+
+.client[data-active="true"] {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
 
 .body {
   padding: var(--space-3);
@@ -134,8 +147,8 @@
 }
 
 /* --border, the site's colour for inert glyphs, disappears entirely against
-   --surface at this size. The prompt is meant to read as a prompt, so it takes
-   the muted tone instead and gets excluded from copy. */
+   --bg at this size. The prompt is meant to read as a prompt, so it takes the
+   muted tone instead and gets excluded from copy. */
 .prompt {
   flex: none;
   color: var(--muted);
@@ -146,13 +159,43 @@
   color: var(--accent);
 }
 
-/* ---- footer: what comes back ---- */
+/* ---- band 3: the response ---- */
 
-.returns {
-  padding: var(--space-2) var(--space-3);
+/* Wraps rather than ellipsises: the aside column is minmax(15rem, 19rem), and
+   at the 15rem end the row is ~24px short of the whole string. What gets cut is
+   the content type, which is the one part worth reading — a wrapped second line
+   is correct, a truncated `charset=utf…` is not. */
+.response {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem var(--space-2);
+  padding: 0.55rem var(--space-3);
   font-size: var(--fs-label);
   color: var(--muted);
-  border-top: 1px solid var(--border);
+}
+
+.dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+}
+
+/* npx returns no status code, so the marker goes inert rather than lying. */
+.dot[data-status="none"] {
+  background: var(--border);
+}
+
+.status {
+  flex: none;
+  color: var(--accent);
+}
+
+.returns {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 /* ---- the aside under the card ---- */
@@ -169,10 +212,8 @@
   font-size: var(--fs-label);
   line-height: var(--lh-body);
   color: var(--muted);
-  /* The first line holds 40 characters at this column width (measured, not
-     guessed), and every hint is written to fit inside that — a one-line aside
-     reads as an aside; a two-line one starts arguing with the card. `pretty`
-     is the backstop for the stacked layout, where the column changes. */
+  /* Every hint is written to fit one line at the 19rem column width. `pretty` is
+     the backstop for the stacked layout, where the column changes. */
   text-wrap: pretty;
 }
 

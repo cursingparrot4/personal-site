@@ -517,9 +517,10 @@ components/
                    the panel can sit in column 2 on desktop and take row 1, above the
                    eyebrow, once the columns collapse. Last in the DOM either way, so the
                    prose keeps the reading and tab order.
-  EndpointCard.tsx (client) the API-reference panel beside the bio (§14c): method + path,
-                   a <select> of clients (cURL / PowerShell / npx), the command, and what
-                   comes back. Commands derive from lib/site.ts, never a typed-in domain.
+  EndpointCard.tsx (client) the API-reference panel beside the bio (§14c): a url bar
+                   (method + host), a tablist of clients (cURL / PowerShell / npx) over the
+                   command, and a response row. Commands derive from lib/site.ts, never a
+                   typed-in domain.
   ProjectRow.tsx   (client) expandable row, id={slug}. Collapsed: index |
                    name/tagline/stack | year | chevron. Expanded: description +
                    repo/demo/devpost links. Opens itself when the hash names it.
@@ -540,7 +541,7 @@ components/
 
 Server components by default; `RailNav`, `ProjectRow`, `ExperienceList`, `Timeline`,
 `TimelineProvider`, `Presence` and `EndpointCard` are client components (local expand state,
-scroll position, shared highlight state, a live socket, a picker + clipboard).
+scroll position, shared highlight state, a live socket, a tablist + clipboard).
 
 ---
 
@@ -665,13 +666,28 @@ blocks waiting for a terminal that isn't there is a bug.
 
 §14a and §14b are invisible from the website itself — nobody types `curl` at a page that
 never mentions it. The card beside the bio is the one place that says so, borrowing the
-shape of an API reference panel: method, path, a client picker, the command, and what comes
-back.
+shape of an API reference panel: a url bar, the command, and what comes back.
 
 **It is the only boxed element on the site.** Everywhere else structure comes from hairline
 rules and whitespace (§2). The border is affordable here because the box is a *quotation* —
 it reads as a docs panel embedded in a page, not as the page growing a card. Inside it,
 nothing new: the same four tokens, JetBrains Mono, `--surface` behind it.
+
+**Three bands, and the middle one inverts.** The url bar and the response row sit on
+`--surface` with the card's chrome; the snippet between them drops to `--bg`. That inversion
+is the whole reason the band exists — on one plane the command is another row of the panel,
+a shade darker it reads as output.
+
+**The clients are tabs, not a `<select>`.** Three ways in is the card's argument, and a
+closed dropdown makes two of them disappear; the tab row states the count without being
+opened. The cost is the keyboard, which the select gave away free — so the tablist earns it
+back by hand: `role="tablist"`/`tab`/`tabpanel`, roving `tabIndex`, and Left/Right wrapping
+and carrying focus with the selection.
+
+**The response row wraps rather than ellipsises.** The aside is `minmax(15rem, 19rem)`, and
+at the narrow end the row is some twenty pixels short of `200 · text/plain; charset=utf-8`.
+The part that gets cut is the content type, which is the part worth reading — a wrapped
+second line is correct, a truncated `charset=utf…` is not.
 
 **PowerShell gets a listed client rather than a footnote.** There, `curl` is an alias for
 `Invoke-WebRequest`, which returns an object instead of the page — so the obvious command is
@@ -686,12 +702,18 @@ leads About rather than trailing it. It reaches that position by being the secti
 About, hard against the Experience eyebrow with nothing holding it, which reads as a stray
 block rather than an aside to anything.
 
-**Under the card, one line of shell comment.** `# npx is interactive, if you trust me` on
-the HTTP clients; `# yippee!! (still a wip)` once you're on npx. It's the only joke on the
-site, and it's carrying real information — nothing else says the npx build is a program
-rather than another dump of text, and `npx`-ing a stranger's package is a thing people are
-rightly wary of, so the card says so first. A comment is the one register a terminal has for
-an aside, which is why it sits outside the border rather than in the response.
+**Under the card, one line of shell comment.** `# npx is interactive` on the HTTP clients;
+`# yippee!! (still a wip)` once you're on npx. It's the only joke on the site, and it's
+carrying real information — nothing else says the npx build is a program rather than another
+dump of text. A comment is the one register a terminal has for an aside, which is why it
+sits outside the border rather than in the response.
+
+**The nudge is declarative, and briefly wasn't.** It trailed into `...if you trust me` for a
+while, which was the wrong move in a small way: `npx`-ing a stranger's package is exactly
+the doubt the reader already has, and naming it hands them a reason to hesitate rather than
+an answer. The clause read as self-aware and worked as a hedge. Stating the fact and
+stopping is the stronger version — and the tone the reader needs before running it lives in
+the npx line, not in a disclaimer on the two lines before it.
 
 **The npx line is not a keymap**, and briefly was one — it drifted into
 `arrows move, ⏎ expands or opens` while the CLI was gaining the ability to open links.

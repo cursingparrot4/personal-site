@@ -15,9 +15,11 @@ export const profile: Profile = {
   discordId: "364856465271422979",
   bio:
     "I'm a CS student at Queen's University on the AI stream, minoring in Economics. I work " +
-    "across the stack, mostly on ML and retrieval systems plus the APIs and tooling that make " +
-    "them usable. Right now I'm building API integrations as a Software Developer Co-op at " +
-    "Co-operators.",
+    "across the stack, building everything from applied ML models to the back end architecture " +
+    "that actually makes them usable. I really enjoy system design, specifically analyzing the " +
+    "architectural tradeoffs required to make complex applications run efficiently. Lately, " +
+    "I've just been building whatever interesting problem catch my eye. Currently, I'm a " +
+    "Software Developer at the Co-operators.",
   location: "Toronto, ON",
   status: "Open to winter 2027 internships",
   links: {

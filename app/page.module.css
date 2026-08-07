@@ -8,7 +8,7 @@
    fighting. The two-column layout itself belongs to Section — the card is that
    section's aside, not part of this content. */
 .bio {
-  max-width: 54ch;
+  max-width: 50ch;
   color: var(--text);
   line-height: var(--lh-body);
 }

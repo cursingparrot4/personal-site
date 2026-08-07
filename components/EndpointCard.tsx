@@ -8,17 +8,28 @@ const host = new URL(site.url).host;
 
 type Client = {
   id: string;
-  /** what the picker calls it */
+  /** what the tab calls it */
   label: string;
   method: string;
+  /** dim half of the url bar — the part that's the same for every endpoint */
+  base: string;
+  /** bright half — the part that identifies this one */
   path: string;
   command: string;
-  /** the response line under the command — what you actually get back */
+  /** the response line under the command — what you actually get back. Split on
+   *  the "·" into a status code and a content type. */
   returns: string;
   /** the shell-comment aside under the card: a nudge toward npx from the HTTP
    *  clients, and — once you're on it — the only line on the page that sounds
-   *  pleased with itself. Deliberately not a keymap: the app names its own keys
-   *  in its footer, contextually, which a static line here can't do. */
+   *  pleased with itself.
+   *
+   *  The nudge is declarative on purpose. It used to trail into "...if you trust
+   *  me", which raised the question it was trying to settle: `npx` on a
+   *  stranger's package is exactly the doubt the visitor already has, and naming
+   *  it hands them a reason to hesitate rather than an answer.
+   *
+   *  Deliberately not a keymap either: the app names its own keys in its footer,
+   *  contextually, which a static line here can't do. */
   hint: string;
 };
 
@@ -39,36 +50,46 @@ const CLIENTS: Client[] = [
     id: "curl",
     label: "cURL",
     method: "GET",
+    base: host,
     path: "/",
     command: `curl -L ${host}`,
     returns: "200 · text/plain; charset=utf-8",
-    hint: "npx is interactive, if you trust me...",
+    hint: "npx is interactive",
   },
   {
     id: "powershell",
     label: "PowerShell",
     method: "GET",
+    base: host,
     path: "/",
     command: `irm ${site.url}`,
     returns: "200 · text/plain; charset=utf-8",
     // Same nudge as cURL. The `irm` rationale doesn't belong here — three lines
     // of aside under a four-line card is the tail wagging the dog, and the
     // README carries the explanation.
-    hint: "npx is interactive, if you trust me...",
+    hint: "npx is interactive",
   },
   {
     id: "npx",
     label: "npx",
     method: "RUN",
-    // No "npm:" prefix. The select is sized by its widest option ("PowerShell")
-    // whatever is chosen, so the path column is narrower than it looks and the
-    // longer string ellipsised. The command underneath says npx anyway.
+    // No "npm:" prefix — the bare package name is what you'd type, and the
+    // command underneath says npx anyway.
+    base: "npx ",
     path: "aryanahlawat",
     command: "npx aryanahlawat",
     returns: "interactive · resizable",
     hint: "yippee!! (still a wip)",
   },
 ];
+
+/** "200 · text/plain; charset=utf-8" -> ["200", "text/plain; charset=utf-8"].
+ *  Anything without a leading status code (npx) returns a null code, and the
+ *  dot goes inert rather than pretending there was a response. */
+function splitStatus(returns: string): [string | null, string] {
+  const m = /^(\d{3})\s·\s(.*)$/.exec(returns);
+  return m ? [m[1], m[2]] : [null, returns];
+}
 
 function CopyIcon() {
   return (
@@ -97,9 +118,10 @@ function CheckIcon() {
  * The site, as an API endpoint. Sits beside the bio and says the thing the page
  * otherwise can't: that everything here is also readable from a terminal.
  *
- * A `<select>` rather than a custom dropdown or a tablist — it's what the
- * reference pattern uses, it survives a 20rem column, and it arrives keyboard
- * accessible without a line of key handling.
+ * Composed as an API reference panel in three bands — url bar, snippet, response
+ * — with the clients as a tablist rather than a `<select>`. Three ways in is the
+ * card's whole point, and a closed dropdown hides two of them; the cost is
+ * having to hand-roll the arrow keys the select gave us for free.
  */
 export function EndpointCard() {
   const [index, setIndex] = useState(0);
@@ -108,6 +130,7 @@ export function EndpointCard() {
 
   const active = CLIENTS[index];
   const [bin, ...args] = active.command.split(" ");
+  const [code, contentType] = splitStatus(active.returns);
 
   useEffect(() => () => clearTimeout(timer.current), []);
 
@@ -123,36 +146,33 @@ export function EndpointCard() {
     }
   }
 
+  function select(next: number) {
+    setIndex(next);
+    setCopied(false);
+  }
+
+  /** Left/Right move between clients, wrapping, and take focus with them — the
+   *  one thing the `<select>` did for free that the tablist has to earn back. */
+  function onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    const delta = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    if (!delta) return;
+    e.preventDefault();
+    const next = (index + delta + CLIENTS.length) % CLIENTS.length;
+    select(next);
+    (e.currentTarget.children[next] as HTMLButtonElement | undefined)?.focus();
+  }
+
   return (
     <div>
       <div className={styles.card}>
-        <div className={styles.head}>
+        <div className={styles.urlBar}>
           <span className={`${styles.method} mono`} data-method={active.method}>
             {active.method}
           </span>
-          <code className={`${styles.path} mono`}>{active.path}</code>
-
-          <span className={styles.picker}>
-            <select
-              className={`${styles.select} mono`}
-              aria-label="Client"
-              value={active.id}
-              onChange={(e) => {
-                setIndex(CLIENTS.findIndex((c) => c.id === e.target.value));
-                setCopied(false);
-              }}
-            >
-              {CLIENTS.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
-            <span className={styles.chevron} aria-hidden="true">
-              ⌄
-            </span>
-          </span>
-
+          <code className={`${styles.url} mono`}>
+            <span className={styles.urlBase}>{active.base}</span>
+            {active.path}
+          </code>
           <button
             type="button"
             className={styles.copy}
@@ -164,18 +184,50 @@ export function EndpointCard() {
           </button>
         </div>
 
-        <div className={styles.body}>
-          <code className={`${styles.command} mono`}>
-            <span className={styles.prompt} aria-hidden="true">
-              $
-            </span>
-            <span>
-              <span className={styles.bin}>{bin}</span> {args.join(" ")}
-            </span>
-          </code>
+        {/* Inverted to --bg: it's what makes the command read as a code block
+            sitting inside the panel rather than one more row of its chrome. */}
+        <div className={styles.snippet}>
+          <div className={styles.clients} role="tablist" aria-label="Client" onKeyDown={onKeyDown}>
+            {CLIENTS.map((c, i) => (
+              <button
+                key={c.id}
+                type="button"
+                role="tab"
+                id={`endpoint-tab-${c.id}`}
+                aria-selected={i === index}
+                aria-controls="endpoint-panel"
+                tabIndex={i === index ? 0 : -1}
+                className={`${styles.client} mono`}
+                data-active={i === index}
+                onClick={() => select(i)}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+
+          <div
+            className={styles.body}
+            id="endpoint-panel"
+            role="tabpanel"
+            aria-labelledby={`endpoint-tab-${active.id}`}
+          >
+            <code className={`${styles.command} mono`}>
+              <span className={styles.prompt} aria-hidden="true">
+                $
+              </span>
+              <span>
+                <span className={styles.bin}>{bin}</span> {args.join(" ")}
+              </span>
+            </code>
+          </div>
         </div>
 
-        <p className={`${styles.returns} mono`}>{active.returns}</p>
+        <p className={`${styles.response} mono`}>
+          <span className={styles.dot} data-status={code ? "ok" : "none"} aria-hidden="true" />
+          {code ? <span className={styles.status}>{code}</span> : null}
+          <span className={styles.returns}>{contentType}</span>
+        </p>
 
         {/* Announced on copy; the icon swap alone says nothing to a screen reader. */}
         <span aria-live="polite" className={styles.srOnly}>
