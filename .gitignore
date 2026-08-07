@@ -33,6 +33,10 @@ yarn-error.log*
 # local agent config + skills (incl. .claude/skills/playwright-cli)
 .claude/
 
+# Private maintenance guide — the "how do I edit this site" notes. The repo is
+# public; README.md is the public front page and this is the working copy.
+/updatesite.md
+
 # Working resume files at the repo root. Only /*.pdf — one level — so the
 # deployed copy at public/resume.pdf is still committed. Don't broaden this
 # to *.pdf or the site's resume link silently 404s in production.
@@ -50,3 +54,6 @@ next-env.d.ts
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+agents.md
+claude.md
